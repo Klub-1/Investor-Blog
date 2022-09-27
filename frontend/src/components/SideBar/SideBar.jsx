@@ -1,8 +1,7 @@
 import React from "react";
-import "./SideBar.css";
 import Grid from "@mui/material/Grid";
 
-import IconButton from "@mui/material/IconButton";
+import { SideBarItem } from "./SideBarItem";
 
 // ICONS
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
@@ -11,41 +10,106 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import LineAxisOutlinedIcon from "@mui/icons-material/LineAxisOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 
+const iconStyle = {
+  iconColor: "black",
+  iconHeight: "30px",
+  iconWidth: "30px",
+  iconMinHeight: "24px",
+  iconMinWidth: "24px",
+};
+
 export const SideBar = () => {
   return (
-    <nav className="menu">
-      <Grid
-        style={{
-          backgroundColor: "white",
-          borderRadius: "20px",
-          height: "100%",
-          width: "100%",
-        }}
-        container
-        direction="column"
-        justifyContent="space-evenly"
-        alignItems="center"
-      >
-        <IconButton>
-          <HomeOutlinedIcon sx={{ fontSize: "100%", color: "black" }} />
-        </IconButton>
+    <Grid
+      style={{
+        height: "50%",
+        width: "60px",
+        minWidth: "40px",
+        background: "white",
+        position: "absolute",
+        left: "0px",
+        boxSadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+        borderRadius: "0px 20px 20px 0px",
+      }}
+      container
+      direction="column"
+      justifyContent="space-evenly"
+      alignItems="center"
+    >
+      <SideBarItem
+        route="/"
+        content={
+          <HomeOutlinedIcon
+            sx={{
+              color: iconStyle.iconColor,
+              height: iconStyle.iconHeight,
+              width: iconStyle.iconWidth,
+              minHeight: iconStyle.iconMinHeight,
+              minWidth: iconStyle.iconMinWidth,
+            }}
+          />
+        }
+      />
 
-        <IconButton>
-          <AddOutlinedIcon sx={{ fontSize: "100%", color: "black" }} />
-        </IconButton>
+      <SideBarItem
+        route="/add"
+        content={
+          <AddOutlinedIcon
+            sx={{
+              color: iconStyle.iconColor,
+              height: iconStyle.iconHeight,
+              width: iconStyle.iconWidth,
+              minHeight: iconStyle.iconMinHeight,
+              minWidth: iconStyle.iconMinWidth,
+            }}
+          />
+        }
+      />
 
-        <IconButton>
-          <SearchOutlinedIcon sx={{ fontSize: "100%", color: "black" }} />
-        </IconButton>
+      <SideBarItem
+        route="/search"
+        content={
+          <SearchOutlinedIcon
+            sx={{
+              color: iconStyle.iconColor,
+              height: iconStyle.iconHeight,
+              width: iconStyle.iconWidth,
+              minHeight: iconStyle.iconMinHeight,
+              minWidth: iconStyle.iconMinWidth,
+            }}
+          />
+        }
+      />
 
-        <IconButton>
-          <LineAxisOutlinedIcon sx={{ fontSize: "100%", color: "black" }} />
-        </IconButton>
+      <SideBarItem
+        route="/stocks"
+        content={
+          <LineAxisOutlinedIcon
+            sx={{
+              color: iconStyle.iconColor,
+              height: iconStyle.iconHeight,
+              width: iconStyle.iconWidth,
+              minHeight: iconStyle.iconMinHeight,
+              minWidth: iconStyle.iconMinWidth,
+            }}
+          />
+        }
+      />
 
-        <IconButton>
-          <PersonOutlineOutlinedIcon sx={{ fontSize: "100%", color: "black" }} />
-        </IconButton>
-      </Grid>
-    </nav>
+      <SideBarItem
+        route="/account"
+        content={
+          <PersonOutlineOutlinedIcon
+            sx={{
+              color: iconStyle.iconColor,
+              height: iconStyle.iconHeight,
+              width: iconStyle.iconWidth,
+              minHeight: iconStyle.iconMinHeight,
+              minWidth: iconStyle.iconMinWidth,
+            }}
+          />
+        }
+      />
+    </Grid>
   );
 };
