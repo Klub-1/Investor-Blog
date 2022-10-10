@@ -1,0 +1,43 @@
+---
+- name: Update and upgrade apt packages
+  become: true
+  apt:
+    update_cache: yes
+  when: ansible_os_family == 'Debian'
+
+- name: checks if ufw is installed
+  ansible.builtin.package:
+    name: ufw
+    state: present
+
+
+- name: enable ufw
+  ansible.builtin.service:
+    name: ufw
+    state: started
+    enabled: true
+
+
+- name: allow port 80/tcp ufw rule
+  ansible.builtin.ufw:
+    rule: allow
+    port: 80
+    protocol: tcp
+    state: enabled
+
+- name: allow port 22/tcp ufw rule
+  ansible.builtin.ufw:
+    rule: allow
+    port: 22
+    protocol: tcp
+
+
+- name: allow port 443/tcp ufw rule
+  ansible.builtin.ufw:
+    rule: allow
+    port: 443
+    protocol: tcp
+    state: enabled
+
+
+
