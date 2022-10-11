@@ -1,7 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 
-import "./App.css";
-
 // Components
 import { SideBar } from "./components/SideBar/SideBar";
 
@@ -14,9 +12,9 @@ import { AccountView } from "./view/AccountView";
 
 function App() {
   return (
-    <div className="App">
+    <div className="flex w-full h-full absolute">
       <SideBar />
-      <div className="content">
+      <div className="flex-1 m-5 md:m-10 bg-teal-500">
         <Routes>
           <Route path="/" element={<HomeView />} />
           <Route path="/add" element={<AddView />} />

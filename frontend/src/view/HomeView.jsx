@@ -1,7 +1,5 @@
-import React from 'react'
+import React from "react";
 
 export const HomeView = () => {
-  return (
-    <div>HomeView</div>
-  )
-}
+  return <div>HomeView</div>;
+};
