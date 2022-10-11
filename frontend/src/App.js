@@ -14,7 +14,7 @@ function App() {
   return (
     <div className="flex w-full h-full absolute">
       <SideBar />
-      <div className="flex-1 m-5 md:m-10 bg-teal-500">
+      <div className="flex-1 m-5 md:m-10">
         <Routes>
           <Route path="/" element={<HomeView />} />
           <Route path="/add" element={<AddView />} />
