@@ -2,8 +2,6 @@
 - hosts: all
   become: yes
   roles:
-    - nginx
-    - certbot
+    - caprover
   tags:
-    - certbot
-    - nginx
+    - caprover
