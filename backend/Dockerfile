@@ -1,5 +1,5 @@
 # Taken from: https://www.erraticbits.ca/post/2021/fastapi/
-FROM python:3.9
+FROM python:3.10
 WORKDIR /code
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONBUFFERED 1

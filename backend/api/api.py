@@ -1,9 +1,9 @@
 from typing import Union
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.model.models import BlogPost
 
 app = FastAPI()
 
@@ -21,15 +21,7 @@ app.add_middleware(
 
 
 
-class BlogPost(BaseModel):
-    header: str
-    content: str
-    likes: int
-    dislikes: int
-    # TODO: fix
-    user: str 
-    comments: str
-    tags: str
+
 
 blogposts = {
     "1": {
