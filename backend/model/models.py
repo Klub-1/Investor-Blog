@@ -22,7 +22,6 @@ class Tag(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     stock_ticker = Column(String, unique=True, index=True)
-    blogposts = relationship("BlogPost", back_populates="tag")
 
 class BlogPost(Base):
     """A blogpost is created by a user, pointing to a tag and its owner"""
@@ -36,11 +35,4 @@ class BlogPost(Base):
     dislikes = Column(Integer, index=True)
 
     user_id = Column(Integer, ForeignKey("users.id"))
-    tag_id = Column(Integer, ForeignKey("tags.id"))
-
     user = relationship("User", back_populates="blogposts")
-    tag = relationship("Tag", back_populates="blogposts")
-    # TODO: fix
-    # user: str
-    # comments: str
-    # tags: str

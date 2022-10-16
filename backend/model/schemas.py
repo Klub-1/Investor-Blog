@@ -45,7 +45,5 @@ class TagCreate(TagBase):
 class Tag(TagBase):
     id: int
 
-    blogposts: list[BlogPost] = []
-
     class Config:
         orm_mode = True

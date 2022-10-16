@@ -39,6 +39,10 @@ def get_db():
         db.close()
 
 
+@app.get("/")
+def read_root():
+    return {"Hello": "Investor World!"}
+
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
@@ -61,6 +65,8 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
+# END COPIED FROM DOCUMENTATION
+# ________________________________________________
 
 @app.post("/users/{user_id}/blogposts/", response_model=schemas.BlogPost)
 def create_blogpost_for_user(
@@ -74,9 +80,16 @@ def read_blogposts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db
     blogposts = crud.get_blogposts(db, skip=skip, limit=limit)
     return blogposts
 
-# END COPIED FROM DOCUMENTATION
-# ________________________________________________
+@app.post("/tags/", response_model=schemas.Tag)
+def create_tag(tag: schemas.TagCreate, db: Session = Depends(get_db)):
+    db_tag = crud.get_tag_by_ticker(db, tag_ticker=tag.stock_ticker)
+    if db_tag:
+        raise HTTPException(status_code=400, detail="Tag already registered")
+    return crud.create_tag(db=db, tag=tag)
 
-@app.get("/")
-def read_root():
-    return {"Hello": "Investor World!"}
+
+
+@app.get("/tags/", response_model=list[schemas.Tag])
+def read_tags(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    tags = crud.get_tags(db, skip=skip, limit=limit)
+    return tags
