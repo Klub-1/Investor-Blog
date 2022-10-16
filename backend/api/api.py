@@ -1,9 +1,15 @@
 from typing import Union
 
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 
-from backend.model.models import BlogPost
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
+
+from backend.api import crud
+from backend.model import  models, schemas
+from backend.database.database import SessionLocal, engine
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -20,62 +26,57 @@ app.add_middleware(
 )
 
 
+# FROM THIS LINE WE HAVE USED THE DOCUMENTATION:
+# https://fastapi.tiangolo.com/tutorial/sql-databases/#__tabbed_4_2
+# ________________________________________________
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+@app.post("/users/", response_model=schemas.User)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_email(db, email=user.email)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return crud.create_user(db=db, user=user)
 
 
 
-blogposts = {
-    "1": {
-        "header": "Overskrift asd",
-        "content": "main content of the blog",
-        "likes": 2,
-        "dislikes": 3,
-        # TODO: fix
-        "user": "user",
-        "comments": "comment",
-        "tags": "tags"
-    },
-    "2": {
-        "header": "Overskrift 2",
-        "content": "main content of the 222 blog",
-        "likes": 2,
-        "dislikes": 3,
-        # TODO: fix
-        "user": "user",
-        "comments": "comment",
-        "tags": "tags"
-    }
-}
+@app.get("/users/", response_model=list[schemas.User])
+def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    users = crud.get_users(db, skip=skip, limit=limit)
+    return users
 
+
+@app.get("/users/{user_id}", response_model=schemas.User)
+def read_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = crud.get_user(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
+
+
+@app.post("/users/{user_id}/blogposts/", response_model=schemas.BlogPost)
+def create_blogpost_for_user(
+        user_id: int, blogpost: schemas.BlogPostCreate, db: Session = Depends(get_db)
+):
+    return crud.create_user_blogpost(db=db, blogpost=blogpost, user_id=user_id)
+
+
+@app.get("/blogposts/", response_model=list[schemas.BlogPost])
+def read_blogposts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    blogposts = crud.get_blogposts(db, skip=skip, limit=limit)
+    return blogposts
+
+# END COPIED FROM DOCUMENTATION
+# ________________________________________________
 
 @app.get("/")
 def read_root():
     return {"Hello": "Investor World!"}
-
-
-@app.get("/blogposts/")
-def get_blogposts():
-    return blogposts
-
-
-@app.get("/blogpost/{blogpost_id}")
-async def get_blogpost(blogpost_id: str):
-    try:
-        return blogposts[blogpost_id]
-    except KeyError:
-        raise HTTPException(status_code=404, detail="Blogpost not found")
-
-
-@app.post("/blogpost/")
-def create_blogpost(blogpost: BlogPost):
-    blogposts[str(len(blogposts)+1)] = blogpost
-    return blogpost
-
-@app.put("/like/{blogpost_id}")
-async def like_blogpost(blogpost_id: str):
-    blogposts[blogpost_id]["likes"] += 1
-    return blogposts[blogpost_id]
-
-@app.put("/dislike/{blogpost_id}")
-async def dislike_blogpost(blogpost_id: str):
-    blogposts[blogpost_id]["dislikes"] += 1
-    return blogposts[blogpost_id]

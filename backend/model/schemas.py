@@ -7,7 +7,9 @@ class BlogPostBase(BaseModel):
     title: str
     content: str | None = None
 
-class BlogPost(ItemBase):
+class BlogPostCreate(BlogPostBase):
+    pass
+class BlogPost(BlogPostBase):
     id: int
 
     likes: int
@@ -24,11 +26,11 @@ class UserBase(BaseModel):
     username: str
     email: str
 
-
+class UserCreate(UserBase):
+    pass
 
 class User(UserBase):
     id: int
-
     blogposts: list[BlogPost] = []
 
     class Config:
@@ -37,6 +39,8 @@ class User(UserBase):
 class TagBase(BaseModel):
     stock_ticker: str
 
+class TagCreate(TagBase):
+    pass
 
 class Tag(TagBase):
     id: int

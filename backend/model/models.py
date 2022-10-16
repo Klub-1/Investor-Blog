@@ -38,6 +38,8 @@ class BlogPost(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     tag_id = Column(Integer, ForeignKey("tags.id"))
 
+    user = relationship("User", back_populates="blogposts")
+    tag = relationship("Tag", back_populates="blogposts")
     # TODO: fix
     # user: str
     # comments: str
