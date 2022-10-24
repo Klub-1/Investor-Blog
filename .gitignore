@@ -177,3 +177,5 @@ chrome-user-data
 .vscode
 *.swp
 *.swo
+.fleet/settings.json
+.fleet
