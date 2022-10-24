@@ -32,6 +32,7 @@ jobs:
         with:
           push: true
           file: ./backend/Dockerfile
+          context: ./backend
           tags: klub-1/backend/devops:${{github.run_number}},
       # Install caprover cli
       - name: install caprover cli
