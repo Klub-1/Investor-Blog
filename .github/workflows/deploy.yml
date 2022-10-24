@@ -41,7 +41,7 @@ jobs:
       - name: Deploy app
         env: 
           APP_NAME: 'devopse22-backend'
-          APP_URL: 'https://devopse22.diplomportal.dk/'
+          APP_URL: 'https://captain.investorblog.diplomportal.dk/'
           IMAGE_NAME: 's205424/backend-devops:${{github.run_number}}'
         run: 
          'caprover deploy --caproverUrl=$APP_URL --caproverPassword=${{ secrets.CAPROVER_PASSWORD }} --imageName=$IMAGE_NAME --appName=$APP_NAME'
