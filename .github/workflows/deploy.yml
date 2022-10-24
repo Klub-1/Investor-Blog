@@ -33,7 +33,7 @@ jobs:
           push: true
           file: ./backend/Dockerfile
           context: ./backend
-          tags: klub-1/backend/devops:${{github.run_number}},
+          tags: s205424/backend-devops:${{github.run_number}},
       # Install caprover cli
       - name: install caprover cli
         run: npm install -g caprover
@@ -42,6 +42,6 @@ jobs:
         env: 
           APP_NAME: 'devopse22-backend'
           APP_URL: 'https://devopse22.diplomportal.dk/'
-          IMAGE_NAME: 'klub-1/backend/devops:${{github.run_number}}'
+          IMAGE_NAME: 's205424/backend-devops:${{github.run_number}}'
         run: 
          'caprover deploy --caproverUrl=$APP_URL --caproverPassword=${{ secrets.CAPROVER_PASSWORD }} --imageName=$IMAGE_NAME --appName=$APP_NAME'
