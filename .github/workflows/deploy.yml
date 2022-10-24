@@ -5,7 +5,6 @@ on:
     branches:
       - 'master'
       - 'dev'
-      - feature/deploy-backend
   workflow_dispatch:      
 
 jobs:
