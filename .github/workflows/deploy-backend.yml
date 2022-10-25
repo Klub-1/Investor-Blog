@@ -1,4 +1,4 @@
-name: java-docker-ci
+name: deploy-backend
 
 on:
   push:
