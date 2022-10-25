@@ -9,7 +9,7 @@ export const SearchView = () => {
     const filterPosts = (e) => {
         const searchFor = e.target.value.toLowerCase();
 
-        if (searchFor.length != 0) {
+        if (searchFor.length !== 0) {
             // We have something to search for
             const filteredBlogsBody= BlogPostData.filter((blog) => {
                 // Filter every body in lowercase to easier match
