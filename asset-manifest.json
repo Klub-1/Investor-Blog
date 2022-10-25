@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/Investor-Blog/static/css/main.d45090d1.css",
-    "main.js": "/Investor-Blog/static/js/main.0cfc7eea.js",
+    "main.css": "/Investor-Blog/static/css/main.d14fa813.css",
+    "main.js": "/Investor-Blog/static/js/main.174bdb87.js",
     "index.html": "/Investor-Blog/index.html",
-    "main.d45090d1.css.map": "/Investor-Blog/static/css/main.d45090d1.css.map",
-    "main.0cfc7eea.js.map": "/Investor-Blog/static/js/main.0cfc7eea.js.map"
+    "main.d14fa813.css.map": "/Investor-Blog/static/css/main.d14fa813.css.map",
+    "main.174bdb87.js.map": "/Investor-Blog/static/js/main.174bdb87.js.map"
   },
   "entrypoints": [
-    "static/css/main.d45090d1.css",
-    "static/js/main.0cfc7eea.js"
+    "static/css/main.d14fa813.css",
+    "static/js/main.174bdb87.js"
   ]
 }
