@@ -98,7 +98,7 @@ def read_tags(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 @app.get("/stocks/")
 def read_stocks():
-    url = https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=92DD3OTK7XOQK3GT
+    url = "https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=92DD3OTK7XOQK3GT"
     r = requests.get(url)
     stocks = r.json()
     return stocks
