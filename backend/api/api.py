@@ -9,6 +9,8 @@ from backend.api import crud
 from backend.model import  models, schemas
 from backend.database.database import SessionLocal, engine
 
+import requests
+
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -93,3 +95,10 @@ def create_tag(tag: schemas.TagCreate, db: Session = Depends(get_db)):
 def read_tags(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     tags = crud.get_tags(db, skip=skip, limit=limit)
     return tags
+
+@app.get("/stocks/")
+def read_stocks():
+    url = https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=92DD3OTK7XOQK3GT
+    r = requests.get(url)
+    stocks = r.json()
+    return stocks
