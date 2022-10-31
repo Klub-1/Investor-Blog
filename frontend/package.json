@@ -2,7 +2,7 @@
   "name": "investor-blog",
   "version": "0.1.0",
   "private": false,
-  "homepage": "https://klub-1.github.io/Investor-Blog/",
+  "homepage": ".",
   "dependencies": {
     "@mui/icons-material": "^5.10.6",
     "@testing-library/jest-dom": "^5.16.5",
