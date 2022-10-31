@@ -36,3 +36,10 @@ class BlogPost(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User", back_populates="blogposts")
+
+class Stock(Base):
+    """A stock is fetched from Alpha Vantage, pointing to an id and its name"""
+    __tablename__ = "stocks"
+
+    id = Column(Integer, primary_key=True, index=True)
+    stock_name = Column(String, index=True)
