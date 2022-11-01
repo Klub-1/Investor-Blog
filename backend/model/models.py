@@ -43,3 +43,13 @@ class Stock(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     stock_name = Column(String, index=True)
+
+    class Favorite(Base):
+        """A favorite is created by a user, pointing to a stock and its owner"""
+        __tablename__ = "favorites"
+
+        id = Column(Integer, primary_key=True, index=True)
+        user_id = Column(Integer, ForeignKey("users.id"))
+        user = relationship("User", back_populates="favorites")
+        stock_id = Column(Integer, ForeignKey("stocks.id"))
+        stock = relationship("Stock", back_populates="favorites")

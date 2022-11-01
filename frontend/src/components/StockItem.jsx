@@ -11,8 +11,8 @@ import {
 export const StockItem = (stock) => {
 const [favorite, setFavorite] = useState(false);
   return (
-    <div className='h-[200px] w-[300px] shadow rounded-lg bg-[#7382D9] mb-5 md:mb-10 p-2.5'>
-        <div className='h-fit flex justify-between align-middle text-white text-2xl md:text-4xl'>
+    <div className='h-max w-11/12 shadow rounded-lg bg-[#7382D9] mb-5 md:mb-10 p-2.5'>
+        <div className='h-max flex justify-between align-middle text-white text-1xl md:text-4xl'>
               <h1 className='font-bold text-white'>
                   {stock.symbol}
             </h1>
@@ -26,17 +26,17 @@ const [favorite, setFavorite] = useState(false);
               )}
             </button>
         </div>
-          <div className='text-2xl md:text-5xl mt-5 text-right font-bold'>
+          <div className='text-1xl md:text-5xl mt-5 text-right font-bold'>
             
               {stock.ppo > 0 && (
                   <h1 className='text-[#7CFF89]'>
-                +{stock.ppo}%
+                +{Math.round(stock.ppo * 100) / 100}%
             </h1>
               )}
 
               {stock.ppo < 0 && (
                   <h1 className='text-[#FF82A0]'>
-                {stock.ppo}%
+                {Math.round(stock.ppo * 100) / 100}%
             </h1>
               )}
 
