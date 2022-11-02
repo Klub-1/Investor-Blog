@@ -2,8 +2,12 @@ from typing import Union
 
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+
+import requests
+import jwt
 
 from backend.api import crud
 from backend.model import  models, schemas
@@ -41,6 +45,7 @@ def get_db():
 
 @app.get("/")
 def read_root():
+    print("test")
     return {"Hello": "Investor World!"}
 
 @app.post("/users/", response_model=schemas.User)
@@ -88,6 +93,33 @@ def create_tag(tag: schemas.TagCreate, db: Session = Depends(get_db)):
     return crud.create_tag(db=db, tag=tag)
 
 
+@app.get("/login")
+async def login():
+    URI = "https://auth.dtu.dk/dtu/?service=http://localhost:8000/redirect"
+    return RedirectResponse(url=URI)
+
+@app.get("/redirect")
+async def redirect(ticket : str):
+    print("redirect "+ ticket)
+    body = "https://auth.dtu.dk/dtu/validate?service=http://localhost:8000/redirect&ticket="+ticket
+    body = requests.get(url=body)
+    print(body.content)
+    #create a jwt token
+    token = jwt.encode({'token': 'payload'}, 'secret', algorithm='HS256')
+    print(token)
+    return token
+
+@app.get("/verify")
+async def verify(token : str):
+    print("verify "+ token)
+    try:
+        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+        print(decoded)
+        return decoded
+    except jwt.ExpiredSignatureError:
+        return "Token expired"
+    except jwt.InvalidTokenError:
+        return "Invalid token"
 
 @app.get("/tags/", response_model=list[schemas.Tag])
 def read_tags(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
