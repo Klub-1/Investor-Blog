@@ -6,6 +6,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
+from datetime import datetime, timedelta, timezone
 import requests
 import jwt
 
@@ -104,8 +105,12 @@ async def redirect(ticket : str):
     body = "https://auth.dtu.dk/dtu/validate?service=http://localhost:8000/redirect&ticket="+ticket
     body = requests.get(url=body)
     print(body.content)
+    if (body.content != b'no\n'):
+        print(body.content.decode("utf-8").split("\n")[1])
+        id = body.content.decode("utf-8").split("\n")[1]
     #create a jwt token
-    token = jwt.encode({'token': 'payload'}, 'secret', algorithm='HS256')
+    #todo CHANGE SECRET KEY
+    token = jwt.encode({'id': id,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=30)}, 'secret', algorithm='HS256')
     print(token)
     return token
 
@@ -113,6 +118,7 @@ async def redirect(ticket : str):
 async def verify(token : str):
     print("verify "+ token)
     try:
+        #todo CHANGE SECRET KEY
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
         print(decoded)
         return decoded
