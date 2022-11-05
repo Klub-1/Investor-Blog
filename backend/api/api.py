@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 import requests
 import jwt
+from bs4 import BeautifulSoup
 
 from backend.api import crud
 from backend.model import  models, schemas
@@ -101,19 +102,17 @@ async def login():
 
 @app.get("/redirect")
 async def redirect(ticket : str):
-    print("redirect "+ ticket)
-    body = "https://auth.dtu.dk/dtu/validate?service=http://localhost:8000/redirect&ticket="+ticket
+    body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://localhost:8000/redirect&ticket="+ticket
     body = requests.get(url=body)
-    print(body.content)
-    if (body.content != b'no\n'):
-        print(body.content.decode("utf-8").split("\n")[1])
-        id = body.content.decode("utf-8").split("\n")[1]
-    #create a jwt token
+    element = BeautifulSoup( body.content.decode("utf-8"))
     #todo CHANGE SECRET KEY
-    token = jwt.encode({'id': id,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=30)}, 'secret', algorithm='HS256')
-    print(token)
-    return token
-
+    token = jwt.encode({'id': element.find("cas:user").text,'mail' : element.find("mail").text , 'name': element.find("gn").text , 'lastname': element.find("sn").text ,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=30)}, 'secret', algorithm='HS256')
+    if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
+        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
+    #print(token)
+    #returnn user to frontend with token in url
+    return RedirectResponse(url="http://localhost:3000/?token="+token)
+    
 @app.get("/verify")
 async def verify(token : str):
     print("verify "+ token)

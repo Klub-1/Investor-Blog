@@ -2,7 +2,7 @@
   "name": "investor-blog",
   "version": "0.1.0",
   "private": false,
-  "homepage": "https://klub-1.github.io/Investor-Blog/",
+  "homepage": ".",
   "dependencies": {
     "@mui/icons-material": "^5.10.6",
     "@testing-library/jest-dom": "^5.16.5",
@@ -18,7 +18,7 @@
     "autoprefixer": "^10.4.12",
     "postcss": "^8.4.17",
     "react-scripts": "^5.0.1",
-    "tailwindcss": "^3.1.8"
+    "tailwindcss": "^3.2.2"
   },
   "scripts": {
     "start": "react-scripts start",
