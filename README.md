@@ -2,6 +2,15 @@
  Fullstack application developed during the "Complex Systems and Devops" course at DTU.
 
 
+# Guide til at køre programmet
+- cd backend
+- docker-compose up -d --build
+
+- cd frontend
+- npm install
+- npm start
+
+
 
 # Sources
 <https://www.youtube.com/watch?v=yKV1IGahXqA&t=315s>
