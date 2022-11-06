@@ -23,6 +23,7 @@ class BlogPost(BlogPostBase):
 
 
 class UserBase(BaseModel):
+    id: str
     username: str
     email: str
 

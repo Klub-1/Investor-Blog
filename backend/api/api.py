@@ -2,8 +2,14 @@ from typing import Union
 
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+
+from datetime import datetime, timedelta, timezone
+import requests
+import jwt
+from bs4 import BeautifulSoup
 
 from backend.api import crud
 from backend.model import  models, schemas
@@ -41,6 +47,7 @@ def get_db():
 
 @app.get("/")
 def read_root():
+    print("test")
     return {"Hello": "Investor World!"}
 
 @app.post("/users/", response_model=schemas.User)
@@ -88,6 +95,36 @@ def create_tag(tag: schemas.TagCreate, db: Session = Depends(get_db)):
     return crud.create_tag(db=db, tag=tag)
 
 
+@app.get("/login")
+async def login():
+    URI = "https://auth.dtu.dk/dtu/?service=http://localhost:8000/redirect"
+    return RedirectResponse(url=URI)
+
+@app.get("/redirect")
+async def redirect(ticket : str):
+    body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://localhost:8000/redirect&ticket="+ticket
+    body = requests.get(url=body)
+    element = BeautifulSoup( body.content.decode("utf-8"))
+    #todo CHANGE SECRET KEY
+    token = jwt.encode({'id': element.find("cas:user").text,'mail' : element.find("mail").text , 'name': element.find("gn").text , 'lastname': element.find("sn").text ,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=30)}, 'secret', algorithm='HS256')
+    if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
+        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
+    #print(token)
+    #returnn user to frontend with token in url
+    return RedirectResponse(url="http://localhost:3000/?token="+token)
+    
+@app.get("/verify")
+async def verify(token : str):
+    print("verify "+ token)
+    try:
+        #todo CHANGE SECRET KEY
+        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+        print(decoded)
+        return decoded
+    except jwt.ExpiredSignatureError:
+        return "Token expired"
+    except jwt.InvalidTokenError:
+        return "Invalid token"
 
 @app.get("/tags/", response_model=list[schemas.Tag])
 def read_tags(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
