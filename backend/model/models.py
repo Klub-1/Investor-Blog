@@ -4,8 +4,10 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 
 from backend.database.database import Base
 
+
 # Models are created from the fastapi documentation:
 # https://fastapi.tiangolo.com/tutorial/sql-databases/
+
 
 class User(Base):
     """A User is connected to their own blog posts"""
@@ -16,15 +18,9 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     blogposts = relationship("BlogPost", back_populates="user")
 
-class Tag(Base):
-    """A tag is used to identify a stock on the site. Can be for a post or graph"""
-    __tablename__ = "tags"
-
-    id = Column(Integer, primary_key=True, index=True)
-    stock_ticker = Column(String, unique=True, index=True)
 
 class BlogPost(Base):
-    """A blogpost is created by a user, pointing to a tag and its owner"""
+    """A blogpost is created by a user, pointing to its owner"""
     __tablename__ = "blogposts"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -34,5 +30,5 @@ class BlogPost(Base):
     likes = Column(Integer, index=True)
     dislikes = Column(Integer, index=True)
 
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(String, ForeignKey("users.id"))
     user = relationship("User", back_populates="blogposts")
