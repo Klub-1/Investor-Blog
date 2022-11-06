@@ -32,7 +32,7 @@ export const AccountView = () => {
     <div className="h-[400px] w-full shadow rounded-lg bg-white mb-5 md:mb-10">
       <div className="h-4/5 flex justify-center items-center">
         <h1 className="h-max w-full text-center font-semibold text-4xl content-center md:text-8xl">
-          InvestorBlog test
+          InvestorBlog
         </h1>
       </div>
       <button
