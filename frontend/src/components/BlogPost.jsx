@@ -17,7 +17,7 @@ export const BlogPost = (post) => {
   const [liked, setLiked] = useState(post.liked);
   const [disliked, setDisLiked] = useState(post.disliked);
   return (
-    <div className="h-fit w-full  shadow rounded-lg bg-white mb-5 md:mb-10">
+          <div className="h-fit w-full  shadow rounded-lg bg-white mb-5 md:mb-10">
       <div className="p-5">
         <div className="flex justify-between">
           <h1 className="font-bold text-2xl md:text-4xl">{post.title}</h1>
