@@ -4,7 +4,7 @@ import  { useEffect, useState } from "react"
 
 function About() {
   // 👇️ using window.location.href 👇️
-  window.location.href = 'http://localhost:8000/login';
+  window.location.href = 'http://4.233.122.101:8000/login';
   return null;
 }
 
@@ -14,7 +14,7 @@ export const AccountView = () => {
   const [users, setUsers] = useState([])
 
   const fetchData = () => {
-    fetch("http://localhost:8000/verify?token=" + localStorage.getItem("portal-jwt-Token"))
+    fetch("http://4.233.122.101:8000/verify?token=" + localStorage.getItem("portal-jwt-Token"))
     .then(response => {
       console.log(response)
       return response.json()

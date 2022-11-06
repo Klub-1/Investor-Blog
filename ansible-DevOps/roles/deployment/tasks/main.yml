@@ -4,7 +4,7 @@
 - name: run docker container backend
   ansible.builtin.docker_container:
     name: backend
-    image: s205424/backend-devops
+    image: s205424/backend-devops:latest
     pull: true
     state: started
     restart_policy: always
@@ -15,7 +15,7 @@
 - name: run docker container frontend
   ansible.builtin.docker_container:
     name: frontend
-    image: s205424/frontend-devops
+    image: s205424/frontend-devops:latest
     pull: true
     state: started
     restart_policy: always

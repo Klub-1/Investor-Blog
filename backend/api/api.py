@@ -97,12 +97,12 @@ def create_tag(tag: schemas.TagCreate, db: Session = Depends(get_db)):
 
 @app.get("/login")
 async def login():
-    URI = "https://auth.dtu.dk/dtu/?service=http://localhost:8000/redirect"
+    URI = "https://auth.dtu.dk/dtu/?service=http://4.233.122.101:8000/redirect"
     return RedirectResponse(url=URI)
 
 @app.get("/redirect")
 async def redirect(ticket : str):
-    body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://localhost:8000/redirect&ticket="+ticket
+    body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://4.233.122.101:8000/redirect&ticket="+ticket
     body = requests.get(url=body)
     element = BeautifulSoup( body.content.decode("utf-8"))
     #todo CHANGE SECRET KEY
@@ -111,7 +111,7 @@ async def redirect(ticket : str):
         crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
     #print(token)
     #returnn user to frontend with token in url
-    return RedirectResponse(url="http://localhost:3000/?token="+token)
+    return RedirectResponse(url="https://investorblog.diplomportal.dk/?token="+token)
     
 @app.get("/verify")
 async def verify(token : str):

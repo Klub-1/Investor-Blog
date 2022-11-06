@@ -22,5 +22,5 @@
     state: link
 
 - name: Generate new certificate if one doesn't exist.
-  shell: "certbot --nginx --noninteractive --agree-tos --email s194134@student.dtu.dk -d investorblog.diplomportal.dk"
+  ansible.builtin.command: "certbot --nginx --noninteractive --agree-tos --email s194134@student.dtu.dk -d investorblog.diplomportal.dk"
   when: create_cert == true
