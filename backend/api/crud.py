@@ -5,7 +5,7 @@ from backend.model import models, schemas
 # These functions are taken from fastapi documentation:
 # https://fastapi.tiangolo.com/tutorial/sql-databases/#__tabbed_1_3
 
-def get_user(db: Session, user_id: int):
+def get_user(db: Session, user_id: str):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
@@ -16,7 +16,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 def create_user(db: Session, user: schemas.UserCreate):
-    db_user = models.User(username=user.username, email=user.email)
+    db_user = models.User(id=user.id,username=user.username, email=user.email)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
