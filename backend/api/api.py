@@ -107,7 +107,7 @@ async def redirect(ticket : str):
     #if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
     #    crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
     if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
-        crud.create_user(db=SessionLocal(), user="",user_id=element.find("cas:user").text, username="")
+        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = " ",username = element.find("cas:user").text,id = element.find("cas:user").text))
     #print(token)
     #returnn user to frontend with token in url
     return RedirectResponse(url="https://investorblog.diplomportal.dk/?token="+token)
