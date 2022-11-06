@@ -1,0 +1,46 @@
+---
+
+- name: pull docker image from s205424
+  ansible.builtin.docker_image:
+    name: s205424/backend-devops
+    source: pull
+
+- name: run docker container backend
+  ansible.builtin.docker_container:
+    name: backend
+    image: s205424/backend-devops
+    state: started
+    restart_policy: always
+    published_ports:
+      - 8000:8000
+    command: uvicorn backend.api.api:app --reload --host 0.0.0.0 --port 8000
+
+- name: pull docker image from s205424
+  ansible.builtin.docker_image:
+    name: s205424/frontend-devops
+    source: pull
+
+- name: run docker container frontend
+  ansible.builtin.docker_container:
+    name: frontend
+    image: s205424/frontend-devops
+    state: started
+    restart_policy: always
+    published_ports:
+      - 80:80
+      - 3000:3000
+
+
+- name: allow port 80/tcp ufw rule
+  ansible.builtin.ufw:
+    rule: allow
+    port: 80
+    protocol: tcp
+
+
+
+- name: allow port 3000/tcp ufw rule
+  ansible.builtin.ufw:
+    rule: allow
+    port: 3000
+    protocol: tcp
