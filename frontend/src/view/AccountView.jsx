@@ -14,7 +14,7 @@ export const AccountView = () => {
   const [users, setUsers] = useState([])
 
   const fetchData = () => {
-    fetch("http://4.233.122.101:8000/verify?token=" + localStorage.getItem("portal-jwt-Token"))
+    fetch("https://4.233.122.101:8000/verify?token=" + localStorage.getItem("portal-jwt-Token"))
     .then(response => {
       console.log(response)
       return response.json()

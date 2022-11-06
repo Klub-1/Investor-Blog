@@ -110,7 +110,7 @@ async def redirect(ticket : str):
         crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = " ",username = element.find("cas:user").text,id = element.find("cas:user").text))
     #print(token)
     #returnn user to frontend with token in url
-    return RedirectResponse(url="https://investorblog.diplomportal.dk/?token="+token)
+    return RedirectResponse(url="https://investorblog.diplomportal.dk?token="+token)
 
 @app.get("/verify")
 async def verify(token: str):
