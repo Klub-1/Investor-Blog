@@ -1,12 +1,14 @@
 import { render, screen } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
 import { SearchView } from "../view/SearchView";
-import App from "../App";
+import '@testing-library/jest-dom'
 
-test("renders APP", () => {
+test("renders search view and checks for elements", () => {
     render(
         <SearchView />
     );
-    const searchBar = screen.getByText(/APPL/i);
+    const searchBar = document.getElementById("SearchInputField")
+    expect(searchBar).toBeInTheDocument()
+    const searchBarTitel = screen.getByText(/Search for a post/i)
+    expect(searchBarTitel).toBeInTheDocument()
 
 });
