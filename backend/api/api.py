@@ -104,7 +104,7 @@ async def login():
 async def redirect(ticket : str):
     body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://4.233.122.101:8000/redirect&ticket="+ticket
     body = requests.get(url=body)
-    print(body)
+    print(body.content.decode("utf-8"))
     element = BeautifulSoup( body.content.decode("utf-8"))
     #todo CHANGE SECRET KEY
     token = jwt.encode({'id': element.find("cas:user").text,'mail' : element.find("mail").text , 'name': element.find("gn").text , 'lastname': element.find("sn").text ,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=30)}, 'secret', algorithm='HS256')
