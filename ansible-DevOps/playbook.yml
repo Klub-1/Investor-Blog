@@ -4,7 +4,11 @@
   roles:
     - setup_server
     - deployment
+    - nginx
+    - certbot
   tags:
     - setup_server
     - deployment
+    - nginx
+    - certbot
   
