@@ -33,14 +33,14 @@ jobs:
           push: true
           file: ./backend/Dockerfile
           context: ./backend
-          tags: s205424/backend-devops:${{github.run_number}},s205424/backend-devops:lastest
+          tags: s205424/backend-devops:${{github.run_number}},s205424/backend-devops:latest
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           push: true
           file: ./frontend/Dockerfile
           context: ./frontend
-          tags: s205424/frontend-devops:${{github.run_number}},s205424/frontend-devops:lastest
+          tags: s205424/frontend-devops:${{github.run_number}},s205424/frontend-devops:latest
 
 
       - name: Run playbook
