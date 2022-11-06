@@ -101,8 +101,8 @@ async def redirect(ticket : str):
     body = requests.get(url=body)
     print(body.content.decode("utf-8"))
     element = BeautifulSoup( body.content.decode("utf-8"))
-    #todo CHANGE SECRET KEY
-    token = jwt.encode({'id': element.find("cas:user").text ,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=30)}, 'secret', algorithm='HS256')
+    #todo CHANGE SECRET KEY 30 min expiration
+    token = jwt.encode({'id': element.find("cas:user").text ,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=1800)}, 'secret', algorithm='HS256')
     #token = jwt.encode({'id': element.find("cas:user").text,'mail' : element.find("mail").text , 'name': element.find("gn").text , 'lastname': element.find("sn").text ,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=30)}, 'secret', algorithm='HS256')
     #if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
     #    crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
