@@ -5,6 +5,29 @@
     update_cache: yes
   when: ansible_os_family == 'Debian'
 
+- name: Install nginx
+  become: true
+  apt:
+    name: nginx
+    state: present
+  when: ansible_os_family == 'Debian' and azure_server == false
+
+- name: copy config
+  become: true
+  copy:
+    src: default
+    dest: /etc/nginx/sites-available
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Make sure nginx is running
+  become: true
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes
+
 - name: checks if ufw is installed
   ansible.builtin.package:
     name: ufw

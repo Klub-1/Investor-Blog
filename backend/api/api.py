@@ -91,26 +91,26 @@ def read_blogposts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db
 
 @app.get("/login")
 async def login():
-    URI = "https://auth.dtu.dk/dtu/?service=http://localhost:8000/redirect"
+    URI = "https://auth.dtu.dk/dtu/?service=http://4.233.122.101:8000/redirect"
     return RedirectResponse(url=URI)
 
 
 @app.get("/redirect")
-async def redirect(ticket: str):
-    body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://localhost:8000/redirect&ticket=" + ticket
+async def redirect(ticket : str):
+    body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://4.233.122.101:8000/redirect&ticket="+ticket
     body = requests.get(url=body)
-    element = BeautifulSoup(body.content.decode("utf-8"))
-    # todo CHANGE SECRET KEY
-    token = jwt.encode({'id': element.find("cas:user").text, 'mail': element.find("mail").text, 'name': element.find(
-        "gn").text, 'lastname': element.find("sn").text, "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=30)},
-                       'secret', algorithm='HS256')
-    if (crud.get_user(db=SessionLocal(), user_id=element.find("cas:user").text) == None):
-        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text, id=element.find(
-            "cas:user").text, username=element.find("gn").text + " " + element.find("sn").text))
-    # print(token)
-    # returnn user to frontend with token in url
-    return RedirectResponse(url="http://localhost:3000/?token=" + token)
-
+    print(body.content.decode("utf-8"))
+    element = BeautifulSoup( body.content.decode("utf-8"))
+    #todo CHANGE SECRET KEY
+    token = jwt.encode({'id': element.find("cas:user").text ,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=30)}, 'secret', algorithm='HS256')
+    #token = jwt.encode({'id': element.find("cas:user").text,'mail' : element.find("mail").text , 'name': element.find("gn").text , 'lastname': element.find("sn").text ,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=30)}, 'secret', algorithm='HS256')
+    #if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
+    #    crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
+    if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
+        crud.create_user(db=SessionLocal(), user="",user_id=element.find("cas:user").text, username="")
+    #print(token)
+    #returnn user to frontend with token in url
+    return RedirectResponse(url="https://investorblog.diplomportal.dk/?token="+token)
 
 @app.get("/verify")
 async def verify(token: str):

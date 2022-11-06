@@ -1,4 +1,4 @@
-name: deploy-backend
+name: deploy
 
 on:
   push:
@@ -33,15 +33,23 @@ jobs:
           push: true
           file: ./backend/Dockerfile
           context: ./backend
-          tags: s205424/backend-devops:${{github.run_number}},
-      # Install caprover cli
-      - name: install caprover cli
-        run: npm install -g caprover
-      # Trigger deploy on Caprover instance
-      - name: Deploy app
-        env: 
-          APP_NAME: 'devopse22-backend'
-          APP_URL: 'https://captain.investorblog.diplomportal.dk/'
-          IMAGE_NAME: 's205424/backend-devops:${{github.run_number}}'
-        run: 
-         'caprover deploy --caproverUrl=$APP_URL --caproverPassword=${{ secrets.CAPROVER_PASSWORD }} --imageName=$IMAGE_NAME --appName=$APP_NAME'
+          tags: s205424/backend-devops:${{github.run_number}},s205424/backend-devops:latest
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          file: ./frontend/Dockerfile
+          context: ./frontend
+          tags: s205424/frontend-devops:${{github.run_number}},s205424/frontend-devops:latest
+
+
+      - name: Run playbook
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          # Required, playbook filepath
+          playbook: playbook.yml
+          # Optional, directory where playbooks live
+          directory: ./ansible-DevOps
+          # Optional, SSH private key
+          key: ${{secrets.SSH_PRIVATE_KEY}}
+          options: -u gruppe11
