@@ -37,3 +37,29 @@ def create_user_blogpost(db: Session, blogpost: schemas.BlogPostCreate, user_id:
     db.commit()
     db.refresh(db_item)
     return db_item
+
+def create_interaction(db: Session, interaction: schemas.Interactions, user_id: int, blog_post_id: int):
+    db_item = models.Interactions(**interaction.dict(), user_id=user_id, blog_post_id=blog_post_id)
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+
+def update_interaction(db: Session, interaction: schemas.Interactions, user_id: int, blog_post_id: int):
+    # TODO: IMPLEMENT THIS:
+    pass
+
+    
+def create_comment(db: Session, comment: schemas.CommentsCreate, user_id: int, blog_post_id: int):
+    db_item = models.Comments(user_id=user_id, blog_post_id=blog_post_id, comment=comment.comment)
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+def get_comments_by_user_and_blog_post(db: Session, user_id: int, blog_post_id: int):
+    return db.query(models.Comments).filter(models.Comments.user_id == user_id).filter(models.Comments.blog_post_id == blog_post_id).all()
+
+def get_interactions_by_user_and_blog_post(db: Session, user_id: int, blog_post_id: int):
+    return db.query(models.Interactions).filter(models.Interactions.user_id == user_id).filter(models.Interactions.blog_post_id == blog_post_id).all()

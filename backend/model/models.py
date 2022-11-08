@@ -26,9 +26,31 @@ class BlogPost(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     content = Column(String, index=True)
-
-    likes = Column(Integer, index=True)
-    dislikes = Column(Integer, index=True)
-
+    
+    tags = Column(list[str], index=True)
+    
     user_id = Column(String, ForeignKey("users.id"))
     user = relationship("User", back_populates="blogposts")
+
+class Interactions(Base):
+    """An interaction is created by a user, pointing to the BlogPost"""
+    __tablename__ = "interactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    like = Column(Boolean, index=True)
+    dislike = Column(Boolean, index=True)
+    
+    blog_post_id = Column(String, ForeignKey("blog_post_id.id"))
+    
+    user_id = Column(String, ForeignKey("users.id"))
+    
+class Comments(Base):
+    """A comment is created by a user, pointing to the BlogPost"""
+    __tablename__ = "comments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    comment = Column(str, index=True)
+    
+    blog_post_id = Column(String, ForeignKey("blogposts.id"))
+    
+    user_id = Column(String, ForeignKey("users.id"))

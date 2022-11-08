@@ -9,8 +9,7 @@ from pydantic import BaseModel
 class BlogPostBase(BaseModel):
     title: str
     content: str | None = None
-    likes: Optional[int] = None
-    dislikes: Optional[int] = None
+    tag: Optional[list[str]] = None
 
 
 class BlogPostCreate(BlogPostBase):
@@ -24,12 +23,45 @@ class BlogPost(BlogPostBase):
     class Config:
         orm_mode = True
 
+    
+class InteractionsBase(BaseModel):
+    blog_post_id: int
+    like: bool
+    dislike: bool
+
+
+class InteractionsCreate(InteractionsBase):
+    pass
+
+
+class Interactions(InteractionsBase):
+    id: int
+    user_id: str
+
+    class Config:
+        orm_mode = True
+        
+class CommentsBase(BaseModel):
+    blog_post_id: int
+    comment: str
+
+
+class CommentsCreate(CommentsBase):
+    pass
+
+
+class Comments(CommentsBase):
+    id: int
+    user_id: str
+
+    class Config:
+        orm_mode = True
+
 
 class UserBase(BaseModel):
     id: str
     username: str
     email: str
-
 
 class UserCreate(UserBase):
     pass
