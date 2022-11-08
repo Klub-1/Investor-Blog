@@ -10,13 +10,20 @@ import requests
 import jwt
 from bs4 import BeautifulSoup
 
+from starlette_prometheus import metrics, PrometheusMiddleware
+
 from backend.api import crud
 from backend.model import models, schemas
 from backend.database.database import SessionLocal, engine
 
+
+
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+app.add_middleware(PrometheusMiddleware)
+app.add_route("/metrics/", metrics)
 
 origins = [
     "*",
@@ -29,6 +36,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 
 # FROM THIS LINE WE HAVE USED THE DOCUMENTATION:

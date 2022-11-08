@@ -4,3 +4,4 @@ SQLAlchemy==1.4.41
 requests==2.26.0
 pyjwt==2.3.0
 beautifulsoup4
+starlette-prometheus==0.9.0
