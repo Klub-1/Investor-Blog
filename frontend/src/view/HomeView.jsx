@@ -1,12 +1,34 @@
 import React from "react";
+import { useEffect, useState } from "react";
+
 import { BlogPost } from "../components/BlogPost";
-import { BlogPostData } from "../Data/TestData/BlogPostData";
 
 export const HomeView = () => {
+  const [blogposts, setBlogposts] = useState([]);
+
+  function getBlogPosts() {
+    fetch("http://localhost:8000/blogposts/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        setBlogposts(data);
+      });
+  }
+
+  useEffect(() => {
+    getBlogPosts();
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center overflow-y-scroll">
-      {BlogPostData.map((post) => (
-              <BlogPost key={post.id} {...post} />
+      {blogposts.map((post) => (
+        <BlogPost key={post.id} {...post} />
       ))}
     </div>
   );

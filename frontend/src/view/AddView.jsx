@@ -1,13 +1,25 @@
 import React from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const AddView = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
 
-  function postDataToBackend(id) {
-    const status = fetch("http://localhost:8000/users/" + id + "/blogposts/", {
+  // SOURCE: https://bobbyhadz.com/blog/react-onclick-redirect
+  const navigate = useNavigate();
+
+  const navigateHome = () => {
+    navigate("/");
+  };
+
+  function postDataToBackend() {
+    const id = "s205123";
+    if (title === "" || content === "") {
+      return;
+    }
+    const response = fetch("http://localhost:8000/users/" + id + "/blogposts/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -15,15 +27,13 @@ export const AddView = () => {
       body: JSON.stringify({
         title: title,
         content: content,
-        tags: tags.split(",").map((tag) => tag.trim()),
+        tags: tags,
       }),
     }).then((response) => {
-      return response.status;
+      return response.json();
     });
 
-    if (status === 200) {
-      alert("Blogpost created");
-    }
+    navigateHome();
   }
 
   return (
@@ -34,27 +44,27 @@ export const AddView = () => {
         </h1>
         <input
           type="text"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 mb-3"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 mb-3"
           placeholder="Titel"
           onChange={(e) => setTitle(e.target.value)}
         />
         <textarea
           type="text"
           rows={8}
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5"
           placeholder="Indlæg"
           onChange={(e) => setContent(e.target.value)}
         />
         <input
           type="text"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 mt-3"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 mt-3"
           placeholder="Tags (F.eks.: APPL, Positivt, Køb)"
           onChange={(e) => setTags(e.target.value)}
         />
       </div>
       <button
         className="w-full h-1/4 bg-[#7382D9] rounded-b-lg text-white p-2 font-extrabold text-xl"
-        onClick={() => postDataToBackend(1)}
+        onClick={() => postDataToBackend()}
       >
         Opret indlæg
       </button>
