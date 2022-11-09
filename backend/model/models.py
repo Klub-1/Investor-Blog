@@ -9,6 +9,33 @@ from backend.database.database import Base
 # https://fastapi.tiangolo.com/tutorial/sql-databases/
 
 
+class Interactions(Base):
+    """An interaction is created by a user, pointing to the BlogPost"""
+    __tablename__ = "interactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    like = Column(Boolean, index=True)
+    dislike = Column(Boolean, index=True)
+    
+    blog_post_id = Column(String, ForeignKey("blogposts.id"))
+    blogpost = relationship("BlogPost", back_populates="interactions")
+    
+    user_id = Column(String, ForeignKey("users.id"))
+    user = relationship("User", back_populates="interactions")
+    
+class Comments(Base):
+    """A comment is created by a user, pointing to the BlogPost"""
+    __tablename__ = "comments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    comment = Column(String, index=True)
+    
+    blog_post_id = Column(String, ForeignKey("blogposts.id"))
+    blogpost = relationship("BlogPost", back_populates="comments")
+    
+    user_id = Column(String, ForeignKey("users.id"))
+    user = relationship("User", back_populates="comments")
+
 class User(Base):
     """A User is connected to their own blog posts"""
     __tablename__ = "users"
@@ -17,6 +44,8 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     blogposts = relationship("BlogPost", back_populates="user")
+    comments = relationship("Comments", back_populates="user")
+    interactions = relationship("Interactions", back_populates="user")
 
 
 class BlogPost(Base):
@@ -27,30 +56,10 @@ class BlogPost(Base):
     title = Column(String, index=True)
     content = Column(String, index=True)
     
-    tags = Column(list[str], index=True)
+    tags = Column(String, index=True)
     
     user_id = Column(String, ForeignKey("users.id"))
     user = relationship("User", back_populates="blogposts")
-
-class Interactions(Base):
-    """An interaction is created by a user, pointing to the BlogPost"""
-    __tablename__ = "interactions"
-
-    id = Column(Integer, primary_key=True, index=True)
-    like = Column(Boolean, index=True)
-    dislike = Column(Boolean, index=True)
     
-    blog_post_id = Column(String, ForeignKey("blog_post_id.id"))
-    
-    user_id = Column(String, ForeignKey("users.id"))
-    
-class Comments(Base):
-    """A comment is created by a user, pointing to the BlogPost"""
-    __tablename__ = "comments"
-
-    id = Column(Integer, primary_key=True, index=True)
-    comment = Column(str, index=True)
-    
-    blog_post_id = Column(String, ForeignKey("blogposts.id"))
-    
-    user_id = Column(String, ForeignKey("users.id"))
+    comments = relationship("Comments", back_populates="blogpost")
+    interactions = relationship("Interactions", back_populates="blogpost")

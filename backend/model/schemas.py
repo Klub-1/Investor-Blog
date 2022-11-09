@@ -5,11 +5,42 @@ from pydantic import BaseModel
 # Schemas are designed from the fastapi documentation
 # https://fastapi.tiangolo.com/tutorial/sql-databases/#__tabbed_1_3
 
+    
+class InteractionsBase(BaseModel):
+    like: bool
+    dislike: bool
 
+
+class InteractionsCreate(InteractionsBase):
+    pass
+
+class Interactions(InteractionsBase):
+    id: int
+    user_id: str
+    blog_post_id: int
+
+    class Config:
+        orm_mode = True
+        
+        
+class CommentsBase(BaseModel):
+    comment: str
+
+class CommentsCreate(CommentsBase):
+    pass
+
+class Comments(CommentsBase):
+    id: int
+    user_id: str
+    blog_post_id: int
+
+    class Config:
+        orm_mode = True
+        
 class BlogPostBase(BaseModel):
     title: str
     content: str | None = None
-    tag: Optional[list[str]] = None
+    tags: str
 
 
 class BlogPostCreate(BlogPostBase):
@@ -19,44 +50,11 @@ class BlogPostCreate(BlogPostBase):
 class BlogPost(BlogPostBase):
     id: int
     user_id: str
+    comments: list[Comments] = []
+    interactions: list[Interactions] = []
 
     class Config:
         orm_mode = True
-
-    
-class InteractionsBase(BaseModel):
-    blog_post_id: int
-    like: bool
-    dislike: bool
-
-
-class InteractionsCreate(InteractionsBase):
-    pass
-
-
-class Interactions(InteractionsBase):
-    id: int
-    user_id: str
-
-    class Config:
-        orm_mode = True
-        
-class CommentsBase(BaseModel):
-    blog_post_id: int
-    comment: str
-
-
-class CommentsCreate(CommentsBase):
-    pass
-
-
-class Comments(CommentsBase):
-    id: int
-    user_id: str
-
-    class Config:
-        orm_mode = True
-
 
 class UserBase(BaseModel):
     id: str
@@ -70,6 +68,8 @@ class UserCreate(UserBase):
 class User(UserBase):
     id: str
     blogposts: list[BlogPost] = []
+    comments: list[Comments] = []
+    interactions: list[Interactions] = []
 
     class Config:
         orm_mode = True
