@@ -11,6 +11,7 @@
     published_ports:
       - 8000:8000
     command: uvicorn backend.api.api:app --reload --host 0.0.0.0 --port 8000
+    tags: notest
 
 - name: run docker container frontend
   ansible.builtin.docker_container:
@@ -21,14 +22,14 @@
     restart_policy: always
     published_ports:
       - 3000:3000
-
+  tags: notest
 
 - name: allow port 80/tcp ufw rule
   ansible.builtin.ufw:
     rule: allow
     port: 80
     protocol: tcp
-
+  tags: notest
 
 
 - name: allow port 3000/tcp ufw rule
@@ -36,3 +37,4 @@
     rule: allow
     port: 3000
     protocol: tcp
+    tags: notest
