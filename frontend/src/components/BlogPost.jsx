@@ -51,7 +51,10 @@ export const BlogPost = (post) => {
             <div className="justify-center content-center text-center">
               <button
                 className="text-2xl md:text-5xl"
-                onClick={() => setLiked(!liked)}
+                onClick={() => {
+                  setLiked(!liked);
+                  setDisLiked(false);
+                }}
               >
                 {liked ? (
                   <AiFillLike className="text-[#7382D9]" />
@@ -72,7 +75,10 @@ export const BlogPost = (post) => {
             <div className="justify-center content-center text-center">
               <button
                 className="text-2xl md:text-5xl"
-                onClick={() => setDisLiked(!disliked)}
+                onClick={() => {
+                  setLiked(false);
+                  setDisLiked(!disliked);
+                }}
               >
                 {disliked ? (
                   <AiFillDislike className="text-[#FF82A0]" />
@@ -120,25 +126,18 @@ const AddComment = ({ post_id }) => {
   const [comment, setComment] = useState("");
 
   function postComment() {
-    const status = fetch(
-      "http://localhost:8000/users/" + id + "/comments/" + post_id,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          comment: comment,
-        }),
-      }
-    ).then((response) => {
-      console.log(response);
+    fetch("http://localhost:8000/users/" + id + "/comments/" + post_id, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        comment: comment,
+      }),
+    }).then((response) => {
       return response.status;
     });
-
-    if (status === 200) {
-      setComment("");
-    }
+    setComment("");
   }
 
   return (
@@ -149,6 +148,7 @@ const AddComment = ({ post_id }) => {
           type="text"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5"
           placeholder="Kommmentar"
+          value={comment}
           onChange={(e) => setComment(e.target.value)}
         />
         <button

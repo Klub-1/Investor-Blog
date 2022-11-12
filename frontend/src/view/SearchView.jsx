@@ -1,23 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BlogPost } from "../components/BlogPost";
-import { BlogPostData } from "../Data/TestData/BlogPostData";
 
 export const SearchView = () => {
-  const [blogs, setBlogs] = useState(BlogPostData);
+  const [blogs, setBlogs] = useState([]);
+  const [tempBlogs, setTempBlogs] = useState([]);
+
+  function getBlogPosts() {
+    fetch("http://localhost:8000/blogposts/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        setBlogs(data);
+        setTempBlogs(data);
+      });
+  }
+
+  useEffect(() => {
+    getBlogPosts();
+  }, []);
 
   const filterPosts = (e) => {
     const searchFor = e.target.value.toLowerCase();
 
     if (searchFor.length !== 0) {
       // We have something to search for
-      const filteredBlogsBody = BlogPostData.filter((blog) => {
+      const filteredBlogsBody = tempBlogs.filter((blog) => {
         // Filter every body in lowercase to easier match
-        return blog.body.toLowerCase().includes(searchFor);
+        return blog.content.toLowerCase().includes(searchFor);
       });
       setBlogs(filteredBlogsBody);
     } else {
       // Reset blog posts
-      setBlogs(BlogPostData);
+      setBlogs(tempBlogs);
     }
   };
 
