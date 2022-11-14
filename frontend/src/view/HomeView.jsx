@@ -6,7 +6,7 @@ export const HomeView = () => {
   return (
     <div className="flex flex-col items-center justify-center overflow-y-scroll">
       {BlogPostData.map((post) => (
-        <BlogPost {...post} />
+              <BlogPost key={post.id} {...post} />
       ))}
     </div>
   );

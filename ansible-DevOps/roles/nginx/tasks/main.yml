@@ -31,6 +31,7 @@
     enabled: yes
   tags: notest
 
+
 - name: checks if ufw is installed
   ansible.builtin.package:
     name: ufw

@@ -24,12 +24,14 @@
       - 3000:3000
   tags: notest
 
+
 - name: allow port 80/tcp ufw rule
   ansible.builtin.ufw:
     rule: allow
     port: 80
     protocol: tcp
   tags: notest
+
 
 
 - name: allow port 3000/tcp ufw rule
