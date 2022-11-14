@@ -19,6 +19,22 @@ export const BlogPost = (post) => {
   const [liked, setLiked] = useState(false);
   const [disliked, setDisLiked] = useState(false);
 
+  function calcLikes() {
+    const likes = post.interactions.filter((interaction) => {
+      return interaction.like === true;
+    }).length;
+
+    return likes;
+  }
+
+  function calcDisLikes() {
+    const disLikes = post.interactions.filter((interaction) => {
+      return interaction.dislike === true;
+    }).length;
+
+    return disLikes;
+  }
+
   function getInteractions() {
     const interaction = post.interactions.filter((interaction) => {
       console.log(interaction.user_id);
@@ -32,6 +48,25 @@ export const BlogPost = (post) => {
       setLiked(like);
       setDisLiked(dislike);
     }
+  }
+
+  function postInteraction() {
+    const interaction = post.interactions.filter((interaction) => {
+      console.log(interaction.user_id);
+      return interaction.user_id.includes(id);
+    });
+    fetch("http://localhost:8000/users/" + id + "/interactions/" + post.id, {
+      method: interaction[0] === undefined ? "POST" : "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        like: liked,
+        dislike: disliked,
+      }),
+    }).then((response) => {
+      return response.status;
+    });
   }
 
   useEffect(() => {
@@ -63,13 +98,7 @@ export const BlogPost = (post) => {
                 )}
               </button>
 
-              <h1>
-                {
-                  post.interactions.filter((interaction) => {
-                    return interaction.like === true;
-                  }).length
-                }
-              </h1>
+              <h1>{calcLikes()}</h1>
             </div>
 
             <div className="justify-center content-center text-center">
@@ -87,13 +116,7 @@ export const BlogPost = (post) => {
                 )}
               </button>
 
-              <h1>
-                {
-                  post.interactions.filter((interaction) => {
-                    return interaction.dislike === true;
-                  }).length
-                }
-              </h1>
+              <h1>{calcDisLikes()}</h1>
             </div>
 
             <div className="justify-center content-center text-center">
