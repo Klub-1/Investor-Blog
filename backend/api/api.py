@@ -10,13 +10,17 @@ import requests
 import jwt
 from bs4 import BeautifulSoup
 
+from prometheus_fastapi_instrumentator import Instrumentator
+
 from backend.api import crud
 from backend.model import models, schemas
 from backend.database.database import SessionLocal, engine
 
+
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
 
 origins = [
     "*",
@@ -96,21 +100,24 @@ async def login():
 
 
 @app.get("/redirect")
-async def redirect(ticket : str):
+async def redirect(ticket: str):
     body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://4.233.122.101:8000/redirect&ticket="+ticket
     body = requests.get(url=body)
     print(body.content.decode("utf-8"))
-    element = BeautifulSoup( body.content.decode("utf-8"))
-    #todo CHANGE SECRET KEY 30 min expiration
-    token = jwt.encode({'id': element.find("cas:user").text ,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+    element = BeautifulSoup(body.content.decode("utf-8"))
+    # todo CHANGE SECRET KEY 30 min expiration
+    token = jwt.encode({'id': element.find("cas:user").text, "exp": datetime.now(
+        tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
     #token = jwt.encode({'id': element.find("cas:user").text,'mail' : element.find("mail").text , 'name': element.find("gn").text , 'lastname': element.find("sn").text ,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=30)}, 'secret', algorithm='HS256')
-    #if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
+    # if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
     #    crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
+
     if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
         crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text,id = element.find("cas:user").text))
     #print(token)
     #returnn user to frontend with token in url
     return RedirectResponse(url="https://investorblog.diplomportal.dk?token="+token)
+
 @app.get("/verify")
 async def verify(token: str):
     print("verify " + token)
@@ -123,3 +130,5 @@ async def verify(token: str):
         return "Token expired"
     except jwt.InvalidTokenError:
         return "Invalid token"
+
+Instrumentator().instrument(app).expose(app)
