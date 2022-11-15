@@ -111,11 +111,11 @@ async def redirect(ticket: str):
     #token = jwt.encode({'id': element.find("cas:user").text,'mail' : element.find("mail").text , 'name': element.find("gn").text , 'lastname': element.find("sn").text ,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=30)}, 'secret', algorithm='HS256')
     # if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
     #    crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
-    if (crud.get_user(db=SessionLocal(), user_id=element.find("cas:user").text) == None):
-        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(
-            email=" ", username=element.find("cas:user").text, id=element.find("cas:user").text))
-    # print(token)
-    # returnn user to frontend with token in url
+
+    if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
+        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text,id = element.find("cas:user").text))
+    #print(token)
+    #returnn user to frontend with token in url
     return RedirectResponse(url="https://investorblog.diplomportal.dk?token="+token)
 
 
