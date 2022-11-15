@@ -45,6 +45,7 @@ def create_tag(db: Session, tag: schemas.TagCreate):
     return db_tag
 
 def get_stocks_asasasa(db: Session):
+    # TODO: Lav den som create user i crud.py
     json = requests.get('https://www.alphavantage.co/query?function=PPO&symbol=GOOGL&interval=daily&series_type=close&fastperiod=10&matype=1&apikey=92DD3OTK7XOQK3GT').json()
     symbol = json["Meta Data"]["1: Symbol"];
     ppo = json["Technical Analysis: PPO"]["2022-11-04"]["PPO"];

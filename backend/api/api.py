@@ -98,4 +98,5 @@ def read_tags(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 @app.get("/stocks/")
 def read_stocks(db: Session = Depends(get_db)):    
+    # TODO: Lav den ligesom create user i api.py
     return crud.get_stocks_asasasa(db)
