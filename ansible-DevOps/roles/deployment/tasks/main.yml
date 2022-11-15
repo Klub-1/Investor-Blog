@@ -11,7 +11,7 @@
     published_ports:
       - 8000:8000
     command: uvicorn backend.api.api:app --reload --host 0.0.0.0 --port 8000
-    tags: notest
+  tags: notest
 
 - name: run docker container frontend
   ansible.builtin.docker_container:
@@ -24,6 +24,48 @@
       - 3000:3000
   tags: notest
 
+- name: copy metrics files
+  copy:
+    src: metrics
+    dest: /
+    directory_mode: yes
+    owner: root
+    group: root
+    mode: 0766
+
+- name: run prometheus container
+  ansible.builtin.docker_container:
+    name: prometheus
+    image: prom/prometheus:latest
+    state: started
+    restart_policy: always
+    volumes:
+      - /metrics/prometheus.yml:/etc/prometheus/prometheus.yml
+    published_ports:
+      - 9090:9090
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+  tags: notest
+
+
+
+
+- name: run grafana container
+  ansible.builtin.docker_container:
+    name: grafana
+    image: grafana/grafana:latest
+    user: "472"
+    state: started
+    restart_policy: always
+    volumes:
+      - /metrics/datasource.yml:/etc/grafana/provisioning/datasource.yml
+    published_ports:
+      - 3001:3000
+    env:
+      GF_SECURITY_ADMIN_USER: "{{grafana_user}}"
+      GF_SECURITY_ADMIN_PASSWORD: "{{grafana_password}}"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+  tags: notest
 
 - name: allow port 80/tcp ufw rule
   ansible.builtin.ufw:
@@ -32,11 +74,23 @@
     protocol: tcp
   tags: notest
 
-
-
 - name: allow port 3000/tcp ufw rule
   ansible.builtin.ufw:
     rule: allow
     port: 3000
     protocol: tcp
-    tags: notest
+  tags: notest
+
+- name: allow port 3001/tcp ufw rule
+  ansible.builtin.ufw:
+    rule: allow
+    port: 3001
+    protocol: tcp
+  tags: notest
+
+- name: allow port 9090/tcp ufw rule
+  ansible.builtin.ufw:
+    rule: allow
+    port: 9090
+    protocol: tcp
+  tags: notest
