@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import {
   AiFillLike,
@@ -13,76 +13,9 @@ import { FiArrowRight } from "react-icons/fi";
 import { MdOutlineAddComment, MdAddComment } from "react-icons/md";
 
 export const BlogPost = (post) => {
-  const id = "s205123";
-
   const [addComment, setAddComment] = useState(false);
   const [liked, setLiked] = useState(false);
   const [disliked, setDisLiked] = useState(false);
-
-  function calcLikes() {
-    const likes = post.interactions.filter((interaction) => {
-      return interaction.like === true;
-    }).length;
-
-    return likes;
-  }
-
-  function calcDisLikes() {
-    const disLikes = post.interactions.filter((interaction) => {
-      return interaction.dislike === true;
-    }).length;
-
-    return disLikes;
-  }
-
-  function getInteractions() {
-    const interaction = post.interactions.filter((interaction) => {
-      console.log(interaction.user_id);
-      return interaction.user_id.includes(id);
-    });
-
-    if (interaction[0] !== undefined) {
-      const like = interaction[0].like;
-      const dislike = interaction[0].dislike;
-
-      setLiked(like);
-      setDisLiked(dislike);
-    }
-  }
-
-  function postInteraction() {
-    const interaction = post.interactions.filter((interaction) => {
-      return interaction.user_id.includes(id);
-    });
-
-    if (!liked && !disliked && interaction[0] !== undefined) {
-      fetch("http://localhost:8000/users/" + id + "/interactions/" + post.id, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((response) => {
-        return response.status;
-      });
-    } else if (liked || disliked) {
-      fetch("http://localhost:8000/users/" + id + "/interactions/" + post.id, {
-        method: interaction[0] === undefined ? "POST" : "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          like: liked,
-          dislike: disliked,
-        }),
-      }).then((response) => {
-        return response.status;
-      });
-    }
-  }
-
-  useEffect(() => {
-    getInteractions();
-  });
 
   return (
     <div className="h-fit w-full  shadow rounded-lg bg-white mb-5 md:mb-10">
@@ -109,7 +42,7 @@ export const BlogPost = (post) => {
                 )}
               </button>
 
-              <h1>{calcLikes()}</h1>
+              <h1>{post.likes}</h1>
             </div>
 
             <div className="justify-center content-center text-center">
@@ -127,7 +60,7 @@ export const BlogPost = (post) => {
                 )}
               </button>
 
-              <h1>{calcDisLikes()}</h1>
+              <h1>{post.dislikes}</h1>
             </div>
 
             <div className="justify-center content-center text-center">
@@ -142,7 +75,7 @@ export const BlogPost = (post) => {
                 )}
               </button>
 
-              <h1>{post.comments.length}</h1>
+              <h1>{post.commentsCount}</h1>
             </div>
           </div>
         </div>

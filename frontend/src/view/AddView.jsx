@@ -19,7 +19,7 @@ export const AddView = () => {
     if (title === "" || content === "") {
       return;
     }
-    const response = fetch("http://localhost:8000/users/" + id + "/blogposts/", {
+    fetch("http://localhost:8000/users/" + id + "/blogposts/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
