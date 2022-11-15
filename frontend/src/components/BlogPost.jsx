@@ -52,21 +52,32 @@ export const BlogPost = (post) => {
 
   function postInteraction() {
     const interaction = post.interactions.filter((interaction) => {
-      console.log(interaction.user_id);
       return interaction.user_id.includes(id);
     });
-    fetch("http://localhost:8000/users/" + id + "/interactions/" + post.id, {
-      method: interaction[0] === undefined ? "POST" : "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        like: liked,
-        dislike: disliked,
-      }),
-    }).then((response) => {
-      return response.status;
-    });
+
+    if (!liked && !disliked && interaction[0] !== undefined) {
+      fetch("http://localhost:8000/users/" + id + "/interactions/" + post.id, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((response) => {
+        return response.status;
+      });
+    } else if (liked || disliked) {
+      fetch("http://localhost:8000/users/" + id + "/interactions/" + post.id, {
+        method: interaction[0] === undefined ? "POST" : "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          like: liked,
+          dislike: disliked,
+        }),
+      }).then((response) => {
+        return response.status;
+      });
+    }
   }
 
   useEffect(() => {

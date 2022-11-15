@@ -94,15 +94,22 @@ def create_blogpost_interaction(
 ):
     return crud.create_interaction(db=db, interaction=interaction, user_id=user_id, blog_post_id=blog_post_id)
 
+@app.put("/users/{user_id}/interactions/{blog_post_id}", response_model=schemas.Interactions)
+def create_blogpost_interaction(
+    user_id: str, blog_post_id: int, interaction: schemas.InteractionsCreate, db: Session = Depends(get_db)
+):
+    return crud.update_interaction(db=db, interaction=interaction, user_id=user_id, blog_post_id=blog_post_id)
+
+@app.delete("/users/{user_id}/interactions/{blog_post_id}", response_model=schemas.Interactions)
+def create_blogpost_interaction(
+    user_id: str, blog_post_id: int, db: Session = Depends(get_db)
+):
+    return crud.delete_interaction(db=db, user_id=user_id, blog_post_id=blog_post_id)
+
 @app.get("/users/{user_id}/interactions/{blog_post_id}", response_model=list[schemas.Interactions])
 def read_comments(user_id: str, blog_post_id: int, db: Session = Depends(get_db)):
-    interactions = crud.get_interactions_by_user_and_blog_post(db, user_id=user_id, blog_post_id=blog_post_id)
-    return interactions
+    return crud.get_interactions_by_user_and_blog_post(db, user_id=user_id, blog_post_id=blog_post_id)
 
-@app.put("/users/{user_id}/interactions/{blog_post_id}", response_model=schemas.Interactions)
-def read_comments(user_id: str, blog_post_id: int, db: Session = Depends(get_db)):
-    interactions = crud.update_interaction(db, user_id=user_id, blog_post_id=blog_post_id)
-    return interactions
 
 @app.post("/users/{user_id}/comments/{blog_post_id}", response_model=schemas.Comments)
 def create_blogpost_comment(
@@ -112,8 +119,7 @@ def create_blogpost_comment(
 
 @app.get("/users/{user_id}/comments/{blog_post_id}", response_model=list[schemas.Comments])
 def read_comments(user_id: str, blog_post_id: int, db: Session = Depends(get_db)):
-    comments = crud.get_comments_by_user_and_blog_post(db, user_id=user_id, blog_post_id=blog_post_id)
-    return comments
+    return crud.get_comments_by_user_and_blog_post(db, user_id=user_id, blog_post_id=blog_post_id)
 
 
 @app.get("/login")

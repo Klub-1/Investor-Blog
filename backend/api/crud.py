@@ -46,8 +46,12 @@ def create_interaction(db: Session, interaction: schemas.Interactions, user_id: 
 
 
 def update_interaction(db: Session, interaction: schemas.Interactions, user_id: str, blog_post_id: int):
-    # TODO: IMPLEMENT THIS:
-    pass
+    # TODO: IMPLEMENT THIS
+    return {"message": "TO BE IMPLEMENTED"}
+    
+def delete_interaction(db: Session, user_id: str, blog_post_id: int):
+    # TODO: IMPLEMENT THIS
+    return {"message": "TO BE IMPLEMENTED"}
 
     
 def create_comment(db: Session, comment: schemas.CommentsCreate, user_id: str, blog_post_id: int):
