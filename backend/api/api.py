@@ -111,7 +111,6 @@ async def redirect(ticket : str):
     #print(token)
     #returnn user to frontend with token in url
     return RedirectResponse(url="https://investorblog.diplomportal.dk?token="+token)
-
 @app.get("/verify")
 async def verify(token: str):
     print("verify " + token)
