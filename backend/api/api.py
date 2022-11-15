@@ -9,7 +9,7 @@ from backend.api import crud
 from backend.model import  models, schemas
 from backend.database.database import SessionLocal, engine
 
-import requests
+
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -97,8 +97,5 @@ def read_tags(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return tags
 
 @app.get("/stocks/")
-def read_stocks():
-    url = "https://www.alphavantage.co/query?function=PPO&symbol=GOOGL&interval=daily&series_type=close&fastperiod=10&matype=1&apikey=92DD3OTK7XOQK3GT"
-    r = requests.get(url)
-    stocks = r.json()
-    return stocks
+def read_stocks(db: Session = Depends(get_db)):    
+    return crud.get_stocks_asasasa(db)

@@ -40,9 +40,9 @@ class BlogPost(Base):
 class Stock(Base):
     """A stock is fetched from Alpha Vantage, pointing to an id and its name"""
     __tablename__ = "stocks"
-
-    id = Column(Integer, primary_key=True, index=True)
-    stock_name = Column(String, index=True)
+    
+    stock_name = Column(String, primary_key=True, index=True)
+    ppo = Column(String, index=True)
 
     class Favorite(Base):
         """A favorite is created by a user, pointing to a stock and its owner"""
@@ -51,5 +51,5 @@ class Stock(Base):
         id = Column(Integer, primary_key=True, index=True)
         user_id = Column(Integer, ForeignKey("users.id"))
         user = relationship("User", back_populates="favorites")
-        stock_id = Column(Integer, ForeignKey("stocks.id"))
+        stock_id = Column(Integer, ForeignKey("stocks.stock_name"))
         stock = relationship("Stock", back_populates="favorites")

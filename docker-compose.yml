@@ -9,5 +9,6 @@ services:
     - "8000:8000"
     volumes:
     - ./backend/api/api.py:/code/backend/api/api.py
+    - ./backend/api/crud.py:/code/backend/api/crud.py
     - ./backend/main.py:/code/backend/main.py
     command: uvicorn backend.api.api:app --reload --host 0.0.0.0 --port 8000
