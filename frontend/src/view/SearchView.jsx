@@ -1,5 +1,5 @@
 import React from "react";
-import { BlogPost } from "../components/BlogPost";
+import BlogPost from "../components/BlogPost";
 import { useContext } from "react";
 import { StoreContext } from "../App";
 import { observer } from "mobx-react-lite";
@@ -39,7 +39,7 @@ export const SearchView = observer(() => {
       {/*  -----------Sorted blog posts ----------- */}
       <div className="flex flex-col items-center justify-center overflow-y-scroll">
         {store.filteredBlogPosts.map((post) => (
-          <BlogPost key={post.id} {...post} />
+          <BlogPost key={post.id} post={post} />
         ))}
       </div>
     </div>

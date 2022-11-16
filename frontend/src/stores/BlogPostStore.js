@@ -21,15 +21,18 @@ export class BlogPostStore {
     this.filter = value;
   }
 
-  createBlogPost(id, user_id, title, content, comments, interactions) {
+  createBlogPost(user_id, title, content, tags) {
+    let data = this.api.createBlogPost(user_id, title, content, tags);
+
     const blogpost = new BlogPost(
-      id,
-      user_id,
-      title,
-      content,
-      comments,
-      interactions
+      data.id,
+      data.user_id,
+      data.title,
+      data.content,
+      data.comments,
+      data.interactions
     );
+
     this.blogposts.push(blogpost);
   }
 
@@ -48,6 +51,7 @@ export class BlogPostStore {
             comment.comment
           );
         }),
+
         blogpost.interactions.map((interaction) => {
           return new Interaction(
             interaction.id,

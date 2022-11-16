@@ -13,7 +13,7 @@ import { FiArrowRight } from "react-icons/fi";
 
 import { MdOutlineAddComment, MdAddComment } from "react-icons/md";
 
-export const BlogPost = observer((post) => {
+const BlogPost = observer(({ post }) => {
   const [addComment, setAddComment] = useState(false);
   const [liked, setLiked] = useState(false);
   const [disliked, setDisLiked] = useState(false);
@@ -25,6 +25,7 @@ export const BlogPost = observer((post) => {
           <div>
             <h1 className="font-bold text-2xl md:text-4xl">{post.title}</h1>
             <h1 className="text-base">By {post.user_id}</h1>
+            <h1 className="font-bold text-2xl md:text-4xl">{post.tags}</h1>
           </div>
 
           <div className="flex gap-3 md:gap-4 pt-4 md:pt-0 justify-center">
@@ -94,18 +95,8 @@ const AddComment = ({ post }) => {
   const [comment, setComment] = useState("");
 
   function postComment() {
-    fetch("http://localhost:8000/users/" + id + "/comments/" + post.id, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        comment: comment,
-      }),
-    }).then((response) => {
-      return response.status;
-    });
     setComment("");
+    post.createComment(id, comment);
   }
 
   return (
@@ -173,3 +164,5 @@ const Comments = ({ comments }) => {
     </div>
   );
 };
+
+export default BlogPost;
