@@ -6,7 +6,7 @@ import { SideBar } from "./components/SideBar/SideBar";
 
 // Views
 import HomeView from "./view/HomeView";
-import { AddView } from "./view/AddView";
+import AddView from "./view/AddView";
 import { SearchView } from "./view/SearchView";
 import { StocksView } from "./view/StocksView";
 import { AccountView } from "./view/AccountView";

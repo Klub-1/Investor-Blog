@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { API } from "../dal/api";
 import { BlogPost } from "../model/BlogPost";
 import { Comment } from "../model/Comment";
@@ -6,63 +6,73 @@ import { Interaction } from "../model/Interaction";
 
 export class BlogPostStore {
   blogposts = [];
+  filter = "";
   api = new API();
 
-  createBlogPost(title, content, author) {
-    const blogpost = new BlogPost(title, content, author);
+  get filteredBlogPosts() {
+    return this.blogposts.filter(
+      (blogpost) =>
+        blogpost.title.toLowerCase().includes(this.filter.toLowerCase()) ||
+        blogpost.content.toLowerCase().includes(this.filter.toLowerCase())
+    );
+  }
+
+  setFilterValue(value) {
+    this.filter = value;
+  }
+
+  createBlogPost(id, user_id, title, content, comments, interactions) {
+    const blogpost = new BlogPost(
+      id,
+      user_id,
+      title,
+      content,
+      comments,
+      interactions
+    );
     this.blogposts.push(blogpost);
   }
 
-  setBlogPosts(blogposts) {
-    blogposts.map((blogpost) => {
-      const comments = blogpost.comments.map(
-        (comment) =>
-          new Comment(
+  initBlogPosts(_blogposts) {
+    this.blogposts = _blogposts.map((blogpost) => {
+      return new BlogPost(
+        blogpost.id,
+        blogpost.user_id,
+        blogpost.title,
+        blogpost.content,
+        blogpost.comments.map((comment) => {
+          return new Comment(
             comment.id,
             comment.user_id,
             comment.blog_post_id,
             comment.comment
-          )
-      );
-
-      const interactions = blogpost.interactions.map(
-        (interaction) =>
-          new Interaction(
+          );
+        }),
+        blogpost.interactions.map((interaction) => {
+          return new Interaction(
             interaction.id,
             interaction.user_id,
             interaction.blog_post_id,
             interaction.like,
             interaction.dislike
-          )
+          );
+        })
       );
-
-      const post = new BlogPost(
-        blogpost.id,
-        blogpost.user_id,
-        blogpost.title,
-        blogpost.content,
-        comments,
-        interactions
-      );
-      this.blogposts.push(post);
     });
   }
 
   constructor() {
-    makeAutoObservable(this);
+    makeObservable(this, {
+      blogposts: observable,
+      filter: observable,
+      setFilterValue: action,
+      filteredBlogPosts: computed,
+      createBlogPost: action,
+      initBlogPosts: action,
+    });
 
-    fetch("http://localhost:8000/blogposts/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        console.log(response);
-        return response.json();
-      })
-      .then((data) => {
-        this.setBlogPosts(data);
-      });
+    this.api.getBlogPosts().then((blogposts) => {
+      this.initBlogPosts(blogposts);
+    });
   }
 }

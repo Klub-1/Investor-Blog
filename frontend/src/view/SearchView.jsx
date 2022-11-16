@@ -1,45 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { BlogPost } from "../components/BlogPost";
+import { useContext } from "react";
+import { StoreContext } from "../App";
+import { observer } from "mobx-react-lite";
 
-export const SearchView = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [tempBlogs, setTempBlogs] = useState([]);
-
-  function getBlogPosts() {
-    fetch("http://localhost:8000/blogposts/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setBlogs(data);
-        setTempBlogs(data);
-      });
-  }
-
-  useEffect(() => {
-    getBlogPosts();
-  }, []);
+export const SearchView = observer(() => {
+  const store = useContext(StoreContext);
 
   const filterPosts = (e) => {
-    const searchFor = e.target.value.toLowerCase();
+    const searchFor = e.target.value;
 
-    if (searchFor.length !== 0) {
-      // We have something to search for
-      const filteredBlogsBody = tempBlogs.filter((blog) => {
-        // Filter every body in lowercase to easier match
-        return blog.content.toLowerCase().includes(searchFor);
-      });
-      setBlogs(filteredBlogsBody);
-    } else {
-      // Reset blog posts
-      setBlogs(tempBlogs);
-    }
+    store.setFilterValue(searchFor);
   };
 
   return (
@@ -67,10 +38,10 @@ export const SearchView = () => {
       </div>
       {/*  -----------Sorted blog posts ----------- */}
       <div className="flex flex-col items-center justify-center overflow-y-scroll">
-        {blogs.map((post) => (
+        {store.filteredBlogPosts.map((post) => (
           <BlogPost key={post.id} {...post} />
         ))}
       </div>
     </div>
   );
-};
+});

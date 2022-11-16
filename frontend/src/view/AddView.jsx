@@ -1,11 +1,15 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { StoreContext } from "../App";
 
-export const AddView = () => {
+const AddView = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
+
+  const store = useContext(StoreContext);
 
   // SOURCE: https://bobbyhadz.com/blog/react-onclick-redirect
   const navigate = useNavigate();
@@ -16,6 +20,7 @@ export const AddView = () => {
 
   function postDataToBackend() {
     const id = "s205123";
+
     if (title === "" || content === "") {
       return;
     }
@@ -29,11 +34,21 @@ export const AddView = () => {
         content: content,
         tags: tags,
       }),
-    }).then((response) => {
-      return response.json();
-    });
-
-    navigateHome();
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        store.createBlogPost(
+          data.id,
+          data.user_id,
+          data.title,
+          data.content,
+          data.comments,
+          data.interactions
+        );
+        navigateHome();
+      });
   }
 
   return (
@@ -71,3 +86,5 @@ export const AddView = () => {
     </div>
   );
 };
+
+export default AddView;

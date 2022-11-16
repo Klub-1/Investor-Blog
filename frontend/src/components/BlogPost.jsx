@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import React from "react";
 import { useState } from "react";
 
@@ -12,7 +13,7 @@ import { FiArrowRight } from "react-icons/fi";
 
 import { MdOutlineAddComment, MdAddComment } from "react-icons/md";
 
-export const BlogPost = (post) => {
+export const BlogPost = observer((post) => {
   const [addComment, setAddComment] = useState(false);
   const [liked, setLiked] = useState(false);
   const [disliked, setDisLiked] = useState(false);
@@ -42,15 +43,15 @@ export const BlogPost = (post) => {
                 )}
               </button>
 
-              <h1>{post.likes}</h1>
+              <h1>{0}</h1>
             </div>
 
             <div className="justify-center content-center text-center">
               <button
                 className="text-2xl md:text-5xl"
                 onClick={() => {
-                  setLiked(false);
                   setDisLiked(!disliked);
+                  setLiked(false);
                 }}
               >
                 {disliked ? (
@@ -60,7 +61,7 @@ export const BlogPost = (post) => {
                 )}
               </button>
 
-              <h1>{post.dislikes}</h1>
+              <h1>{0}</h1>
             </div>
 
             <div className="justify-center content-center text-center">
@@ -75,25 +76,25 @@ export const BlogPost = (post) => {
                 )}
               </button>
 
-              <h1>{post.commentsCount}</h1>
+              <h1>{post.comments.length}</h1>
             </div>
           </div>
         </div>
 
         <div className="pt-2 text-2xl">{post.content}</div>
       </div>
-      {addComment ? <AddComment post_id={post.id} /> : null}
+      {addComment ? <AddComment post={post} /> : null}
       <CommentSection comments={post.comments} />
     </div>
   );
-};
+});
 
-const AddComment = ({ post_id }) => {
+const AddComment = ({ post }) => {
   const id = "s205123";
   const [comment, setComment] = useState("");
 
   function postComment() {
-    fetch("http://localhost:8000/users/" + id + "/comments/" + post_id, {
+    fetch("http://localhost:8000/users/" + id + "/comments/" + post.id, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
