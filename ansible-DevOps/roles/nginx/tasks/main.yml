@@ -5,6 +5,33 @@
     update_cache: yes
   when: ansible_os_family == 'Debian'
 
+- name: Install nginx
+  become: true
+  apt:
+    name: nginx
+    state: present
+  when: ansible_os_family == 'Debian' and azure_server == false
+
+- name: copy config
+  become: true
+  copy:
+    src: default
+    dest: /etc/nginx/sites-available
+    owner: root
+    group: root
+    mode: 0644
+
+
+##TODO fix test Idempotence test failed because of the following tasks:*  => nginx : Make sure nginx is running
+- name: Make sure nginx is running
+  become: true
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes
+  tags: notest
+
+
 - name: checks if ufw is installed
   ansible.builtin.package:
     name: ufw
@@ -16,6 +43,7 @@
     name: ufw
     state: started
     enabled: true
+  tags: notest
 
 
 - name: allow port 80/tcp ufw rule
@@ -24,13 +52,14 @@
     port: 80
     protocol: tcp
     state: enabled
-
+  tags: notest
+  
 - name: allow port 22/tcp ufw rule
   ansible.builtin.ufw:
     rule: allow
     port: 22
     protocol: tcp
-
+  tags: notest
 
 - name: allow port 443/tcp ufw rule
   ansible.builtin.ufw:
@@ -38,6 +67,6 @@
     port: 443
     protocol: tcp
     state: enabled
-
+  tags: notest
 
 

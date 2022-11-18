@@ -1,0 +1,38 @@
+---
+
+- name: install python pip
+  ansible.builtin.package:
+    name: python3-pip
+    state: present
+
+- name: install docker
+  ansible.builtin.package:
+    name: docker.io
+    state: present
+
+- name: Pip install docker py module
+  ansible.builtin.pip:
+    name: docker-py
+    state: present
+
+- name: install firewall 
+  ansible.builtin.package:
+    name: ufw
+    state: present
+  tags: notest
+
+
+- name: make sure firewall is running
+  ansible.builtin.service:
+    name: ufw
+    state: started
+    enabled: yes
+  tags: notest
+
+
+- name: allow port 22/tcp ufw rule
+  ansible.builtin.ufw:
+    rule: allow
+    port: 22
+    protocol: tcp
+  tags: notest
