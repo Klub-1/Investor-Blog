@@ -1,5 +1,6 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { API } from "../Api/api";
+import { AuthHandler } from "../Auth/AuthHandler";
 import { BlogPost } from "../models/BlogPost";
 import { Comment } from "../models/Comment";
 import { Interaction } from "../models/Interaction";
@@ -8,6 +9,7 @@ export class BlogPostStore {
   blogposts = [];
   filter = "";
   api = new API();
+  auth = new AuthHandler(true);
 
   get filteredBlogPosts() {
     return this.blogposts.filter(
@@ -21,7 +23,8 @@ export class BlogPostStore {
     this.filter = value;
   }
 
-  createComment(user_id, blog_post_id, comment) {
+  createComment(blog_post_id, comment) {
+    const user_id = this.auth.getToken();
     const data = this.api.createComment(user_id, blog_post_id, comment);
     const newComment = new Comment(data.id, user_id, blog_post_id, comment);
     this.blogposts.forEach((blogpost) => {
@@ -31,12 +34,20 @@ export class BlogPostStore {
     });
   }
 
-  createBlogPost(user_id, title, content, tags) {
+  createBlogPost(title, content, tags) {
+    const user_id = this.auth.getToken();
+
     const data = this.api.createBlogPost(user_id, title, content, tags);
 
-    console.table(data);
-
-    const blogpost = new BlogPost(data.id, user_id, title, content, [], []);
+    const blogpost = new BlogPost(
+      data.id,
+      user_id,
+      title,
+      content,
+      tags,
+      [],
+      []
+    );
 
     this.blogposts.push(blogpost);
   }
@@ -48,6 +59,7 @@ export class BlogPostStore {
         blogpost.user_id,
         blogpost.title,
         blogpost.content,
+        blogpost.tags,
         blogpost.comments.map((comment) => {
           return new Comment(
             comment.id,

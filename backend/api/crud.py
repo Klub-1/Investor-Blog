@@ -45,13 +45,20 @@ def create_interaction(db: Session, interaction: schemas.Interactions, user_id: 
     return db_item
 
 
-def update_interaction(db: Session, interaction: schemas.Interactions, user_id: str, blog_post_id: int):
-    # TODO: IMPLEMENT THIS
-    return {"message": "TO BE IMPLEMENTED"}
+def update_interaction(db: Session, interaction: schemas.InteractionsUpdate, user_id: str, blog_post_id: int):
+    db_item = db.query(models.Interactions).filter(models.Interactions.user_id==user_id).filter(models.Interactions.blog_post_id==blog_post_id).first()
+    if db_item is None:
+        return None
+    print(db_item)
+    db_item.update(interaction.dict())
+    db.commit()
+    db.refresh(db_item)
+    return {"message": "Updated"}
     
 def delete_interaction(db: Session, user_id: str, blog_post_id: int):
-    # TODO: IMPLEMENT THIS
-    return {"message": "TO BE IMPLEMENTED"}
+    db.query(models.Interactions).filter(models.Interactions.user_id==user_id).filter(models.Interactions.blog_post_id==blog_post_id).delete()
+    db.commit()
+    return {"message": "Deleted"}
 
     
 def create_comment(db: Session, comment: schemas.CommentsCreate, user_id: str, blog_post_id: int):

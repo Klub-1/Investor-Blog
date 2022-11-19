@@ -11,13 +11,11 @@ const AddView = () => {
   const store = useContext(StoreContext);
 
   function postDataToBackend() {
-    const id = "s205123";
-
     if (title === "" || content === "") {
       return;
     }
 
-    store.createBlogPost(id, title, content, tags);
+    store.createBlogPost(title, content, tags);
 
     setTitle("");
     setContent("");

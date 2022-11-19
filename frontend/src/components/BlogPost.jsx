@@ -14,6 +14,7 @@ import {
 import { FiArrowRight } from "react-icons/fi";
 
 import { MdOutlineAddComment, MdAddComment } from "react-icons/md";
+import { AuthHandler } from "../Auth/AuthHandler";
 
 const BlogPost = observer(({ post }) => {
   const [addComment, setAddComment] = useState(false);
@@ -27,7 +28,6 @@ const BlogPost = observer(({ post }) => {
           <div>
             <h1 className="font-bold text-2xl md:text-4xl">{post.title}</h1>
             <h1 className="text-base">By {post.user_id}</h1>
-            <h1 className="font-bold text-2xl md:text-4xl">{post.tags}</h1>
           </div>
 
           <div className="flex gap-3 md:gap-4 pt-4 md:pt-0 justify-center">
@@ -84,7 +84,9 @@ const BlogPost = observer(({ post }) => {
           </div>
         </div>
 
-        <div className="pt-2 text-2xl">{post.content}</div>
+        <div className="pb-5 text-2xl">{post.content}</div>
+
+        <h1 className="font-bold text-1xl md:text-2xl">{post.tags}</h1>
       </div>
       {addComment ? <AddComment post={post} /> : null}
       <CommentSection comments={post.comments} />
@@ -93,13 +95,12 @@ const BlogPost = observer(({ post }) => {
 });
 
 const AddComment = ({ post }) => {
-  const id = "s205123";
   const [comment, setComment] = useState("");
 
   const store = useContext(StoreContext);
 
   function postComment() {
-    store.createComment(id, post.id, comment);
+    store.createComment(post.id, comment);
     setComment("");
   }
 
@@ -152,7 +153,8 @@ const CommentSection = ({ comments }) => {
 };
 
 const Comments = ({ comments }) => {
-  const id = "s205123";
+  const auth = new AuthHandler();
+  const id = auth.getToken();
   return (
     <div>
       <div className="h-2 w-full bg-[#EFF2F9]" />

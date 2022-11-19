@@ -14,6 +14,9 @@ class InteractionsBase(BaseModel):
 class InteractionsCreate(InteractionsBase):
     pass
 
+class InteractionsUpdate(InteractionsBase):
+    pass
+
 class Interactions(InteractionsBase):
     id: int
     user_id: str

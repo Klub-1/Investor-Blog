@@ -17,10 +17,11 @@ class Interactions(Base):
     like = Column(Boolean, index=True)
     dislike = Column(Boolean, index=True)
     
-    blog_post_id = Column(String, ForeignKey("blogposts.id"))
+    blog_post_id = Column(String, ForeignKey("blogposts.id", ondelete="CASCADE", onupdate="CASCADE"))
     blogpost = relationship("BlogPost", back_populates="interactions")
     
-    user_id = Column(String, ForeignKey("users.id"))
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"))
+    user = relationship("User", backref="posts")
     user = relationship("User", back_populates="interactions")
     
 class Comments(Base):
@@ -30,10 +31,10 @@ class Comments(Base):
     id = Column(Integer, primary_key=True, index=True)
     comment = Column(String, index=True)
     
-    blog_post_id = Column(String, ForeignKey("blogposts.id"))
+    blog_post_id = Column(String, ForeignKey("blogposts.id", ondelete="CASCADE", onupdate="CASCADE"))
     blogpost = relationship("BlogPost", back_populates="comments")
     
-    user_id = Column(String, ForeignKey("users.id"))
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"))
     user = relationship("User", back_populates="comments")
 
 class User(Base):
@@ -58,8 +59,8 @@ class BlogPost(Base):
     
     tags = Column(String, index=True)
     
-    user_id = Column(String, ForeignKey("users.id"))
-    user = relationship("User", back_populates="blogposts")
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"))
+    user = relationship("User", back_populates="blogposts", )
     
     comments = relationship("Comments", back_populates="blogpost")
     interactions = relationship("Interactions", back_populates="blogpost")
