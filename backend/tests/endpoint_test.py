@@ -10,7 +10,7 @@ import requests
 class TestAPI(unittest.TestCase):
 
     def setUp(self):
-        self.url = 'http://localhost:8000/'
+        self.url = 'http://host.docker.internal:8000/'
         self.api_session = requests.Session()
 
     def test_create_user_and_delete(self):
