@@ -1,9 +1,5 @@
 export class AuthHandler {
-  test = false;
-
-  constructor(test) {
-    this.test = test;
-  }
+  test = true;
 
   getToken() {
     if (this.test) {

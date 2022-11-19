@@ -9,7 +9,7 @@ export class BlogPostStore {
   blogposts = [];
   filter = "";
   api = new API();
-  auth = new AuthHandler(true);
+  auth = new AuthHandler();
 
   get filteredBlogPosts() {
     return this.blogposts.filter(

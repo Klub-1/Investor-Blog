@@ -37,7 +37,9 @@ def create_user_blogpost(db: Session, blogpost: schemas.BlogPostCreate, user_id:
     db.refresh(db_item)
     return db_item
 
-def create_interaction(db: Session, interaction: schemas.Interactions, user_id: str, blog_post_id: int):
+# TODO: Inplement new type system for interactions
+
+def register_interaction(db: Session, interaction: schemas.Interactions, user_id: str, blog_post_id: int):
     db_item = models.Interactions(**interaction.dict(), user_id=user_id, blog_post_id=blog_post_id)
     db.add(db_item)
     db.commit()

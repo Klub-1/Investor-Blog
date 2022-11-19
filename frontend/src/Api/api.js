@@ -56,4 +56,75 @@ export class API {
         return data;
       });
   }
+
+  postInteraction(user_id, blog_post_id, like, dislike) {
+    return fetch(
+      "http://localhost:8000/users/" +
+        user_id +
+        "/interactions/" +
+        blog_post_id,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          like: like,
+          dislike: dislike,
+        }),
+      }
+    )
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        return data;
+      });
+  }
+
+  putInteraction(user_id, blog_post_id, like, dislike) {
+    return fetch(
+      "http://localhost:8000/users/" +
+        user_id +
+        "/interactions/" +
+        blog_post_id,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          like: like,
+          dislike: dislike,
+        }),
+      }
+    )
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        return data;
+      });
+  }
+
+  deleteInteraction(user_id, blog_post_id) {
+    return fetch(
+      "http://localhost:8000/users/" +
+        user_id +
+        "/interactions/" +
+        blog_post_id,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        return data;
+      });
+  }
 }

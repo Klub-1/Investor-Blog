@@ -17,9 +17,11 @@ import { MdOutlineAddComment, MdAddComment } from "react-icons/md";
 import { AuthHandler } from "../Auth/AuthHandler";
 
 const BlogPost = observer(({ post }) => {
+  const store = useContext(StoreContext);
+
   const [addComment, setAddComment] = useState(false);
-  const [liked, setLiked] = useState(false);
-  const [disliked, setDisLiked] = useState(false);
+  const [like, setLike] = useState(false);
+  const [dislike, setDislike] = useState(false);
 
   return (
     <div className="h-fit w-full  shadow rounded-lg bg-white mb-5 md:mb-10">
@@ -35,11 +37,11 @@ const BlogPost = observer(({ post }) => {
               <button
                 className="text-2xl md:text-5xl"
                 onClick={() => {
-                  setLiked(!liked);
-                  setDisLiked(false);
+                  setLike(!like);
+                  setDislike(false);
                 }}
               >
-                {liked ? (
+                {like ? (
                   <AiFillLike className="text-[#7382D9]" />
                 ) : (
                   <AiOutlineLike />
@@ -53,11 +55,11 @@ const BlogPost = observer(({ post }) => {
               <button
                 className="text-2xl md:text-5xl"
                 onClick={() => {
-                  setDisLiked(!disliked);
-                  setLiked(false);
+                  setLike(false);
+                  setDislike(!dislike);
                 }}
               >
-                {disliked ? (
+                {dislike ? (
                   <AiFillDislike className="text-[#FF82A0]" />
                 ) : (
                   <AiOutlineDislike />

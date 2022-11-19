@@ -14,8 +14,7 @@ class Interactions(Base):
     __tablename__ = "interactions"
 
     id = Column(Integer, primary_key=True, index=True)
-    like = Column(Boolean, index=True)
-    dislike = Column(Boolean, index=True)
+    type = Column(Integer, index=True)
     
     blog_post_id = Column(String, ForeignKey("blogposts.id", ondelete="CASCADE", onupdate="CASCADE"))
     blogpost = relationship("BlogPost", back_populates="interactions")

@@ -7,8 +7,9 @@ from pydantic import BaseModel
 
     
 class InteractionsBase(BaseModel):
-    like: bool
-    dislike: bool
+    # like = 0
+    # dislike = 1
+    type: int
 
 
 class InteractionsCreate(InteractionsBase):
