@@ -1,6 +1,6 @@
 import React from "react";
 
-import { SideBarItems } from "../../Data/SideBarItems";
+import { SideBarItems } from "../../data/SideBarItems";
 import { SideBarItem } from "./SideBarItem";
 
 export const SideBar = () => {

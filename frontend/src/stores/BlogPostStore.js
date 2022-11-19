@@ -1,8 +1,8 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import { API } from "../dal/api";
-import { BlogPost } from "../model/BlogPost";
-import { Comment } from "../model/Comment";
-import { Interaction } from "../model/Interaction";
+import { API } from "../Api/api";
+import { BlogPost } from "../models/BlogPost";
+import { Comment } from "../models/Comment";
+import { Interaction } from "../models/Interaction";
 
 export class BlogPostStore {
   blogposts = [];
@@ -21,17 +21,22 @@ export class BlogPostStore {
     this.filter = value;
   }
 
-  createBlogPost(user_id, title, content, tags) {
-    let data = this.api.createBlogPost(user_id, title, content, tags);
+  createComment(user_id, blog_post_id, comment) {
+    const data = this.api.createComment(user_id, blog_post_id, comment);
+    const newComment = new Comment(data.id, user_id, blog_post_id, comment);
+    this.blogposts.forEach((blogpost) => {
+      if (blogpost.id === blog_post_id) {
+        blogpost.comments.push(newComment);
+      }
+    });
+  }
 
-    const blogpost = new BlogPost(
-      data.id,
-      data.user_id,
-      data.title,
-      data.content,
-      data.comments,
-      data.interactions
-    );
+  createBlogPost(user_id, title, content, tags) {
+    const data = this.api.createBlogPost(user_id, title, content, tags);
+
+    console.table(data);
+
+    const blogpost = new BlogPost(data.id, user_id, title, content, [], []);
 
     this.blogposts.push(blogpost);
   }

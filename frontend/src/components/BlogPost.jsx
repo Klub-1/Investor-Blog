@@ -1,6 +1,8 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { useState } from "react";
+import { useContext } from "react";
+import { StoreContext } from "../App";
 
 import {
   AiFillLike,
@@ -94,9 +96,11 @@ const AddComment = ({ post }) => {
   const id = "s205123";
   const [comment, setComment] = useState("");
 
+  const store = useContext(StoreContext);
+
   function postComment() {
+    store.createComment(id, post.id, comment);
     setComment("");
-    post.createComment(id, comment);
   }
 
   return (
@@ -148,13 +152,19 @@ const CommentSection = ({ comments }) => {
 };
 
 const Comments = ({ comments }) => {
+  const id = "s205123";
   return (
     <div>
       <div className="h-2 w-full bg-[#EFF2F9]" />
       {comments.length > 0 && (
         <div className="pb-5">
           {comments.map((data) => (
-            <div key={data.id} className="px-5 pt-5">
+            <div
+              key={data.id}
+              className={`px-5 pt-5 ${
+                data.user_id === id ? "text-right" : "text-left"
+              }`}
+            >
               <h1 className="text-xl">{data.comment}</h1>
               <h1 className="text-base">By {data.user_id}</h1>
             </div>

@@ -5,11 +5,11 @@ import { createContext } from "react";
 import { SideBar } from "./components/SideBar/SideBar";
 
 // Views
-import HomeView from "./view/HomeView";
-import AddView from "./view/AddView";
-import { SearchView } from "./view/SearchView";
-import { StocksView } from "./view/StocksView";
-import { AccountView } from "./view/AccountView";
+import HomeView from "./views/HomeView";
+import AddView from "./views/AddView";
+import { SearchView } from "./views/SearchView";
+import { StocksView } from "./views/StocksView";
+import { AccountView } from "./views/AccountView";
 import { BlogPostStore } from "./stores/BlogPostStore";
 
 // SOURCE: https://jsguild.com/how-to-setup-mobx-with-react-in-2021/
