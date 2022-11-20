@@ -1,6 +1,5 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import bcrypt from 'bcryptjs'
 
 
 function About() {
@@ -20,37 +19,35 @@ export const AccountView = () => {
 const handleSubmit = async e => {
   e.preventDefault();
   if(showRegister){
-    !fetch(`http://localhost:8000/checkifuserexists?email=${email}`).then((response) => {
-      if(response.status === 200){
-        const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync());
-        fetch(`http://localhost:8000/register?email=${email}&username=${username}&hashed_password=${hashedPassword}`, {
+    fetch(`https://investorblog.diplomportal.dk/api//checkifuserexists?email=${email}`).then((response) => {
+      if(response.status === 409){
+        fetch(`https://investorblog.diplomportal.dk/api//register?email=${email}&username=${username}&password=${password}`, {
           method: 'POST',
           
         }).then(response => response.text())
-        .then(data => console.log(data))
+        .then(data =>  window.location.href = `https://investorblog.diplomportal.dk/?token=${data}`)
       }
-    else if(response.status === 408){
+    else if(response.status === 200){
       console.log("SOMETHING WENT WRONG")
       this.setState({ requestFailed: true })
       }
       })
   }else if(showLogin){
-      const doesPasswordMatch =bcrypt.compareSync(yourPasswordFromLoginForm, yourHashedPassword)
-      fetch(`http://localhost:8000/login?username=${username}&hashed_password=${hashedPassword}`, {
-        method: 'POST',
+      fetch(`https://investorblog.diplomportal.dk/api//login?email=${email}&password=${password}`, {
+        method: 'GET',
         
       }).then(response => response.text())
-      .then(data => console.log(data))
+      .then(data => window.location.href = `https://investorblog.diplomportal.dk/?token=${data}`)
   }
   else{
-    window.location.href = "https://investorblog.diplomportal.dk/api/login";
+    window.location.href = "https://investorblog.diplomportal.dk/api//campusnet/login";
     return null;
   }
 }
 
   const fetchData = () => {
     fetch(
-      "https://investorblog.diplomportal.dk/api/verify?token=" +
+      "https://investorblog.diplomportal.dk/api//verify?token=" +
         localStorage.getItem("portal-jwt-Token")
     )
       .then((response) => {

@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 import requests
 import jwt
+import bcrypt
 from bs4 import BeautifulSoup
 
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -95,13 +96,13 @@ def read_blogposts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db
 
 @app.get("/campusnet/login")
 async def login():
-    URI = "https://auth.dtu.dk/dtu/?service=http://localhost:8000/campusnet/redirect"
+    URI = "https://auth.dtu.dk/dtu/?service=https://investorblog.diplomportal.dk/api//campusnet/redirect"
     return RedirectResponse(url=URI)
 
 
 @app.get("/campusnet/redirect")
 async def redirect(ticket: str):
-    body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://localhost:8000/campusnet/redirect&ticket="+ticket
+    body = "https://auth.dtu.dk/dtu/servicevalidate?service=https://investorblog.diplomportal.dk/api//campusnet/redirect&ticket="+ticket
     body = requests.get(url=body)
     print(body.content.decode("utf-8"))
     element = BeautifulSoup(body.content.decode("utf-8"))
@@ -113,41 +114,51 @@ async def redirect(ticket: str):
     #    crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
 
     if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
-        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text,id = element.find("cas:user").text))
+        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text,id = element.find("cas:user").text, hashed_password = ""))
     #print(token)
     #returnn user to frontend with token in url
-    return RedirectResponse(url="https://localhost?token="+token)
+    return RedirectResponse(url="https://investorblog.diplomportal.dk/?token="+token)
 
 
 @app.post("/register")
-async def register(email: str, username: str, hashed_password: str):
+async def register(email: str, username: str, password: str):
     if(crud.get_user(db=SessionLocal(), user_id = email) == None):
-        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = email,username = username,id = email, hashed_password = hashed_password))
+        mySalt = bcrypt.gensalt()
+        hashed = bcrypt.hashpw(password.encode('utf-8'),mySalt)
+        print(hashed)
+        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = email,username = username,id = email, hashed_password = hashed))
         token = jwt.encode({'id': username, "exp": datetime.now(
         tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+
         return token
     else:
         raise HTTPException(status_code=400, detail="Email already registered") 
 
 @app.get("/login")
-async def login(email: str, hashed_password: str):
+async def login(email: str, password: str):
     user = crud.get_user(db=SessionLocal(), user_id = email)
     if(user == None):
         raise HTTPException(status_code=400, detail="User not found")
-    if(user.hashed_password == hashed_password):
-        return token
+    if((bcrypt.checkpw(password.encode('utf-8'), user.hashed_password.encode('utf-8')))):
+        return jwt.encode({'id': user.username, "exp": datetime.now(
+        tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
 
 
-@app.get("checkifuserexists/{email}")
+@app.get("/checkifuserexists")
 async def checkifuserexists(email: str):
     if(crud.get_user(db=SessionLocal(), user_id = email) == None):
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=409, detail="Email does not exist")
     else:
         return jwt.encode({'id': crud.get_user(db=SessionLocal(), user_id = email).username, "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
 
 @app.get("/verify")
 async def verify(token: str):
     print("verify " + token)
+    #if "" in token remove it
+    if(token[0] == '"'):
+        token = token[1:]
+    if(token[-1] == '"'):
+        token = token[:-1]
     try:
         # todo CHANGE SECRET KEY
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
