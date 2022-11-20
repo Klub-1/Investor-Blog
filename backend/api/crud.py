@@ -37,3 +37,6 @@ def create_user_blogpost(db: Session, blogpost: schemas.BlogPostCreate, user_id:
     db.commit()
     db.refresh(db_item)
     return db_item
+
+def check_if_stock_exists(db: Session, stockid: str):
+    return db.session(db.exists().where(models.Stock.stock_name==stockid)).scalar()
