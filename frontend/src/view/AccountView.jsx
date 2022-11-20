@@ -1,5 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import bcrypt from 'bcryptjs'
+
 
 function About() {
   // 👇️ using window.location.href 👇️
@@ -11,6 +13,40 @@ export const AccountView = () => {
   const [users, setUsers] = useState([]);
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const [username, setUserName] = useState();
+  const [password, setPassword] = useState();
+  const [email, setEmail] = useState();
+
+const handleSubmit = async e => {
+  e.preventDefault();
+  if(showRegister){
+    !fetch(`http://localhost:8000/checkifuserexists?email=${email}`).then((response) => {
+      if(response.status === 200){
+        const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync());
+        fetch(`http://localhost:8000/register?email=${email}&username=${username}&hashed_password=${hashedPassword}`, {
+          method: 'POST',
+          
+        }).then(response => response.text())
+        .then(data => console.log(data))
+      }
+    else if(response.status === 408){
+      console.log("SOMETHING WENT WRONG")
+      this.setState({ requestFailed: true })
+      }
+      })
+  }else if(showLogin){
+      const doesPasswordMatch =bcrypt.compareSync(yourPasswordFromLoginForm, yourHashedPassword)
+      fetch(`http://localhost:8000/login?username=${username}&hashed_password=${hashedPassword}`, {
+        method: 'POST',
+        
+      }).then(response => response.text())
+      .then(data => console.log(data))
+  }
+  else{
+    window.location.href = "https://investorblog.diplomportal.dk/api/login";
+    return null;
+  }
+}
 
   const fetchData = () => {
     fetch(
@@ -47,6 +83,7 @@ export const AccountView = () => {
                 <input
                   type="Username"
                   class="h-fit w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm p-2.5 mt-3 rounded-lg"
+                  onChange={e => setUserName(e.target.value)}
                   placeholder="Brugernavn"
                 />
               ) : null}
@@ -54,12 +91,14 @@ export const AccountView = () => {
               <input
                 type="Email"
                 class="h-fit w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm p-2.5 mt-3 rounded-lg"
+                onChange={e => setEmail(e.target.value)}
                 placeholder="Email"
               />
 
               <input
                 type="Password"
                 class="h-fit w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm p-2.5 mt-3 rounded-lg"
+                onChange={e => setPassword(e.target.value)}
                 placeholder="Password"
               />
             </div>
@@ -95,7 +134,7 @@ export const AccountView = () => {
 
           <button
             className="w-full h-full bg-[#7382D9] rounded-br-lg text-white p-2 font-extrabold text-xl"
-            onClick={About}
+            onClick={handleSubmit}
           >
             {showLogin
               ? showRegister

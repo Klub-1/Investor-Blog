@@ -16,6 +16,7 @@ class User(Base):
     id = Column(String, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
     blogposts = relationship("BlogPost", back_populates="user")
 
 

@@ -93,15 +93,15 @@ def read_blogposts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db
     return blogposts
 
 
-@app.get("/login")
+@app.get("/campusnet/login")
 async def login():
-    URI = "https://auth.dtu.dk/dtu/?service=http://4.233.122.101:8000/redirect"
+    URI = "https://auth.dtu.dk/dtu/?service=http://localhost:8000/campusnet/redirect"
     return RedirectResponse(url=URI)
 
 
-@app.get("/redirect")
+@app.get("/campusnet/redirect")
 async def redirect(ticket: str):
-    body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://4.233.122.101:8000/redirect&ticket="+ticket
+    body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://localhost:8000/campusnet/redirect&ticket="+ticket
     body = requests.get(url=body)
     print(body.content.decode("utf-8"))
     element = BeautifulSoup(body.content.decode("utf-8"))
@@ -116,7 +116,34 @@ async def redirect(ticket: str):
         crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text,id = element.find("cas:user").text))
     #print(token)
     #returnn user to frontend with token in url
-    return RedirectResponse(url="https://investorblog.diplomportal.dk?token="+token)
+    return RedirectResponse(url="https://localhost?token="+token)
+
+
+@app.post("/register")
+async def register(email: str, username: str, hashed_password: str):
+    if(crud.get_user(db=SessionLocal(), user_id = email) == None):
+        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = email,username = username,id = email, hashed_password = hashed_password))
+        token = jwt.encode({'id': username, "exp": datetime.now(
+        tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+        return token
+    else:
+        raise HTTPException(status_code=400, detail="Email already registered") 
+
+@app.get("/login")
+async def login(email: str, hashed_password: str):
+    user = crud.get_user(db=SessionLocal(), user_id = email)
+    if(user == None):
+        raise HTTPException(status_code=400, detail="User not found")
+    if(user.hashed_password == hashed_password):
+        return token
+
+
+@app.get("checkifuserexists/{email}")
+async def checkifuserexists(email: str):
+    if(crud.get_user(db=SessionLocal(), user_id = email) == None):
+        raise HTTPException(status_code=400, detail="Email already registered")
+    else:
+        return jwt.encode({'id': crud.get_user(db=SessionLocal(), user_id = email).username, "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
 
 @app.get("/verify")
 async def verify(token: str):

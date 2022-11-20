@@ -29,6 +29,7 @@ class UserBase(BaseModel):
     id: str
     username: str
     email: str
+    hashed_password: str
 
 
 class UserCreate(UserBase):
