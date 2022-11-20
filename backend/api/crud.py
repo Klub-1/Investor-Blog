@@ -37,9 +37,7 @@ def create_user_blogpost(db: Session, blogpost: schemas.BlogPostCreate, user_id:
     db.refresh(db_item)
     return db_item
 
-# TODO: Inplement new type system for interactions
-
-def register_interaction(db: Session, interaction: schemas.Interactions, user_id: str, blog_post_id: int):
+def create_interaction(db: Session, interaction: schemas.Interactions, user_id: str, blog_post_id: int):
     db_item = models.Interactions(**interaction.dict(), user_id=user_id, blog_post_id=blog_post_id)
     db.add(db_item)
     db.commit()
@@ -51,11 +49,10 @@ def update_interaction(db: Session, interaction: schemas.InteractionsUpdate, use
     db_item = db.query(models.Interactions).filter(models.Interactions.user_id==user_id).filter(models.Interactions.blog_post_id==blog_post_id).first()
     if db_item is None:
         return None
-    print(db_item)
-    db_item.update(interaction.dict())
+    db_item.type = interaction.type
     db.commit()
     db.refresh(db_item)
-    return {"message": "Updated"}
+    return db_item
     
 def delete_interaction(db: Session, user_id: str, blog_post_id: int):
     db.query(models.Interactions).filter(models.Interactions.user_id==user_id).filter(models.Interactions.blog_post_id==blog_post_id).delete()
@@ -69,9 +66,3 @@ def create_comment(db: Session, comment: schemas.CommentsCreate, user_id: str, b
     db.commit()
     db.refresh(db_item)
     return db_item
-
-def get_comments_by_user_and_blog_post(db: Session, user_id: str, blog_post_id: int):
-    return db.query(models.Comments).filter(models.Comments.user_id == user_id).filter(models.Comments.blog_post_id == blog_post_id).all()
-
-def get_interactions_by_user_and_blog_post(db: Session, user_id: str, blog_post_id: int):
-    return db.query(models.Interactions).filter(models.Interactions.user_id == user_id).filter(models.Interactions.blog_post_id == blog_post_id).all()

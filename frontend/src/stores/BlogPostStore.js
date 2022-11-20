@@ -12,24 +12,95 @@ export class BlogPostStore {
   auth = new AuthHandler();
 
   get filteredBlogPosts() {
-    return this.blogposts.filter(
-      (blogpost) =>
+    return this.blogposts.filter((blogpost) => {
+      return (
         blogpost.title.toLowerCase().includes(this.filter.toLowerCase()) ||
         blogpost.content.toLowerCase().includes(this.filter.toLowerCase())
-    );
+      );
+    });
   }
 
   setFilterValue(value) {
     this.filter = value;
   }
 
+  getInteractionsCount(blog_post_id, type) {
+    return this.blogposts
+      .find((blogpost) => blogpost.id === blog_post_id)
+      .interactions.filter((interaction) => interaction.type === type).length;
+  }
+
+  hasUserInteracted(blog_post_id) {
+    const user_id = this.auth.getToken();
+    const interaction = this.blogposts
+      .find((blogpost) => blogpost.id === blog_post_id)
+      .interactions.find((interaction) => interaction.user_id === user_id);
+
+    if (interaction) {
+      return interaction.type;
+    } else {
+      return -1;
+    }
+  }
+
+  createInteraction(interaction) {
+    // Create interaction
+    this.api.postInteraction(interaction);
+    this.blogposts.forEach((blogpost) => {
+      if (blogpost.id === interaction.blog_post_id) {
+        blogpost.createInteraction(interaction);
+      }
+    });
+  }
+
+  deleteInteraction(interaction) {
+    // Delete interaction
+    this.api.deleteInteraction(interaction);
+    this.blogposts.forEach((blogpost) => {
+      if (blogpost.id === interaction.blog_post_id) {
+        blogpost.removeInteraction(interaction);
+      }
+    });
+  }
+
+  updateInteractions(interaction) {
+    // Update interaction
+    this.api.putInteraction(interaction);
+    this.blogposts.forEach((blogpost) => {
+      if (blogpost.id === interaction.blog_post_id) {
+        blogpost.updateInteraction(interaction);
+      }
+    });
+  }
+
+  registerInteraction(blog_post_id, type) {
+    let interactionType = this.hasUserInteracted(blog_post_id);
+    const user_id = this.auth.getToken();
+
+    if (type === interactionType) {
+      type = -1;
+    }
+
+    const interaction = new Interaction(-1, user_id, blog_post_id, type);
+
+    if (type === -1) {
+      if (interactionType !== -1) {
+        this.deleteInteraction(interaction);
+      }
+    } else if (interactionType === -1) {
+      this.createInteraction(interaction);
+    } else if (interactionType !== type) {
+      this.updateInteractions(interaction);
+    }
+  }
+
   createComment(blog_post_id, comment) {
     const user_id = this.auth.getToken();
-    const data = this.api.createComment(user_id, blog_post_id, comment);
-    const newComment = new Comment(data.id, user_id, blog_post_id, comment);
+    this.api.createComment(user_id, blog_post_id, comment);
+    const newComment = new Comment(-1, user_id, blog_post_id, comment);
     this.blogposts.forEach((blogpost) => {
       if (blogpost.id === blog_post_id) {
-        blogpost.comments.push(newComment);
+        blogpost.createComment(newComment);
       }
     });
   }
@@ -74,8 +145,7 @@ export class BlogPostStore {
             interaction.id,
             interaction.user_id,
             interaction.blog_post_id,
-            interaction.like,
-            interaction.dislike
+            interaction.type
           );
         })
       );

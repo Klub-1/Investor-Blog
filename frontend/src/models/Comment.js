@@ -7,7 +7,11 @@ export class Comment {
 
   constructor(id, user_id, blog_post_id, comment) {
     makeAutoObservable(this);
-    this.id = id;
+    if (id < 0) {
+      this.id = Math.random() * Math.PI * 10;
+    } else {
+      this.id = id;
+    }
     this.user_id = user_id;
     this.blog_post_id = blog_post_id;
     this.comment = comment;

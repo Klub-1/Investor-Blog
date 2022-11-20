@@ -57,62 +57,61 @@ export class API {
       });
   }
 
-  postInteraction(user_id, blog_post_id, like, dislike) {
+  postInteraction(interaction) {
     return fetch(
       "http://localhost:8000/users/" +
-        user_id +
+        interaction.user_id +
         "/interactions/" +
-        blog_post_id,
+        interaction.blog_post_id,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          like: like,
-          dislike: dislike,
+          type: interaction.type,
         }),
       }
     )
       .then((response) => {
-        return response.json();
+        return response.status;
       })
       .then((data) => {
-        return data;
+        interaction.id = data.id;
+        return interaction;
       });
   }
 
-  putInteraction(user_id, blog_post_id, like, dislike) {
+  putInteraction(interaction) {
     return fetch(
       "http://localhost:8000/users/" +
-        user_id +
+        interaction.user_id +
         "/interactions/" +
-        blog_post_id,
+        interaction.blog_post_id,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          like: like,
-          dislike: dislike,
+          type: interaction.type,
         }),
       }
     )
       .then((response) => {
-        return response.json();
+        return response.status;
       })
       .then((data) => {
         return data;
       });
   }
 
-  deleteInteraction(user_id, blog_post_id) {
+  deleteInteraction(interaction) {
     return fetch(
       "http://localhost:8000/users/" +
-        user_id +
+        interaction.user_id +
         "/interactions/" +
-        blog_post_id,
+        interaction.blog_post_id,
       {
         method: "DELETE",
         headers: {
@@ -121,7 +120,7 @@ export class API {
       }
     )
       .then((response) => {
-        return response.json();
+        return response.status;
       })
       .then((data) => {
         return data;

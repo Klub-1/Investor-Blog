@@ -120,13 +120,6 @@ def delete_blogpost_interaction(
         raise HTTPException(status_code=404, detail="Interaction not found")
     return {"status": "Interaction deleted"}
 
-@app.get("/users/{user_id}/interactions/{blog_post_id}", response_model=list[schemas.Interactions])
-def read_comments(user_id: str, blog_post_id: int, db: Session = Depends(get_db)):
-    interaction = crud.get_interaction(db=db, user_id=user_id, blog_post_id=blog_post_id)
-    if interaction is None:
-        raise HTTPException(status_code=404, detail="Interaction not found")
-    return interaction
-
 
 @app.post("/users/{user_id}/comments/{blog_post_id}", response_model=schemas.Comments, status_code=201)
 def create_blogpost_comment(
@@ -136,13 +129,6 @@ def create_blogpost_comment(
     if response is None:
         raise HTTPException(status_code=500, detail="Error creating comment")
     return response
-
-@app.get("/users/{user_id}/comments/{blog_post_id}", response_model=list[schemas.Comments])
-def read_comments(user_id: str, blog_post_id: int, db: Session = Depends(get_db)):
-    comments = crud.get_comments_by_user_and_blog_post(db, user_id=user_id, blog_post_id=blog_post_id)
-    if comments is None:
-        raise HTTPException(status_code=404, detail="Comments not found")
-    return comments
 
 
 @app.get("/login")

@@ -20,8 +20,6 @@ const BlogPost = observer(({ post }) => {
   const store = useContext(StoreContext);
 
   const [addComment, setAddComment] = useState(false);
-  const [like, setLike] = useState(false);
-  const [dislike, setDislike] = useState(false);
 
   return (
     <div className="h-fit w-full  shadow rounded-lg bg-white mb-5 md:mb-10">
@@ -29,7 +27,10 @@ const BlogPost = observer(({ post }) => {
         <div className="md:flex md:justify-between">
           <div>
             <h1 className="font-bold text-2xl md:text-4xl">{post.title}</h1>
-            <h1 className="text-base">By {post.user_id}</h1>
+            <h1 className="text-base">
+              Slået op af{" "}
+              {post.user_id === store.auth.getToken() ? "dig" : post.user_id}
+            </h1>
           </div>
 
           <div className="flex gap-3 md:gap-4 pt-4 md:pt-0 justify-center">
@@ -37,36 +38,34 @@ const BlogPost = observer(({ post }) => {
               <button
                 className="text-2xl md:text-5xl"
                 onClick={() => {
-                  setLike(!like);
-                  setDislike(false);
+                  store.registerInteraction(post.id, 0);
                 }}
               >
-                {like ? (
+                {store.hasUserInteracted(post.id) === 0 ? (
                   <AiFillLike className="text-[#7382D9]" />
                 ) : (
                   <AiOutlineLike />
                 )}
               </button>
 
-              <h1>{0}</h1>
+              <h1>{post.getLikeCount()}</h1>
             </div>
 
             <div className="justify-center content-center text-center">
               <button
                 className="text-2xl md:text-5xl"
                 onClick={() => {
-                  setLike(false);
-                  setDislike(!dislike);
+                  store.registerInteraction(post.id, 1);
                 }}
               >
-                {dislike ? (
+                {store.hasUserInteracted(post.id) === 1 ? (
                   <AiFillDislike className="text-[#FF82A0]" />
                 ) : (
                   <AiOutlineDislike />
                 )}
               </button>
 
-              <h1>{0}</h1>
+              <h1>{post.getDislikeCount()}</h1>
             </div>
 
             <div className="justify-center content-center text-center">
@@ -88,7 +87,7 @@ const BlogPost = observer(({ post }) => {
 
         <div className="pb-5 text-2xl">{post.content}</div>
 
-        <h1 className="font-bold text-1xl md:text-2xl">{post.tags}</h1>
+        <h1 className="font-semibold text-sm md:text-1xl">{post.tags}</h1>
       </div>
       {addComment ? <AddComment post={post} /> : null}
       <CommentSection comments={post.comments} />
