@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { useState } from "react";
+
 import { useContext } from "react";
 import { StoreContext } from "../App";
 
@@ -14,22 +15,20 @@ import {
 import { FiArrowRight } from "react-icons/fi";
 
 import { MdOutlineAddComment, MdAddComment } from "react-icons/md";
-import { AuthHandler } from "../Auth/AuthHandler";
 
 const BlogPost = observer(({ post }) => {
-  const store = useContext(StoreContext);
-
   const [addComment, setAddComment] = useState(false);
+
+  const store = useContext(StoreContext);
 
   return (
     <div className="h-fit w-full  shadow rounded-lg bg-white mb-5 md:mb-10">
       <div className="p-5">
-        <div className="md:flex md:justify-between">
+        <div className="z-auto md:flex md:justify-between">
           <div>
             <h1 className="font-bold text-2xl md:text-4xl">{post.title}</h1>
             <h1 className="text-base">
-              Slået op af{" "}
-              {post.user_id === store.auth.getToken() ? "dig" : post.user_id}
+              Slået op af {post.authorIsUser() ? "dig" : post.user_id}
             </h1>
           </div>
 
@@ -38,13 +37,13 @@ const BlogPost = observer(({ post }) => {
               <button
                 className="text-2xl md:text-5xl"
                 onClick={() => {
-                  store.registerInteraction(post.id, 0);
+                  post.registerInteraction(0);
                 }}
               >
-                {store.hasUserInteracted(post.id) === 0 ? (
-                  <AiFillLike className="text-[#7382D9]" />
+                {post.userLiked() ? (
+                  <AiFillLike className="text-[#C5C8D9]" />
                 ) : (
-                  <AiOutlineLike />
+                  <AiOutlineLike className="hover:text-[#C5C8D9]" />
                 )}
               </button>
 
@@ -55,13 +54,13 @@ const BlogPost = observer(({ post }) => {
               <button
                 className="text-2xl md:text-5xl"
                 onClick={() => {
-                  store.registerInteraction(post.id, 1);
+                  post.registerInteraction(1);
                 }}
               >
-                {store.hasUserInteracted(post.id) === 1 ? (
-                  <AiFillDislike className="text-[#FF82A0]" />
+                {post.userDisliked() ? (
+                  <AiFillDislike className="text-[#C5C8D9]" />
                 ) : (
-                  <AiOutlineDislike />
+                  <AiOutlineDislike className="hover:text-[#C5C8D9]" />
                 )}
               </button>
 
@@ -74,13 +73,13 @@ const BlogPost = observer(({ post }) => {
                 onClick={() => setAddComment(!addComment)}
               >
                 {addComment ? (
-                  <MdAddComment className="text-[#FF82A0]" />
+                  <MdAddComment className="text-[#7382D9]" />
                 ) : (
-                  <MdOutlineAddComment />
+                  <MdOutlineAddComment className="hover:text-[#7382D9]" />
                 )}
               </button>
 
-              <h1>{post.comments.length}</h1>
+              <h1>{post.commentsCount()}</h1>
             </div>
           </div>
         </div>
@@ -98,10 +97,8 @@ const BlogPost = observer(({ post }) => {
 const AddComment = ({ post }) => {
   const [comment, setComment] = useState("");
 
-  const store = useContext(StoreContext);
-
   function postComment() {
-    store.createComment(post.id, comment);
+    post.createComment(comment);
     setComment("");
   }
 
@@ -154,8 +151,6 @@ const CommentSection = ({ comments }) => {
 };
 
 const Comments = ({ comments }) => {
-  const auth = new AuthHandler();
-  const id = auth.getToken();
   return (
     <div>
       <div className="h-2 w-full bg-[#EFF2F9]" />
@@ -165,11 +160,13 @@ const Comments = ({ comments }) => {
             <div
               key={data.id}
               className={`px-5 pt-5 ${
-                data.user_id === id ? "text-right" : "text-left"
+                data.isCommentFromUser() ? "text-right" : "text-left"
               }`}
             >
               <h1 className="text-xl">{data.comment}</h1>
-              <h1 className="text-base">By {data.user_id}</h1>
+              <h1 className="text-base">
+                Slået op af {data.isCommentFromUser() ? "dig" : data.user_id}
+              </h1>
             </div>
           ))}
         </div>

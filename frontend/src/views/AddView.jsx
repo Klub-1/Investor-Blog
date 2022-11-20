@@ -32,6 +32,7 @@ const AddView = () => {
           type="text"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 mb-3"
           placeholder="Titel"
+          value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
         <textarea
@@ -39,12 +40,14 @@ const AddView = () => {
           rows={8}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5"
           placeholder="Indlæg"
+          value={content}
           onChange={(e) => setContent(e.target.value)}
         />
         <input
           type="text"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 mt-3"
           placeholder="Tags (F.eks.: APPL, Positivt, Køb)"
+          value={tags}
           onChange={(e) => setTags(e.target.value)}
         />
       </div>

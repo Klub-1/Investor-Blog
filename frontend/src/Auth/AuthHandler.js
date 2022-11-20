@@ -1,7 +1,7 @@
 export class AuthHandler {
   test = true;
 
-  getToken() {
+  getUserName() {
     if (this.test) {
       return "s205124";
     }

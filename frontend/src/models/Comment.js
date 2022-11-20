@@ -1,9 +1,17 @@
 import { makeAutoObservable } from "mobx";
+import { AuthHandler } from "../Auth/AuthHandler";
 export class Comment {
   id = 0;
   user_id = "";
   blog_post_id = 0;
   comment = "";
+
+  auth = new AuthHandler();
+
+  isCommentFromUser() {
+    const user_id = this.auth.getUserName();
+    return user_id === this.user_id;
+  }
 
   constructor(id, user_id, blog_post_id, comment) {
     makeAutoObservable(this);
