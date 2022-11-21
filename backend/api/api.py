@@ -180,6 +180,8 @@ def read_stocks(stock_id: str):
     url = "https://www.alphavantage.co/query?function=PPO&symbol="+stock_id+"&interval=daily&series_type=close&fastperiod=10&matype=1&apikey=92DD3OTK7XOQK3GT"
     r = requests.get(url)
     stocks = r.json()
+    print(stocks)
+    print(url)
     return stocks
 
 
