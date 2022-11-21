@@ -2,7 +2,7 @@ export class API {
   url = "https://investorblog.diplomportal.dk/api";
 
   getBlogPosts() {
-    return fetch(url + "/blogposts/", {
+    return fetch(this.url + "/blogposts/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -17,7 +17,7 @@ export class API {
   }
 
   createBlogPost(user_id, title, content, tags) {
-    return fetch(url + "/users/" + user_id + "/blogposts/", {
+    return fetch(this.url + "/users/" + user_id + "/blogposts/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -37,18 +37,15 @@ export class API {
   }
 
   createComment(user_id, blog_post_id, comment) {
-    return fetch(
-      url + "/users/" + user_id + "/comments/" + blog_post_id,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          comment: comment,
-        }),
-      }
-    )
+    return fetch(this.url + "/users/" + user_id + "/comments/" + blog_post_id, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        comment: comment,
+      }),
+    })
       .then((response) => {
         return response.json();
       })
@@ -59,7 +56,8 @@ export class API {
 
   postInteraction(interaction) {
     return fetch(
-      url + "/users/" +
+      this.url +
+        "/users/" +
         interaction.user_id +
         "/interactions/" +
         interaction.blog_post_id,
@@ -84,7 +82,8 @@ export class API {
 
   putInteraction(interaction) {
     return fetch(
-      url + "/users/" +
+      this.url +
+        "/users/" +
         interaction.user_id +
         "/interactions/" +
         interaction.blog_post_id,
@@ -108,7 +107,8 @@ export class API {
 
   deleteInteraction(interaction) {
     return fetch(
-      url + "/users/" +
+      this.url +
+        "/users/" +
         interaction.user_id +
         "/interactions/" +
         interaction.blog_post_id,
