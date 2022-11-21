@@ -13,6 +13,12 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 16
+    - name: Go back
+      run: cd ..
+    - name: Go back again
+      run: cd ..
+    - name: Go to frontend
+      run: cd frontend
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers
