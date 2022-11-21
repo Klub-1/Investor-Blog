@@ -2,9 +2,6 @@ import { observer } from "mobx-react-lite";
 import React from "react";
 import { useState } from "react";
 
-import { useContext } from "react";
-import { StoreContext } from "../App";
-
 import {
   AiFillLike,
   AiFillDislike,
@@ -18,8 +15,6 @@ import { MdOutlineAddComment, MdAddComment } from "react-icons/md";
 
 const BlogPost = observer(({ post }) => {
   const [addComment, setAddComment] = useState(false);
-
-  const store = useContext(StoreContext);
 
   return (
     <div className="h-fit w-full  shadow rounded-lg bg-white mb-5 md:mb-10">
