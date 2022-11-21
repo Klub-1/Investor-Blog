@@ -85,6 +85,9 @@ class StockBase(BaseModel):
 class StockCreate(StockBase):
     pass
 
+class StockUpdate(StockBase):
+    pass
+
 class Stock(StockBase):
     stockname: str
     ppo: float

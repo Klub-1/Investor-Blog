@@ -184,13 +184,9 @@ def read_stocks(stock_id: str):
     print(url)
     return stocks
 
-
-# TODO: Find ud af hvordan man sender data rundt
 @app.post("/stocks/", response_model=schemas.Stock)
 def create_stock(stock: schemas.StockCreate, db: Session = Depends(get_db)):
     db_stock = crud.check_if_stock_exists(db, stockid=stock.stockname)
-    if db_stock:
-        #TODO Opdater stock med ny ppo i crud.py
-        return crud.update_stock(db=db, stock=stock)
-    #TODO return opret stock i db
-    return crud.create_user(db=db, user=user)
+    if db_stock:        
+        return crud.update_stock(db=db, stock=stock, stockname=stock.stockname, stockppo=stock.ppo)    
+    return crud.create_stock(db=db, stock=stock)

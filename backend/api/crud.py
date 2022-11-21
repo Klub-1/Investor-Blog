@@ -67,5 +67,22 @@ def create_comment(db: Session, comment: schemas.CommentsCreate, user_id: str, b
     db.commit()
     db.refresh(db_item)
     return db_item
+
 def check_if_stock_exists(db: Session, stockid: str):
     return db.session(db.exists().where(models.Stock.stock_name==stockid)).scalar()
+
+def update_stock(db: Session, stock: schemas.StockUpdate, stockname: str, stockppo: float):
+    stock_item = db.query(models.Stock).filter(models.Stock.stock_name==stockname).first()
+    if stock_item is None:
+        return None
+    setattr(stock_item, 'ppo', stockppo)
+    db.commit
+    db.refresh(stock_item)
+    return stock_item
+
+def create_stock(db: Session, stock: schemas.StockCreate):
+    db_stock = models.Stock(stockname=stock.stockname, ppo=stock.ppo)
+    db.add(db_stock)
+    db.commit()
+    db.refresh(db_stock)
+    return db_stock
