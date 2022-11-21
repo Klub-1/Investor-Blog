@@ -5,7 +5,7 @@
     name: snapd
     state: present 
 
-- name: make sure nginx is running
+- name: make sure snapd is running
   ansible.builtin.service:
     name: snapd
     state: started
@@ -22,4 +22,4 @@
     state: link
 
 - name: Generate new certificate if one doesn't exist.
-  shell: "certbot --nginx --noninteractive --agree-tos --email s194134@student.dtu.dk -d investorblog.diplomportal.dk"
+  ansible.builtin.command: "certbot --nginx --noninteractive --agree-tos --email s194134@student.dtu.dk -d investorblog.diplomportal.dk"

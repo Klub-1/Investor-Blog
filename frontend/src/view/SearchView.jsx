@@ -30,14 +30,14 @@ export const SearchView = () => {
           <h1 className="font-bold text-2xl md:text-4xl">Search for a post</h1>
         </div>
         <div className="flex justify-center">
-          <p class="text-gray-700 text-base mb-4">
+          <p className="text-gray-700 text-base mb-4">
             Search by text in the description.
           </p>
         </div>
         <div className="flex justify-center">
           <input
             type="text"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 mb-3"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 mb-3"
             id="SearchInputField"
             onChange={filterPosts}
             placeholder="Søg..."
@@ -47,7 +47,7 @@ export const SearchView = () => {
       {/*  -----------Sorted blog posts ----------- */}
       <div className="flex flex-col items-center justify-center overflow-y-scroll">
         {blogs.map((post) => (
-          <BlogPost {...post} />
+          <BlogPost key={post.id} {...post} />
         ))}
       </div>
     </div>

@@ -5,7 +5,6 @@
   tasks:
     - name: "Include myrole"
       include_role:
-        name: "nginx"
-    - name: "include certbot"
+        name: "deployment"
       include_role:
-        name: "certbot"
+        name: "nginx"
