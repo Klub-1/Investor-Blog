@@ -1,8 +1,8 @@
 export class API {
-  url = "http://localhost:8000";
+  url = "https://investorblog.diplomportal.dk/api";
 
   getBlogPosts() {
-    return fetch("http://localhost:8000/blogposts/", {
+    return fetch(url + "/blogposts/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -17,7 +17,7 @@ export class API {
   }
 
   createBlogPost(user_id, title, content, tags) {
-    return fetch("http://localhost:8000/users/" + user_id + "/blogposts/", {
+    return fetch(url + "/users/" + user_id + "/blogposts/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -38,7 +38,7 @@ export class API {
 
   createComment(user_id, blog_post_id, comment) {
     return fetch(
-      "http://localhost:8000/users/" + user_id + "/comments/" + blog_post_id,
+      url + "/users/" + user_id + "/comments/" + blog_post_id,
       {
         method: "POST",
         headers: {
@@ -59,7 +59,7 @@ export class API {
 
   postInteraction(interaction) {
     return fetch(
-      "http://localhost:8000/users/" +
+      url + "/users/" +
         interaction.user_id +
         "/interactions/" +
         interaction.blog_post_id,
@@ -84,7 +84,7 @@ export class API {
 
   putInteraction(interaction) {
     return fetch(
-      "http://localhost:8000/users/" +
+      url + "/users/" +
         interaction.user_id +
         "/interactions/" +
         interaction.blog_post_id,
@@ -108,7 +108,7 @@ export class API {
 
   deleteInteraction(interaction) {
     return fetch(
-      "http://localhost:8000/users/" +
+      url + "/users/" +
         interaction.user_id +
         "/interactions/" +
         interaction.blog_post_id,
