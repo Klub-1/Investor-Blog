@@ -1,5 +1,6 @@
 import { API } from "../Api/api";
 import "@testing-library/jest-dom";
+import { expect, test } from '@jest/globals';
 
 test("Get blogposts from API", () => {
   const api = new API();
