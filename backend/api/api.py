@@ -133,22 +133,20 @@ async def verify(token: str):
 
 Instrumentator().instrument(app).expose(app)
 
-@app.get("/stocks/")
-def read_stocks():
-    url = "https://www.alphavantage.co/query?function=PPO&symbol=GOOGL&interval=daily&series_type=close&fastperiod=10&matype=1&apikey=92DD3OTK7XOQK3GT"
+@app.get("/stocks/{stock_id}")
+def read_stocks(stock_id: str):    
+    url = "https://www.alphavantage.co/query?function=PPO&symbol="+stock_id+"&interval=daily&series_type=close&fastperiod=10&matype=1&apikey=92DD3OTK7XOQK3GT"
     r = requests.get(url)
     stocks = r.json()
     return stocks
 
-@app.get("/stocks/")
-def read_stocks(db: Session = Depends(get_db)):    
-    # TODO: Lav den ligesom create user i api.py
-    return crud.get_stocks_asasasa(db)
 
 # TODO: Find ud af hvordan man sender data rundt
-@app.post("/stocks/", response_model=schemas.User)
-def create_stock(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
+@app.post("/stocks/", response_model=schemas.Stock)
+def create_stock(stock: schemas.StockCreate, db: Session = Depends(get_db)):
+    db_stock = crud.check_if_stock_exists(db, stockid=stock.stockname)
+    if db_stock:
+        #TODO Opdater stock med ny ppo i crud.py
+        return crud.update_stock(db=db, stock=stock)
+    #TODO return opret stock i db
     return crud.create_user(db=db, user=user)

@@ -41,3 +41,14 @@ class User(UserBase):
 
     class Config:
         orm_mode = True
+
+class StockBase(BaseModel):
+    stockname: str
+    ppo: float
+
+class StockCreate(StockBase):
+    pass
+
+class Stock(StockBase):
+    stockname: str
+    ppo: float
