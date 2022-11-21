@@ -30,13 +30,42 @@ def create_user(db: Session, user: schemas.UserCreate):
 def get_blogposts(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.BlogPost).offset(skip).limit(limit).all()
 
-
-def create_user_blogpost(db: Session, blogpost: schemas.BlogPostCreate, user_id: int):
+def create_user_blogpost(db: Session, blogpost: schemas.BlogPostCreate, user_id: str):
     db_item = models.BlogPost(**blogpost.dict(), user_id=user_id)
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
     return db_item
 
+def create_interaction(db: Session, interaction: schemas.Interactions, user_id: str, blog_post_id: int):
+    db_item = models.Interactions(**interaction.dict(), user_id=user_id, blog_post_id=blog_post_id)
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+
+def update_interaction(db: Session, interaction: schemas.InteractionsUpdate, user_id: str, blog_post_id: int):
+    db_item = db.query(models.Interactions).filter(models.Interactions.user_id==user_id).filter(models.Interactions.blog_post_id==blog_post_id).first()
+    if db_item is None:
+        return None
+    db_item.type = interaction.type
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+    
+def delete_interaction(db: Session, user_id: str, blog_post_id: int):
+    db.query(models.Interactions).filter(models.Interactions.user_id==user_id).filter(models.Interactions.blog_post_id==blog_post_id).delete()
+    db.commit()
+    return {"message": "Deleted"}
+
+    
+
+def create_comment(db: Session, comment: schemas.CommentsCreate, user_id: str, blog_post_id: int):
+    db_item = models.Comments(user_id=user_id, blog_post_id=blog_post_id, comment=comment.comment)
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
 def check_if_stock_exists(db: Session, stockid: str):
     return db.session(db.exists().where(models.Stock.stock_name==stockid)).scalar()
