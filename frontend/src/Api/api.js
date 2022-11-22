@@ -45,20 +45,16 @@ export class API {
     return json;
   }
 
-  async postInteraction(interaction) {
+  async postInteraction(user_id, blog_post_id, type) {
     const res = await fetch(
-      this.url +
-        "/users/" +
-        interaction.user_id +
-        "/interactions/" +
-        interaction.blog_post_id,
+      this.url + "/users/" + user_id + "/interactions/" + blog_post_id,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          type: interaction.type,
+          type: type,
         }),
       }
     );
@@ -66,35 +62,24 @@ export class API {
     return json.id;
   }
 
-  async putInteraction(interaction) {
-    const res = await fetch(
-      this.url +
-        "/users/" +
-        interaction.user_id +
-        "/interactions/" +
-        interaction.blog_post_id,
+  async putInteraction(user_id, blog_post_id, type) {
+    await fetch(
+      this.url + "/users/" + user_id + "/interactions/" + blog_post_id,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          type: interaction.type,
+          type: type,
         }),
       }
     );
-
-    const json = await res.json();
-    return json.id;
   }
 
-  async deleteInteraction(interaction) {
-    const res = await fetch(
-      this.url +
-        "/users/" +
-        interaction.user_id +
-        "/interactions/" +
-        interaction.blog_post_id,
+  async deleteInteraction(user_id, blog_post_id) {
+    await fetch(
+      this.url + "/users/" + user_id + "/interactions/" + blog_post_id,
       {
         method: "DELETE",
         headers: {
@@ -102,7 +87,6 @@ export class API {
         },
       }
     );
-    return res.status;
   }
 
   async getUserName() {

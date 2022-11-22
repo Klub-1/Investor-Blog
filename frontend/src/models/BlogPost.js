@@ -70,15 +70,18 @@ export class BlogPost {
   }
 
   async removeInteraction(interaction) {
-    await this.api.deleteInteraction(interaction);
+    await this.api.deleteInteraction(interaction.user_name, this.id);
     this.interactions = this.interactions.filter(
       (i) => i.user_id !== interaction.user_id
     );
   }
 
   async updateInteraction(interaction) {
-    const id = await this.api.putInteraction(interaction);
-    interaction.id = id;
+    await this.api.putInteraction(
+      interaction.user_name,
+      this.id,
+      interaction.type
+    );
     this.interactions.forEach((i) => {
       if (interaction.user_id === i.user_id) {
         i.update(interaction.type);
@@ -94,7 +97,8 @@ export class BlogPost {
       interactionType = 1;
     }
 
-    const user_id = this.auth.getUserName();
+    AuthStore.getUserName();
+    const user_id = AuthStore.user_name;
 
     const interaction = new Interaction(-1, user_id, this.id, type);
 
