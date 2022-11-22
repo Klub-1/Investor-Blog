@@ -176,8 +176,6 @@ async def verify(token: str):
 Instrumentator().instrument(app).expose(app)
 
 @app.get("/stocks/{stock_id}")
-def read_stocks(stock_id: str):    
-    url = "https://www.alphavantage.co/query?function=PPO&symbol="+stock_id+"&interval=daily&series_type=close&fastperiod=10&matype=1&apikey=92DD3OTK7XOQK3GT"
 def read_stocks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):    
     stocks = crud.get_stocks_from_db(db, skip=skip, limit=limit)
     return stocks
