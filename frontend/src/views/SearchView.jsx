@@ -1,24 +1,16 @@
-import React, { useState } from "react";
-import { BlogPost } from "../components/BlogPost";
-import { BlogPostData } from "../Data/TestData/BlogPostData";
+import React from "react";
+import BlogPost from "../components/BlogPost";
+import { useContext } from "react";
+import { StoreContext } from "../App";
+import { observer } from "mobx-react-lite";
 
-export const SearchView = () => {
-  const [blogs, setBlogs] = useState(BlogPostData);
+export const SearchView = observer(() => {
+  const store = useContext(StoreContext);
 
   const filterPosts = (e) => {
-    const searchFor = e.target.value.toLowerCase();
+    const searchFor = e.target.value;
 
-    if (searchFor.length !== 0) {
-      // We have something to search for
-      const filteredBlogsBody = BlogPostData.filter((blog) => {
-        // Filter every body in lowercase to easier match
-        return blog.body.toLowerCase().includes(searchFor);
-      });
-      setBlogs(filteredBlogsBody);
-    } else {
-      // Reset blog posts
-      setBlogs(BlogPostData);
-    }
+    store.setFilterValue(searchFor);
   };
 
   return (
@@ -46,10 +38,10 @@ export const SearchView = () => {
       </div>
       {/*  -----------Sorted blog posts ----------- */}
       <div className="flex flex-col items-center justify-center overflow-y-scroll">
-        {blogs.map((post) => (
-          <BlogPost key={post.id} {...post} />
+        {store.filteredBlogPosts.map((post) => (
+          <BlogPost key={post.id + Math.random()} post={post} />
         ))}
       </div>
     </div>
   );
-};
+});

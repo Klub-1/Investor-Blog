@@ -20,7 +20,7 @@ from backend.database.database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(openapi_prefix="/api")
 
 
 origins = [
@@ -55,7 +55,7 @@ def read_root():
     return {"Hello": "Investor World!"}
 
 
-@app.post("/users/", response_model=schemas.User)
+@app.post("/users/", response_model=schemas.User, status_code=201)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
@@ -81,17 +81,59 @@ def read_user(user_id: str, db: Session = Depends(get_db)):
 # ________________________________________________
 
 
-@app.post("/users/{user_id}/blogposts/", response_model=schemas.BlogPost)
+@app.post("/users/{user_id}/blogposts/", response_model=schemas.BlogPost, status_code=201)
 def create_blogpost_for_user(
     user_id: str, blogpost: schemas.BlogPostCreate, db: Session = Depends(get_db)
 ):
-    return crud.create_user_blogpost(db=db, blogpost=blogpost, user_id=user_id)
+    blogpost = crud.create_user_blogpost(db=db, blogpost=blogpost, user_id=user_id)
+    if blogpost is None:
+        raise HTTPException(status_code=500, detail="Error creating blogpost")
+    return blogpost
 
 
 @app.get("/blogposts/", response_model=list[schemas.BlogPost])
 def read_blogposts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     blogposts = crud.get_blogposts(db, skip=skip, limit=limit)
+    if blogposts is None:
+        raise HTTPException(status_code=404, detail="Blogposts not found")
     return blogposts
+
+@app.post("/users/{user_id}/interactions/{blog_post_id}", response_model=schemas.Interactions, status_code=201)
+def create_blogpost_interaction(
+    user_id: str, blog_post_id: int, interaction: schemas.InteractionsCreate, db: Session = Depends(get_db)
+):
+    interaction = crud.create_interaction(db=db, interaction=interaction, user_id=user_id, blog_post_id=blog_post_id)
+    if interaction is None:
+        raise HTTPException(status_code=500, detail="Error creating interaction")
+    return interaction
+
+@app.put("/users/{user_id}/interactions/{blog_post_id}", response_model=schemas.Interactions)
+def update_blogpost_interaction(
+    user_id: str, blog_post_id: int, interaction: schemas.InteractionsCreate, db: Session = Depends(get_db)
+):
+    interaction = crud.update_interaction(db=db, interaction=interaction, user_id=user_id, blog_post_id=blog_post_id)
+    if interaction is None:
+        raise HTTPException(status_code=404, detail="Interaction not found")
+    return interaction
+
+@app.delete("/users/{user_id}/interactions/{blog_post_id}")
+def delete_blogpost_interaction(
+    user_id: str, blog_post_id: int, db: Session = Depends(get_db)
+):
+    interaction = crud.delete_interaction(db=db, user_id=user_id, blog_post_id=blog_post_id)
+    if interaction is None:
+        raise HTTPException(status_code=404, detail="Interaction not found")
+    return {"status": "Interaction deleted"}
+
+
+@app.post("/users/{user_id}/comments/{blog_post_id}", response_model=schemas.Comments, status_code=201)
+def create_blogpost_comment(
+    user_id: str, blog_post_id: int, comment: schemas.CommentsCreate, db: Session = Depends(get_db)
+):
+    response = crud.create_comment(db=db, comment=comment, user_id=user_id, blog_post_id=blog_post_id)
+    if response is None:
+        raise HTTPException(status_code=500, detail="Error creating comment")
+    return response
 
 
 @app.get("/campusnet/login")

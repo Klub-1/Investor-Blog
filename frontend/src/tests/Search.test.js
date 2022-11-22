@@ -1,14 +1,36 @@
-import { render, screen } from "@testing-library/react";
-import { SearchView } from "../view/SearchView";
-import '@testing-library/jest-dom'
+import "@testing-library/jest-dom";
 
-test("renders search view and checks for elements", () => {
-    render(
-        <SearchView />
-    );
-    const searchBar = document.getElementById("SearchInputField")
-    expect(searchBar).toBeInTheDocument()
-    const searchBarTitel = screen.getByText(/Search for a post/i)
-    expect(searchBarTitel).toBeInTheDocument()
+import { BlogPostStore } from "../stores/BlogPostStore";
 
+test("Filter blogposts", () => {
+  const blogpostStore = new BlogPostStore();
+
+  blogpostStore.createBlogPost("This is a test", "I'm writing a test", "TAG");
+
+  blogpostStore.createBlogPost(
+    "This is another test",
+    "I'm writing another test",
+    "TAG, TAG2, TAG3"
+  );
+
+  blogpostStore.setFilterValue("another");
+
+  expect(blogpostStore.filteredBlogPosts.length).toBe(1);
+});
+
+
+test("Add interaction", () => {
+  const blogpostStore = new BlogPostStore();
+
+  blogpostStore.createBlogPost("This is a test", "I'm writing a test", "TAG");
+
+  blogpostStore.createBlogPost(
+    "This is another test",
+    "I'm writing another test",
+    "TAG, TAG2, TAG3"
+  );
+
+  blogpostStore.setFilterValue("another");
+
+  expect(blogpostStore.filteredBlogPosts.length).toBe(1);
 });
