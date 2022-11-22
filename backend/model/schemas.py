@@ -91,3 +91,12 @@ class StockUpdate(StockBase):
 class Stock(StockBase):
     stockname: str
     ppo: float
+
+class FavoriteBase(BaseModel):
+    fav: bool
+
+class FavoriteAdd(FavoriteBase):
+    pass
+
+class FavoriteRemove(FavoriteBase):
+    pass

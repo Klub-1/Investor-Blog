@@ -190,3 +190,21 @@ def create_stock(stock: schemas.StockCreate, db: Session = Depends(get_db)):
     if db_stock:        
         return crud.update_stock(db=db, stock=stock, stockname=stock.stockname, stockppo=stock.ppo)    
     return crud.create_stock(db=db, stock=stock)
+
+@app.post("/stocks/{user_id}/favorite", response_model=schemas.FavoriteBase)
+def add_favorite_stock(
+    user_id: str, stock_name: str, favorite: schemas.FavoriteAdd, db: Session = Depends(get_db)
+):
+    favorite = crud.add_favorite(db=db, favorite=favorite, user_id=user_id, stock_name=stock_name)
+    if stock_name is None:
+        raise HTTPException(status_code=500, detail="Can't find stock")
+    return favorite
+
+@app.delete("/stocks/{user_id}/favorite", response_model=schemas.FavoriteRemove)
+def delete_favorite_stock(
+    user_id: str, stock_name: str, favorite: schemas.FavoriteRemove, db: Session = Depends(get_db)
+    ):
+    favorite = crud.remove_favorite(db=db, favorite=favorite, user_id=user_id, stock_name=stock_name)
+    if favorite is None:
+        raise HTTPException(status_code=404, detail="Favorite stock not found")
+    return {"status": "Favorite stock has been removed"}

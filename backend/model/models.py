@@ -77,12 +77,12 @@ class Stock(Base):
     stock_name = Column(String, primary_key=True, index=True)
     ppo = Column(String, index=True)
 
-    class Favorite(Base):
-        """A favorite is created by a user, pointing to a stock and its owner"""
-        __tablename__ = "favorites"
+class Favorite(Base):
+    """A favorite is created by a user, pointing to a stock and its owner"""
+    __tablename__ = "favorites"
 
-        id = Column(Integer, primary_key=True, index=True)
-        user_id = Column(Integer, ForeignKey("users.id"))
-        user = relationship("User", back_populates="favorites")
-        stock_id = Column(Integer, ForeignKey("stocks.stock_name"))
-        stock = relationship("Stock", back_populates="favorites")
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="favorites")
+    stock_id = Column(Integer, ForeignKey("stocks.stock_name"))
+    stock = relationship("Stock", back_populates="favorites")

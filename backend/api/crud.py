@@ -86,3 +86,14 @@ def create_stock(db: Session, stock: schemas.StockCreate):
     db.commit()
     db.refresh(db_stock)
     return db_stock
+
+def add_favorite(db: Session, favorite: schemas.FavoriteAdd, user_id: str, stock_name: str):
+    #TODO Hvordan indsætter man id for et table
+    db_fav = models.Favorite()
+    return db_fav
+
+def delete_favorite(db: Session, favorite: schemas.FavoriteRemove, user_id: str, stock_name: str):
+    #TODO Hvordan indsætter man id for et table
+    db_fav = models.Favorite()
+
+    return db_fav
