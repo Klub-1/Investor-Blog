@@ -70,7 +70,7 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 
 @app.get("/users/{user_id}", response_model=schemas.User)
-def read_user(user_id: str, db: Session = Depends(get_db)):
+def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -83,7 +83,7 @@ def read_user(user_id: str, db: Session = Depends(get_db)):
 
 @app.post("/users/{user_id}/blogposts/", response_model=schemas.BlogPost, status_code=201)
 def create_blogpost_for_user(
-    user_id: str, blogpost: schemas.BlogPostCreate, db: Session = Depends(get_db)
+    user_id: int, blogpost: schemas.BlogPostCreate, db: Session = Depends(get_db)
 ):
     blogpost = crud.create_user_blogpost(db=db, blogpost=blogpost, user_id=user_id)
     if blogpost is None:
@@ -100,7 +100,7 @@ def read_blogposts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db
 
 @app.post("/users/{user_id}/interactions/{blog_post_id}", response_model=schemas.Interactions, status_code=201)
 def create_blogpost_interaction(
-    user_id: str, blog_post_id: int, interaction: schemas.InteractionsCreate, db: Session = Depends(get_db)
+    user_id: int, blog_post_id: int, interaction: schemas.InteractionsCreate, db: Session = Depends(get_db)
 ):
     interaction = crud.create_interaction(db=db, interaction=interaction, user_id=user_id, blog_post_id=blog_post_id)
     if interaction is None:
@@ -109,7 +109,7 @@ def create_blogpost_interaction(
 
 @app.put("/users/{user_id}/interactions/{blog_post_id}", response_model=schemas.Interactions)
 def update_blogpost_interaction(
-    user_id: str, blog_post_id: int, interaction: schemas.InteractionsCreate, db: Session = Depends(get_db)
+    user_id: int, blog_post_id: int, interaction: schemas.InteractionsCreate, db: Session = Depends(get_db)
 ):
     interaction = crud.update_interaction(db=db, interaction=interaction, user_id=user_id, blog_post_id=blog_post_id)
     if interaction is None:
@@ -118,7 +118,7 @@ def update_blogpost_interaction(
 
 @app.delete("/users/{user_id}/interactions/{blog_post_id}")
 def delete_blogpost_interaction(
-    user_id: str, blog_post_id: int, db: Session = Depends(get_db)
+    user_id: int, blog_post_id: int, db: Session = Depends(get_db)
 ):
     interaction = crud.delete_interaction(db=db, user_id=user_id, blog_post_id=blog_post_id)
     if interaction is None:
@@ -128,7 +128,7 @@ def delete_blogpost_interaction(
 
 @app.post("/users/{user_id}/comments/{blog_post_id}", response_model=schemas.Comments, status_code=201)
 def create_blogpost_comment(
-    user_id: str, blog_post_id: int, comment: schemas.CommentsCreate, db: Session = Depends(get_db)
+    user_id: int, blog_post_id: int, comment: schemas.CommentsCreate, db: Session = Depends(get_db)
 ):
     response = crud.create_comment(db=db, comment=comment, user_id=user_id, blog_post_id=blog_post_id)
     if response is None:
@@ -155,10 +155,8 @@ async def redirect(ticket: str):
     # if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
     #    crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
 
-    if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
-        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text,id = element.find("cas:user").text, hashed_password = ""))
-    #print(token)
-    #returnn user to frontend with token in url
+    if(crud.get_user_by_username(db=SessionLocal(), username = element.find("cas:user").text) == None):
+        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user"), hashed_password = ""))
     return RedirectResponse(url="http://localhost:3000?token="+token)
 
 
@@ -168,7 +166,7 @@ async def register(email: str, username: str, password: str):
         mySalt = bcrypt.gensalt()
         hashed = bcrypt.hashpw(password.encode('utf-8'),mySalt)
         print(hashed)
-        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = email,username = username,id = email, hashed_password = hashed))
+        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = email,username = username, hashed_password = hashed))
         token = jwt.encode({'id': username, "exp": datetime.now(
         tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
 
@@ -178,7 +176,7 @@ async def register(email: str, username: str, password: str):
 
 @app.get("/login")
 async def login(email: str, password: str):
-    user = crud.get_user(db=SessionLocal(), user_id = email)
+    user = crud.get_user(db=SessionLocal(), email = email)
     if(user == None):
         raise HTTPException(status_code=400, detail="User not found")
     if((bcrypt.checkpw(password.encode('utf-8'), user.hashed_password.encode('utf-8')))):
@@ -188,10 +186,28 @@ async def login(email: str, password: str):
 
 @app.get("/checkifuserexists")
 async def checkifuserexists(email: str):
-    if(crud.get_user(db=SessionLocal(), user_id = email) == None):
+    if(crud.get_user(db=SessionLocal(), email = email) == None):
         raise HTTPException(status_code=409, detail="Email does not exist")
     else:
-        return jwt.encode({'id': crud.get_user(db=SessionLocal(), user_id = email).username, "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+        return jwt.encode({'id': crud.get_user(db=SessionLocal(), email=email).id, "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+
+@app.get("/user/username")
+async def verify(token: str):
+    print("verify " + token)
+    #if "" in token remove it
+    if(token[0] == '"'):
+        token = token[1:]
+    if(token[-1] == '"'):
+        token = token[:-1]
+    try:
+        # todo CHANGE SECRET KEY
+        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+
+        return {"username": crud.get_user(db=SessionLocal(), user_id = decoded.id).username}
+    except jwt.ExpiredSignatureError:
+        return "Token expired"
+    except jwt.InvalidTokenError:
+        return "Invalid token"
 
 @app.get("/verify")
 async def verify(token: str):
@@ -204,8 +220,7 @@ async def verify(token: str):
     try:
         # todo CHANGE SECRET KEY
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-        print(decoded)
-        return decoded
+        return True
     except jwt.ExpiredSignatureError:
         return "Token expired"
     except jwt.InvalidTokenError:

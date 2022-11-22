@@ -1,14 +1,10 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { useContext } from "react";
-import { StoreContext } from "../App";
 
 import BlogPost from "../components/BlogPost";
 import BlogPostStore from "../stores/BlogPostStore";
 
 const HomeView = () => {
-
-
   return (
     <div className="flex flex-col items-center justify-center overflow-y-scroll">
       {BlogPostStore.blogposts.map((post) => (

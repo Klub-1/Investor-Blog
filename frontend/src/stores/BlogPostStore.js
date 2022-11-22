@@ -1,15 +1,14 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { API } from "../Api/api";
-import { AuthHandler } from "../Auth/AuthHandler";
+import AuthStore from "./AuthStore";
 import { BlogPost } from "../models/BlogPost";
 import { Comment } from "../models/Comment";
 import { Interaction } from "../models/Interaction";
 
- class BlogPostStore {
+class BlogPostStore {
   blogposts = [];
   filter = "";
   api = new API();
-  auth = new AuthHandler();
 
   get filteredBlogPosts() {
     return this.blogposts.filter((blogpost) => {
@@ -25,7 +24,7 @@ import { Interaction } from "../models/Interaction";
   }
 
   async createBlogPost(title, content, tags) {
-    const user_id = await this.auth.getUserName();
+    const user_id = await AuthStore.getUserName();
 
     const data = await this.api.createBlogPost(user_id, title, content, tags);
 

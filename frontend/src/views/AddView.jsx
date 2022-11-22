@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import blogpostStore from "../stores/BlogPostStore";
+import BlogPostStore from "../stores/BlogPostStore";
 
 const AddView = () => {
   const [title, setTitle] = useState("");
@@ -12,7 +12,7 @@ const AddView = () => {
       return;
     }
 
-    store.createBlogPost(title, content, tags);
+    BlogPostStore.createBlogPost(title, content, tags);
 
     setTitle("");
     setContent("");

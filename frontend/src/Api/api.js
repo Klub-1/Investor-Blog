@@ -1,23 +1,19 @@
 export class API {
   url = "http://localhost:8000";
 
-  getBlogPosts() {
-    return fetch(this.url + "/blogposts/", {
+  async getBlogPosts() {
+    const res = await fetch(this.url + "/blogposts/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        return data;
-      });
+    });
+    const json = await res.json();
+    return json;
   }
 
-  createBlogPost(user_id, title, content, tags) {
-    return fetch(this.url + "/users/" + user_id + "/blogposts/", {
+  async createBlogPost(user_id, title, content, tags) {
+    const res = await fetch(this.url + "/users/" + user_id + "/blogposts/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -27,35 +23,30 @@ export class API {
         content: content,
         tags: tags,
       }),
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        return data;
-      });
+    });
+    const json = await res.json();
+    return json.id;
   }
 
-  createComment(user_id, blog_post_id, comment) {
-    return fetch(this.url + "/users/" + user_id + "/comments/" + blog_post_id, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        comment: comment,
-      }),
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        return data;
-      });
+  async createComment(user_id, blog_post_id, comment) {
+    const res = await fetch(
+      this.url + "/users/" + user_id + "/comments/" + blog_post_id,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          comment: comment,
+        }),
+      }
+    );
+    const json = await res.json();
+    return json;
   }
 
-  postInteraction(interaction) {
-    return fetch(
+  async postInteraction(interaction) {
+    const res = await fetch(
       this.url +
         "/users/" +
         interaction.user_id +
@@ -70,18 +61,13 @@ export class API {
           type: interaction.type,
         }),
       }
-    )
-      .then((response) => {
-        return response.status;
-      })
-      .then((data) => {
-        interaction.id = data.id;
-        return interaction;
-      });
+    );
+    const json = await res.json();
+    return json.id;
   }
 
-  putInteraction(interaction) {
-    return fetch(
+  async putInteraction(interaction) {
+    const res = await fetch(
       this.url +
         "/users/" +
         interaction.user_id +
@@ -96,17 +82,14 @@ export class API {
           type: interaction.type,
         }),
       }
-    )
-      .then((response) => {
-        return response.status;
-      })
-      .then((data) => {
-        return data;
-      });
+    );
+
+    const json = await res.json();
+    return json.id;
   }
 
-  deleteInteraction(interaction) {
-    return fetch(
+  async deleteInteraction(interaction) {
+    const res = await fetch(
       this.url +
         "/users/" +
         interaction.user_id +
@@ -118,20 +101,17 @@ export class API {
           "Content-Type": "application/json",
         },
       }
-    )
-      .then((response) => {
-        return response.status;
-      })
-      .then((data) => {
-        return data;
-      });
+    );
+    return res.status;
   }
-  async getUser() {
+
+  async getUserName() {
     const res = await fetch(
-        this.url+"/verify?token=" +
-          localStorage.getItem("portal-jwt-Token")
-      );
-      const json = await res.json();
-      return json;
-    }
+      this.url +
+        "/user/username?token=" +
+        localStorage.getItem("portal-jwt-Token")
+    );
+    const json = await res.json();
+    return json;
+  }
 }
