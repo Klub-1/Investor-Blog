@@ -1,15 +1,11 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import { AuthHandler } from "../Auth/AuthHandler";
 
-
-function About() {
-  // 👇️ using window.location.href 👇️
-  window.location.href = "https://investorblog.diplomportal.dk/api/login";
-  return null;
-}
 
 export const AccountView = () => {
-  const [users, setUsers] = useState([]);
+  const authHandler = new AuthHandler();
+  const [users, setUsers] = useState(this.authHandler.getUser());
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [username, setUserName] = useState();
@@ -40,29 +36,12 @@ const handleSubmit = async e => {
       .then(data => window.location.href = `https://investorblog.diplomportal.dk/?token=${data}`)
   }
   else{
-    window.location.href = "https://investorblog.diplomportal.dk/api//campusnet/login";
+    window.location.href = "https://investorblog.diplomportal.dk/api/campusnet/login";
     return null;
   }
 }
 
-  const fetchData = () => {
-    fetch(
-      "https://investorblog.diplomportal.dk/api//verify?token=" +
-        localStorage.getItem("portal-jwt-Token")
-    )
-      .then((response) => {
-        console.log(response);
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setUsers(data);
-      });
-  };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
   if (
     !localStorage.getItem("portal-jwt-Token") ||
     users === "Token expired" ||

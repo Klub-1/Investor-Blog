@@ -126,4 +126,18 @@ export class API {
         return data;
       });
   }
+  getUser() {
+    return fetch(
+        this.url+"/verify?token=" +
+          localStorage.getItem("portal-jwt-Token")
+      )
+        .then((response) => {
+          console.log(response);
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+          return data;
+        });
+    };
 }
