@@ -79,7 +79,7 @@ class User(UserBase):
         orm_mode = True
 
 class StockBase(BaseModel):
-    stockname: str
+    stock_name: str
     ppo: float
 
 class StockCreate(StockBase):
@@ -89,13 +89,25 @@ class StockUpdate(StockBase):
     pass
 
 class Stock(StockBase):
-    stockname: str
+    stock_name: str
     ppo: float
 
-class FavoriteBase(BaseModel):
-    fav: bool
+    class Config:
+        orm_mode = True
 
-class FavoriteAdd(FavoriteBase):
+class FavoriteBase(BaseModel):    
+    user_id: str
+    stock_id: str
+
+class Favorite(FavoriteBase):
+    id: int
+    user_id: str
+    stock_id: str
+
+    class Config:
+        orm_mode = True
+
+class FavoriteCreate(FavoriteBase):
     pass
 
 class FavoriteRemove(FavoriteBase):

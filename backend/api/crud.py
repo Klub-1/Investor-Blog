@@ -69,10 +69,11 @@ def create_comment(db: Session, comment: schemas.CommentsCreate, user_id: str, b
     return db_item
 
 def check_if_stock_exists(db: Session, stockid: str):
-    return db.session(db.exists().where(models.Stock.stock_name==stockid)).scalar()
+    exists = db.query(models.Stock).filter(models.Stock.stock_name==stockid).first() is not None
+    return exists
 
-def update_stock(db: Session, stock: schemas.StockUpdate, stockname: str, stockppo: float):
-    stock_item = db.query(models.Stock).filter(models.Stock.stock_name==stockname).first()
+def update_stock(db: Session, stock: schemas.StockUpdate, stock_name: str, stockppo: float):
+    stock_item = db.query(models.Stock).filter(models.Stock.stock_name==stock_name).first()
     if stock_item is None:
         return None
     setattr(stock_item, 'ppo', stockppo)
@@ -81,19 +82,23 @@ def update_stock(db: Session, stock: schemas.StockUpdate, stockname: str, stockp
     return stock_item
 
 def create_stock(db: Session, stock: schemas.StockCreate):
-    db_stock = models.Stock(stockname=stock.stockname, ppo=stock.ppo)
+    db_stock =  models.Stock(stock_name=stock.stock_name, ppo=stock.ppo)
     db.add(db_stock)
     db.commit()
     db.refresh(db_stock)
     return db_stock
 
-def add_favorite(db: Session, favorite: schemas.FavoriteAdd, user_id: str, stock_name: str):
-    #TODO Hvordan indsætter man id for et table
-    db_fav = models.Favorite()
+def get_stocks_from_db(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Stock).offset(skip).limit(limit).all()
+
+def create_favorite(db: Session, favorite: schemas.FavoriteCreate, user_id: str, stock_name: str):
+    db_fav = models.Favorite(user_id=user_id, stock_id=stock_name)
+    db.add(db_fav)
+    db.commit()
+    db.refresh(db_fav)
     return db_fav
 
 def delete_favorite(db: Session, favorite: schemas.FavoriteRemove, user_id: str, stock_name: str):
-    #TODO Hvordan indsætter man id for et table
-    db_fav = models.Favorite()
-
-    return db_fav
+    db.query(models.Favorite).filter_by(user_id=user_id, stock_id=stock_name).delete()
+    db.commit()
+    return {"message": "Stock removed from favorites"}

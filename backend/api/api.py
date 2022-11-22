@@ -178,24 +178,27 @@ Instrumentator().instrument(app).expose(app)
 @app.get("/stocks/{stock_id}")
 def read_stocks(stock_id: str):    
     url = "https://www.alphavantage.co/query?function=PPO&symbol="+stock_id+"&interval=daily&series_type=close&fastperiod=10&matype=1&apikey=92DD3OTK7XOQK3GT"
-    r = requests.get(url)
-    stocks = r.json()
-    print(stocks)
-    print(url)
+def read_stocks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):    
+    stocks = crud.get_stocks_from_db(db, skip=skip, limit=limit)
     return stocks
 
-@app.post("/stocks/", response_model=schemas.Stock)
-def create_stock(stock: schemas.StockCreate, db: Session = Depends(get_db)):
-    db_stock = crud.check_if_stock_exists(db, stockid=stock.stockname)
+@app.post("/stocks/")
+def create_stock(stock_name: str, db: Session = Depends(get_db)):
+    url = "https://www.alphavantage.co/query?function=PPO&symbol="+stock_name+"&interval=daily&series_type=close&fastperiod=10&matype=1&apikey=92DD3OTK7XOQK3GT"
+    r = requests.get(url)
+    stocks = r.json()  
+    apippo = stocks.get("Technical Analysis: PPO").get("2020-11-20").get("PPO")
+    db_stock = crud.check_if_stock_exists(db, stockid=stock_name)
+    stock = models.Stock(stock_name=stock_name, ppo=apippo)
     if db_stock:        
-        return crud.update_stock(db=db, stock=stock, stockname=stock.stockname, stockppo=stock.ppo)    
+        return crud.update_stock(db=db, stock=stock, stock_name=stock_name, stockppo=stocks.get("Technical Analysis: PPO").get("2020-11-27").get("PPO"))   
     return crud.create_stock(db=db, stock=stock)
 
-@app.post("/stocks/{user_id}/favorite", response_model=schemas.FavoriteBase)
-def add_favorite_stock(
-    user_id: str, stock_name: str, favorite: schemas.FavoriteAdd, db: Session = Depends(get_db)
+@app.post("/stocks/{user_id}/favorite", response_model=schemas.FavoriteBase, status_code=201)
+def create_favorite_stock(
+    user_id: str, stock_name: str, favorite: schemas.FavoriteCreate, db: Session = Depends(get_db)
 ):
-    favorite = crud.add_favorite(db=db, favorite=favorite, user_id=user_id, stock_name=stock_name)
+    favorite = crud.create_favorite(db=db, favorite=favorite, user_id=user_id, stock_name=stock_name)
     if stock_name is None:
         raise HTTPException(status_code=500, detail="Can't find stock")
     return favorite

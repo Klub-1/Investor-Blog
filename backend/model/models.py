@@ -46,6 +46,7 @@ class User(Base):
     blogposts = relationship("BlogPost", back_populates="user")
     comments = relationship("Comments", back_populates="user")
     interactions = relationship("Interactions", back_populates="user")
+    favorites = relationship("Favorite", back_populates="user")
 
 
 class BlogPost(Base):
@@ -76,6 +77,7 @@ class Stock(Base):
     
     stock_name = Column(String, primary_key=True, index=True)
     ppo = Column(String, index=True)
+    favorites= relationship("Favorite", back_populates="stock")
 
 class Favorite(Base):
     """A favorite is created by a user, pointing to a stock and its owner"""
