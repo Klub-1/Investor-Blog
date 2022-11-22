@@ -203,11 +203,11 @@ async def verify(token: str):
         # todo CHANGE SECRET KEY
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
 
-        return {"username": crud.get_user(db=SessionLocal(), user_id = decoded.id).username}
+        return {"username": crud.get_user(db=SessionLocal(), user_id = decoded.id).username, "status": "valid"}
     except jwt.ExpiredSignatureError:
-        return "Token expired"
+        return {"username": "", "status": "Token expired"}
     except jwt.InvalidTokenError:
-        return "Invalid token"
+        return {"username": "", "status": "Invalid token"}
 
 @app.get("/verify")
 async def verify(token: str):
