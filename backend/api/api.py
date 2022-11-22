@@ -156,7 +156,7 @@ async def redirect(ticket: str):
     #    crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
 
     if(crud.get_user_by_username(db=SessionLocal(), username = element.find("cas:user").text) == None):
-        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user"), hashed_password = ""))
+        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text, hashed_password = ""))
     return RedirectResponse(url="http://localhost:3000?token="+token)
 
 
@@ -176,7 +176,7 @@ async def register(email: str, username: str, password: str):
 
 @app.get("/login")
 async def login(email: str, password: str):
-    user = crud.get_user(db=SessionLocal(), email = email)
+    user = crud.get_user_by_email(db=SessionLocal(), email = email)
     if(user == None):
         raise HTTPException(status_code=400, detail="User not found")
     if((bcrypt.checkpw(password.encode('utf-8'), user.hashed_password.encode('utf-8')))):
@@ -186,7 +186,7 @@ async def login(email: str, password: str):
 
 @app.get("/checkifuserexists")
 async def checkifuserexists(email: str):
-    if(crud.get_user(db=SessionLocal(), email = email) == None):
+    if(crud.get_user_by_email(db=SessionLocal(), email = email) == None):
         raise HTTPException(status_code=409, detail="Email does not exist")
     else:
         return jwt.encode({'id': crud.get_user(db=SessionLocal(), email=email).id, "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
@@ -202,8 +202,8 @@ async def verify(token: str):
     try:
         # todo CHANGE SECRET KEY
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-
-        return {"username": crud.get_user(db=SessionLocal(), user_id = decoded.id).username, "status": "valid"}
+        print(decoded)
+        return {"username": crud.get_user_by_username(db=SessionLocal(), username = decoded["id"]).username, "status": "valid"}
     except jwt.ExpiredSignatureError:
         return {"username": "", "status": "Token expired"}
     except jwt.InvalidTokenError:
