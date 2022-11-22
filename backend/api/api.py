@@ -44,7 +44,6 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(openapi_prefix="/api")
 
-
 origins = [
     "*",
 ]
@@ -109,7 +108,8 @@ def read_user(user_id: str, db: Session = Depends(get_db)):
 def create_blogpost_for_user(
     user_id: str, blogpost: schemas.BlogPostCreate, db: Session = Depends(get_db)
 ):
-    blogpost = crud.create_user_blogpost(db=db, blogpost=blogpost, user_id=user_id)
+    blogpost = crud.create_user_blogpost(
+        db=db, blogpost=blogpost, user_id=user_id)
     if blogpost is None:
         raise HTTPException(status_code=500, detail="Error creating blogpost")
     return blogpost
@@ -122,29 +122,45 @@ def read_blogposts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db
         raise HTTPException(status_code=404, detail="Blogposts not found")
     return blogposts
 
+
+@app.delete("/users/{user_id}/blogpost/{blog_post_id}")
+def delete_blogpost_interaction(user_id: str, blog_post_id: int, db: Session = Depends(get_db)):
+    blogpost = crud.delete_user_blogpost(
+        db=db, user_id=user_id, blog_post_id=blog_post_id)
+    if blogpost is None:
+        raise HTTPException(status_code=404, detail="Blogpost not found")
+    return {"status": "Blogpost deleted"}
+
+
 @app.post("/users/{user_id}/interactions/{blog_post_id}", response_model=schemas.Interactions, status_code=201)
 def create_blogpost_interaction(
     user_id: str, blog_post_id: int, interaction: schemas.InteractionsCreate, db: Session = Depends(get_db)
 ):
-    interaction = crud.create_interaction(db=db, interaction=interaction, user_id=user_id, blog_post_id=blog_post_id)
+    interaction = crud.create_interaction(
+        db=db, interaction=interaction, user_id=user_id, blog_post_id=blog_post_id)
     if interaction is None:
-        raise HTTPException(status_code=500, detail="Error creating interaction")
+        raise HTTPException(
+            status_code=500, detail="Error creating interaction")
     return interaction
+
 
 @app.put("/users/{user_id}/interactions/{blog_post_id}", response_model=schemas.Interactions)
 def update_blogpost_interaction(
     user_id: str, blog_post_id: int, interaction: schemas.InteractionsCreate, db: Session = Depends(get_db)
 ):
-    interaction = crud.update_interaction(db=db, interaction=interaction, user_id=user_id, blog_post_id=blog_post_id)
+    interaction = crud.update_interaction(
+        db=db, interaction=interaction, user_id=user_id, blog_post_id=blog_post_id)
     if interaction is None:
         raise HTTPException(status_code=404, detail="Interaction not found")
     return interaction
+
 
 @app.delete("/users/{user_id}/interactions/{blog_post_id}")
 def delete_blogpost_interaction(
     user_id: str, blog_post_id: int, db: Session = Depends(get_db)
 ):
-    interaction = crud.delete_interaction(db=db, user_id=user_id, blog_post_id=blog_post_id)
+    interaction = crud.delete_interaction(
+        db=db, user_id=user_id, blog_post_id=blog_post_id)
     if interaction is None:
         raise HTTPException(status_code=404, detail="Interaction not found")
     return {"status": "Interaction deleted"}
@@ -154,7 +170,8 @@ def delete_blogpost_interaction(
 def create_blogpost_comment(
     user_id: str, blog_post_id: int, comment: schemas.CommentsCreate, db: Session = Depends(get_db)
 ):
-    response = crud.create_comment(db=db, comment=comment, user_id=user_id, blog_post_id=blog_post_id)
+    response = crud.create_comment(
+        db=db, comment=comment, user_id=user_id, blog_post_id=blog_post_id)
     if response is None:
         raise HTTPException(status_code=500, detail="Error creating comment")
     return response
@@ -179,11 +196,13 @@ async def redirect(ticket: str):
     # if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
     #    crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
 
-    if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
-        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text,id = element.find("cas:user").text))
-    #print(token)
-    #returnn user to frontend with token in url
+    if (crud.get_user(db=SessionLocal(), user_id=element.find("cas:user").text) == None):
+        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find(
+            "cas:user").text + "@dtu.dk", username=element.find("cas:user").text, id=element.find("cas:user").text))
+    # print(token)
+    # returnn user to frontend with token in url
     return RedirectResponse(url="https://investorblog.diplomportal.dk?token="+token)
+
 
 @app.get("/verify")
 async def verify(token: str):
@@ -198,10 +217,11 @@ async def verify(token: str):
     except jwt.InvalidTokenError:
         return "Invalid token"
 
+
 @app.get("/test_logging")
 def test_logging():
     logging.info("Running logger test:")
-    division_error = 1/ 0
+    division_error = 1 / 0
     return {"test": "log"}
 
 
