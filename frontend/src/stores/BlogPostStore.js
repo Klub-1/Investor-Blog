@@ -5,7 +5,7 @@ import { BlogPost } from "../models/BlogPost";
 import { Comment } from "../models/Comment";
 import { Interaction } from "../models/Interaction";
 
-export class BlogPostStore {
+ class BlogPostStore {
   blogposts = [];
   filter = "";
   api = new API();
@@ -24,10 +24,10 @@ export class BlogPostStore {
     this.filter = value;
   }
 
-  createBlogPost(title, content, tags) {
-    const user_id = this.auth.getUserName();
+  async createBlogPost(title, content, tags) {
+    const user_id = await this.auth.getUserName();
 
-    const data = this.api.createBlogPost(user_id, title, content, tags);
+    const data = await this.api.createBlogPost(user_id, title, content, tags);
 
     const blogpost = new BlogPost(
       data.id,
@@ -86,3 +86,4 @@ export class BlogPostStore {
     });
   }
 }
+export default new BlogPostStore();

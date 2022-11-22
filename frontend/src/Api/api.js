@@ -1,5 +1,5 @@
 export class API {
-  url = "https://investorblog.diplomportal.dk/api";
+  url = "http://localhost:8000";
 
   getBlogPosts() {
     return fetch(this.url + "/blogposts/", {
@@ -126,18 +126,12 @@ export class API {
         return data;
       });
   }
-  getUser() {
-    return fetch(
+  async getUser() {
+    const res = await fetch(
         this.url+"/verify?token=" +
           localStorage.getItem("portal-jwt-Token")
-      )
-        .then((response) => {
-          console.log(response);
-          return response.json();
-        })
-        .then((data) => {
-          console.log(data);
-          return data;
-        });
-    };
+      );
+      const json = await res.json();
+      return json;
+    }
 }

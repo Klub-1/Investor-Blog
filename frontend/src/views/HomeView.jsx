@@ -4,13 +4,14 @@ import { useContext } from "react";
 import { StoreContext } from "../App";
 
 import BlogPost from "../components/BlogPost";
+import BlogPostStore from "../stores/BlogPostStore";
 
 const HomeView = () => {
-  const store = useContext(StoreContext);
+
 
   return (
     <div className="flex flex-col items-center justify-center overflow-y-scroll">
-      {store.blogposts.map((post) => (
+      {BlogPostStore.blogposts.map((post) => (
         <BlogPost key={post.id + Math.random()} post={post} />
       ))}
     </div>

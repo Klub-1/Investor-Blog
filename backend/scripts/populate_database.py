@@ -58,4 +58,4 @@ def populate_database(ip="http://localhost:8000/"):
             raise ConnectionError
 
 if __name__ == "__main__":
-    populate_database('https://investorblog.diplomportal.dk/api/')
+    populate_database('http://localhost:8000')

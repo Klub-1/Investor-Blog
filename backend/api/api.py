@@ -138,13 +138,13 @@ def create_blogpost_comment(
 
 @app.get("/campusnet/login")
 async def login():
-    URI = "https://auth.dtu.dk/dtu/?service=https://investorblog.diplomportal.dk/api//campusnet/redirect"
+    URI = "https://auth.dtu.dk/dtu/?service=http://localhost:8000/campusnet/redirect"
     return RedirectResponse(url=URI)
 
 
 @app.get("/campusnet/redirect")
 async def redirect(ticket: str):
-    body = "https://auth.dtu.dk/dtu/servicevalidate?service=https://investorblog.diplomportal.dk/api//campusnet/redirect&ticket="+ticket
+    body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://localhost:8000/campusnet/redirect&ticket="+ticket
     body = requests.get(url=body)
     print(body.content.decode("utf-8"))
     element = BeautifulSoup(body.content.decode("utf-8"))
@@ -159,7 +159,7 @@ async def redirect(ticket: str):
         crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text,id = element.find("cas:user").text, hashed_password = ""))
     #print(token)
     #returnn user to frontend with token in url
-    return RedirectResponse(url="https://investorblog.diplomportal.dk/?token="+token)
+    return RedirectResponse(url="http://localhost:3000?token="+token)
 
 
 @app.post("/register")

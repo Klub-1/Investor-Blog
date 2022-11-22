@@ -6,10 +6,11 @@ export class AuthHandler {
   api = new API();
   test = true;
 
-  getUserName() {
-    const user = this.api.getUser();
-    if(user.length() > 0) {
+  async agetUserName() {
+    const user = await this.api.getUser();
+    console.log(user);
+    if(user == null) {
       return user.username;
-    }else{ window.location.href = "https://investorblog.diplomportal.dk/account/"}
+    }
   }
 }

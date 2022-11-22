@@ -1,14 +1,11 @@
 import React from "react";
 import { useState } from "react";
-import { useContext } from "react";
-import { StoreContext } from "../App";
+import blogpostStore from "../stores/BlogPostStore";
 
 const AddView = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
-
-  const store = useContext(StoreContext);
 
   function postDataToBackend() {
     if (title === "" || content === "") {

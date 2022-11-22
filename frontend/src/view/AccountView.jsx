@@ -1,17 +1,20 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { AuthHandler } from "../Auth/AuthHandler";
 
+
+function About() {
+  // 👇️ using window.location.href 👇️
+  window.location.href = "http://localhost:8000/login";
+  return null;
+}
 
 export const AccountView = () => {
-  const authHandler = new AuthHandler();
   const [users, setUsers] = useState([]);
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
   const [email, setEmail] = useState();
-  useEffect(() => {setUsers(authHandler.getUserName())}, []);
 
 const handleSubmit = async e => {
   e.preventDefault();
@@ -42,7 +45,24 @@ const handleSubmit = async e => {
   }
 }
 
+  const fetchData = () => {
+    fetch(
+      "http://localhost:8000/verify?token=" +
+        localStorage.getItem("portal-jwt-Token")
+    )
+      .then((response) => {
+        console.log(response);
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        setUsers(data);
+      });
+  };
 
+  useEffect(() => {
+    fetchData();
+  }, []);
   if (
     !localStorage.getItem("portal-jwt-Token") ||
     users === "Token expired" ||
@@ -127,7 +147,7 @@ const handleSubmit = async e => {
       <div className="h-[400px] w-full shadow rounded-lg bg-white mb-5 md:mb-10">
         <div className="h-4/5 flex justify-center items-center">
           <h1 className="h-max w-full text-center font-semibold text-4xl content-center md:text-8xl">
-            your user = {users}
+            your user = {users.id}
           </h1>
         </div>
       </div>
