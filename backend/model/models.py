@@ -43,7 +43,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True) # AUTO GENERATED
     username = Column(String, unique=True, index=True) # COMPUSNET: S205124 - MAILOGIN: Selected by user
     email = Column(String, unique=True, index=True) # COMPUSNET: NULL - MAILOGIN: Selected by user
-    hashed_password = Column(String, index=True) # COMPUSNET: NULL - MAILOGIN: Selected by user
+    password = Column(String, index=True) # COMPUSNET: NULL - MAILOGIN: Selected by user
     blogposts = relationship("BlogPost", back_populates="user")
     comments = relationship("Comments", back_populates="user")
     interactions = relationship("Interactions", back_populates="user")

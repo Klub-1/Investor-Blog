@@ -156,30 +156,30 @@ async def redirect(ticket: str):
     #    crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
 
     if(crud.get_user_by_username(db=SessionLocal(), username = element.find("cas:user").text) == None):
-        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text, hashed_password = ""))
+        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text, password = ""))
     return RedirectResponse(url="http://localhost:3000?token="+token)
 
-
+#body with email username and password
 @app.post("/register")
-async def register(email: str, username: str, password: str):
-    if(crud.get_user(db=SessionLocal(), user_id = email) == None):
+async def register(user: schemas.UserBase, db: Session = Depends(get_db)):
+    if(crud.get_user(db=SessionLocal(), user_id = user.email) == None):
         mySalt = bcrypt.gensalt()
-        hashed = bcrypt.hashpw(password.encode('utf-8'),mySalt)
+        hashed = bcrypt.hashpw(user.password.encode('utf-8'),mySalt)
         print(hashed)
-        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = email,username = username, hashed_password = hashed))
-        token = jwt.encode({'id': username, "exp": datetime.now(
+        crud.create_user(db=SessionLocal(), user=user)
+        print("here")
+        token = jwt.encode({'id': user.username, "exp": datetime.now(
         tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
-
         return token
     else:
         raise HTTPException(status_code=400, detail="Email already registered") 
 
-@app.get("/login")
+@app.post("/login")
 async def login(email: str, password: str):
-    user = crud.get_user_by_email(db=SessionLocal(), email = email)
+    db_user = crud.get_user_by_email(db=SessionLocal(), email = user.email)
     if(user == None):
         raise HTTPException(status_code=400, detail="User not found")
-    if((bcrypt.checkpw(password.encode('utf-8'), user.hashed_password.encode('utf-8')))):
+    if((bcrypt.checkpw(user.password.encode('utf-8'), db_user.password.encode('utf-8')))):
         return jwt.encode({'id': user.username, "exp": datetime.now(
         tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
 
@@ -189,7 +189,7 @@ async def checkifuserexists(email: str):
     if(crud.get_user_by_email(db=SessionLocal(), email = email) == None):
         raise HTTPException(status_code=409, detail="Email does not exist")
     else:
-        return jwt.encode({'id': crud.get_user(db=SessionLocal(), email=email).id, "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+        return jwt.encode({'id': crud.get_user_by_email(db=SessionLocal(), email = email).id, "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
 
 @app.get("/user/username")
 async def verify(token: str):

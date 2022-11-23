@@ -63,7 +63,9 @@ class BlogPost(BlogPostBase):
 class UserBase(BaseModel):
     username: str
     email: str
-    hashed_password: str
+    password: str
+    class Config:
+        orm_mode = True
 
 class UserCreate(UserBase):
     pass

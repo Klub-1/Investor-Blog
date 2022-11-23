@@ -23,9 +23,17 @@ export const AccountView = observer(() => {
         (response) => {
           if (response.status === 409) {
             fetch(
-              `http://localhost:8000/register?email=${email}&username=${username}&password=${password}`,
+              `http://localhost:8000/register`,
               {
                 method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  email: email,
+                  username: username,
+                  password: password,
+                }),
               }
             )
               .then((response) => response.text())
@@ -40,9 +48,19 @@ export const AccountView = observer(() => {
         }
       );
     } else if (showLogin) {
-      fetch(`http://localhost:8000/login?email=${email}&password=${password}`, {
-        method: "GET",
-      })
+      fetch(
+        `http://localhost:8000/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        }
+      )
         .then((response) => response.text())
         .then(
           (data) =>
