@@ -51,7 +51,6 @@ def get_db():
 
 @app.get("/")
 def read_root():
-    print("test")
     return {"Hello": "Investor World!"}
 
 
@@ -146,17 +145,11 @@ async def login():
 async def redirect(ticket: str):
     body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://localhost:8000/campusnet/redirect&ticket="+ticket
     body = requests.get(url=body)
-    print(body.content.decode("utf-8"))
     element = BeautifulSoup(body.content.decode("utf-8"))
-    # todo CHANGE SECRET KEY 30 min expiration
-    token = jwt.encode({'id': element.find("cas:user").text, "exp": datetime.now(
-        tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
-    #token = jwt.encode({'id': element.find("cas:user").text,'mail' : element.find("mail").text , 'name': element.find("gn").text , 'lastname': element.find("sn").text ,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=30)}, 'secret', algorithm='HS256')
-    # if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
-    #    crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
-
     if(crud.get_user_by_username(db=SessionLocal(), username = element.find("cas:user").text) == None):
-        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text, password = ""))
+        db_user = crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text, password = ""))
+        token = jwt.encode({'id': db_user.id, "exp": datetime.now(
+        tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
     return RedirectResponse(url="http://localhost:3000?token="+token)
 
 #body with email username and password
@@ -165,22 +158,21 @@ async def register(user: schemas.UserBase, db: Session = Depends(get_db)):
     if(crud.get_user(db=SessionLocal(), user_id = user.email) == None):
         mySalt = bcrypt.gensalt()
         hashed = bcrypt.hashpw(user.password.encode('utf-8'),mySalt)
-        print(hashed)
-        crud.create_user(db=SessionLocal(), user=user)
-        print("here")
-        token = jwt.encode({'id': user.username, "exp": datetime.now(
+        user.password = hashed
+        db_user = crud.create_user(db=SessionLocal(), user=user)
+        token = jwt.encode({'id': db_user.id, "exp": datetime.now(
         tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
         return token
     else:
         raise HTTPException(status_code=400, detail="Email already registered") 
 
 @app.post("/login")
-async def login(email: str, password: str):
+async def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db=SessionLocal(), email = user.email)
     if(user == None):
         raise HTTPException(status_code=400, detail="User not found")
-    if((bcrypt.checkpw(user.password.encode('utf-8'), db_user.password.encode('utf-8')))):
-        return jwt.encode({'id': user.username, "exp": datetime.now(
+    if((bcrypt.checkpw(user.password.encode('utf-8'), db_user.password))):
+        return jwt.encode({'id': db_user.id, "exp": datetime.now(
         tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
 
 
@@ -193,7 +185,6 @@ async def checkifuserexists(email: str):
 
 @app.get("/user/username")
 async def verify(token: str):
-    print("verify " + token)
     #if "" in token remove it
     if(token[0] == '"'):
         token = token[1:]
@@ -202,8 +193,7 @@ async def verify(token: str):
     try:
         # todo CHANGE SECRET KEY
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-        print(decoded)
-        return {"username": crud.get_user_by_username(db=SessionLocal(), username = decoded["id"]).username, "status": "valid"}
+        return {"username": crud.get_user(db=SessionLocal(), user_id = decoded["id"]).username, "status": "valid"}
     except jwt.ExpiredSignatureError:
         return {"username": "", "status": "Token expired"}
     except jwt.InvalidTokenError:
@@ -211,7 +201,6 @@ async def verify(token: str):
 
 @app.get("/verify")
 async def verify(token: str):
-    print("verify " + token)
     #if "" in token remove it
     if(token[0] == '"'):
         token = token[1:]

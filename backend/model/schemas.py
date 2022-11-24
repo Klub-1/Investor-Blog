@@ -60,6 +60,12 @@ class BlogPost(BlogPostBase):
     class Config:
         orm_mode = True
 
+class UserLogin(BaseModel):
+    email: str
+    password: str
+    class Config:
+        orm_mode = True
+
 class UserBase(BaseModel):
     username: str
     email: str
