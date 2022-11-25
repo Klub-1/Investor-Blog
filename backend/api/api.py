@@ -180,13 +180,13 @@ def create_blogpost_comment(
 
 @app.get("/campusnet/login")
 async def login():
-    URI = "https://auth.dtu.dk/dtu/?service=http://localhost:8000/campusnet/redirect"
+    URI = "https://auth.dtu.dk/dtu/?service=https://investorblog.diplomportal.dk/api/campusnet/redirect"
     return RedirectResponse(url=URI)
 
 
 @app.get("/campusnet/redirect")
 async def redirect(ticket: str):
-    body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://localhost:8000/campusnet/redirect&ticket="+ticket
+    body = "https://auth.dtu.dk/dtu/servicevalidate?service=https://investorblog.diplomportal.dk/api/campusnet/redirect&ticket="+ticket
     body = requests.get(url=body)
     element = BeautifulSoup(body.content.decode("utf-8"))
     if(crud.get_user_by_username(db=SessionLocal(), username = element.find("cas:user").text) == None):

@@ -26,7 +26,7 @@ export const AccountView = observer(() => {
     } else if (showLogin) {
       await AuthStore.login(email, password);
     } else {
-      window.location.href = "http://localhost:8000/campusnet/login";
+      window.location.href = "https://investorblog.diplomportal.dk/api/campusnet/login";
       return null;
     }
   };
