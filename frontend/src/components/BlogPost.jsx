@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import AuthStore from "../stores/AuthStore";
 
 import {
   AiFillLike,
@@ -16,6 +17,10 @@ import { MdOutlineAddComment, MdAddComment } from "react-icons/md";
 const BlogPost = observer(({ post }) => {
   const [addComment, setAddComment] = useState(false);
 
+  useEffect(() => {
+    AuthStore.checkAuth();
+  }, []);
+
   return (
     <div className="h-fit w-full  shadow rounded-lg bg-white mb-5 md:mb-10">
       <div className="p-5">
@@ -27,56 +32,58 @@ const BlogPost = observer(({ post }) => {
             </h1>
           </div>
 
-          <div className="flex gap-3 md:gap-4 pt-4 md:pt-0 justify-center">
-            <div className="justify-center content-center text-center">
-              <button
-                className="text-2xl md:text-5xl"
-                onClick={() => {
-                  post.registerInteraction(0);
-                }}
-              >
-                {post.userLiked() ? (
-                  <AiFillLike className="text-[#C5C8D9]" />
-                ) : (
-                  <AiOutlineLike className="hover:text-[#C5C8D9]" />
-                )}
-              </button>
+          {AuthStore.isAuth ? (
+            <div className="flex gap-3 md:gap-4 pt-4 md:pt-0 justify-center">
+              <div className="justify-center content-center text-center">
+                <button
+                  className="text-2xl md:text-5xl"
+                  onClick={() => {
+                    post.registerInteraction(0);
+                  }}
+                >
+                  {post.userLiked() ? (
+                    <AiFillLike className="text-[#C5C8D9]" />
+                  ) : (
+                    <AiOutlineLike className="hover:text-[#C5C8D9]" />
+                  )}
+                </button>
 
-              <h1>{post.getLikeCount()}</h1>
+                <h1>{post.getLikeCount()}</h1>
+              </div>
+
+              <div className="justify-center content-center text-center">
+                <button
+                  className="text-2xl md:text-5xl"
+                  onClick={() => {
+                    post.registerInteraction(1);
+                  }}
+                >
+                  {post.userDisliked() ? (
+                    <AiFillDislike className="text-[#C5C8D9]" />
+                  ) : (
+                    <AiOutlineDislike className="hover:text-[#C5C8D9]" />
+                  )}
+                </button>
+
+                <h1>{post.getDislikeCount()}</h1>
+              </div>
+
+              <div className="justify-center content-center text-center">
+                <button
+                  className="text-2xl md:text-5xl"
+                  onClick={() => setAddComment(!addComment)}
+                >
+                  {addComment ? (
+                    <MdAddComment className="text-[#7382D9]" />
+                  ) : (
+                    <MdOutlineAddComment className="hover:text-[#7382D9]" />
+                  )}
+                </button>
+
+                <h1>{post.commentsCount()}</h1>
+              </div>
             </div>
-
-            <div className="justify-center content-center text-center">
-              <button
-                className="text-2xl md:text-5xl"
-                onClick={() => {
-                  post.registerInteraction(1);
-                }}
-              >
-                {post.userDisliked() ? (
-                  <AiFillDislike className="text-[#C5C8D9]" />
-                ) : (
-                  <AiOutlineDislike className="hover:text-[#C5C8D9]" />
-                )}
-              </button>
-
-              <h1>{post.getDislikeCount()}</h1>
-            </div>
-
-            <div className="justify-center content-center text-center">
-              <button
-                className="text-2xl md:text-5xl"
-                onClick={() => setAddComment(!addComment)}
-              >
-                {addComment ? (
-                  <MdAddComment className="text-[#7382D9]" />
-                ) : (
-                  <MdOutlineAddComment className="hover:text-[#7382D9]" />
-                )}
-              </button>
-
-              <h1>{post.commentsCount()}</h1>
-            </div>
-          </div>
+          ) : null}
         </div>
 
         <div className="pb-5 text-2xl">{post.content}</div>

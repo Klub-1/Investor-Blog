@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { API } from "../Api/api";
-import { AuthHandler } from "../Auth/AuthHandler";
+import AuthStore from "../stores/AuthStore";
 import { Comment } from "./Comment";
 import { Interaction } from "./Interaction";
 
@@ -13,7 +13,6 @@ export class BlogPost {
   comments = [];
   interactions = [];
 
-  auth = new AuthHandler();
   api = new API();
 
   // USER
@@ -30,16 +29,16 @@ export class BlogPost {
   }
 
   authorIsUser() {
-    const user_id = this.auth.getUserName();
+    const user_id = AuthStore.getUserName();
     return user_id === this.user_id;
   }
 
   // COMMENTS
 
-  createComment(comment) {
-    const user_id = this.auth.getUserName();
-    this.api.createComment(user_id, this.id, comment);
-    const newComment = new Comment(-1, user_id, this.id, comment);
+  async createComment(comment) {
+    const user_id = AuthStore.getUserName();
+    const id = await this.api.createComment(user_id, this.id, comment);
+    const newComment = new Comment(id, user_id, this.id, comment);
     console.table(newComment.user_id);
     this.comments.push(newComment);
   }
@@ -64,20 +63,25 @@ export class BlogPost {
     return count;
   }
 
-  createInteraction(interaction) {
-    this.api.postInteraction(interaction);
+  async createInteraction(interaction) {
+    const id = await this.api.postInteraction(interaction);
+    interaction.id = id;
     this.interactions.push(interaction);
   }
 
-  removeInteraction(interaction) {
-    this.api.deleteInteraction(interaction);
+  async removeInteraction(interaction) {
+    await this.api.deleteInteraction(interaction.user_name, this.id);
     this.interactions = this.interactions.filter(
       (i) => i.user_id !== interaction.user_id
     );
   }
 
-  updateInteraction(interaction) {
-    this.api.putInteraction(interaction);
+  async updateInteraction(interaction) {
+    await this.api.putInteraction(
+      interaction.user_name,
+      this.id,
+      interaction.type
+    );
     this.interactions.forEach((i) => {
       if (interaction.user_id === i.user_id) {
         i.update(interaction.type);
@@ -93,7 +97,8 @@ export class BlogPost {
       interactionType = 1;
     }
 
-    const user_id = this.auth.getUserName();
+    AuthStore.getUserName();
+    const user_id = AuthStore.user_name;
 
     const interaction = new Interaction(-1, user_id, this.id, type);
 
