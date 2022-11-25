@@ -35,7 +35,6 @@ class AuthStore {
   }
   async getUserID() {
     const id = await this.api.getUserID();
-    this.user_id = id.id;
     return id.id;
   }
 
