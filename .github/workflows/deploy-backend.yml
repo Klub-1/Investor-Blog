@@ -51,4 +51,4 @@ jobs:
           directory: ./ansible-DevOps
           # Optional, SSH private key
           key: ${{secrets.SSH_PRIVATE_KEY}}
-          options: -u gruppe11 -e "grafana_user=${{secrets.grafana_user}}" -e "grafana_password=${{secrets.grafana_password}}"
+          options: -u gruppe11 -e "grafana_user=${{secrets.grafana_user}}" -e "grafana_password=${{secrets.grafana_password}}" -e "SENTRY_PATH=${{secrets.SENTRY_PATH}}"
