@@ -1,4 +1,5 @@
-import {action, makeObservable, observable, computed} from "mobx";
+import { action, makeObservable, observable, computed } from "mobx";
+import { Stock } from "../models/Stock";
 import { API } from "../Api/api";
 
 class StocksStore {
@@ -6,13 +7,29 @@ class StocksStore {
   filter = "";
   api = new API();
 
-  get filteredStocks() {
-    return this.stocks.filter((stocks) => {
+    get filteredStocks() {
+      
+    const filtered = this.stocks.filter((stocks) => {
       return (
         stocks.stockname.toLowerCase().includes(this.filter.toLowerCase())
       );
     });
-  }
+        
+        if (filtered.length === 0) {
+            // TODO: MAKE API CALL
+            // INSERT INTO stocks
+        }
+
+        return filtered;
+    }
+    
+    async syncStocks() {
+        const data = await this.api.getStocks();
+
+        this.stocks = data.map((stock) => {
+            return new Stock(stock.stock_name, stock.ppo)
+    });        
+    }
 
  
   constructor() {

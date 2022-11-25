@@ -6,7 +6,7 @@ import StocksStore from "../stores/StocksStore";
 export const StocksView = () => {  
 
   useEffect(() => {
-    StocksStore.getStocks();
+    StocksStore.syncStocks();
   });
 
   return (

@@ -6,13 +6,19 @@ export class Stock {
   ppo = 0.0; //float
   isFavorite = false;
 
-  api = new API();
+    api = new API();
+    
+    getFavorite() {
+        //TODO: CHECK IF STOCK EXISTS IN USER DB TABLE
+        const isFav = false; // TODO: MAKE API CALL
+        this.isFavorite = isFav;
+    }
 
-  constructor(stockname, ppo, isFavorite) {
+  constructor(stockname, ppo) {
       makeAutoObservable(this);
       this.stock_name = stockname;
-    this.ppo = ppo;
-    this.isFavorite = isFavorite;
+      this.ppo = ppo;
+      this.getFavorite();
   }
   
   toggleFavorite(){
