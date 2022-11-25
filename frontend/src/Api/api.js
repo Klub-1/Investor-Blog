@@ -127,6 +127,19 @@ export class API {
     return token;
   }
 
+  async getStocks(){
+
+    const res = await fetch("http://localhost:8000/stocks/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const stocks = await res.json();
+    return stocks
+  }
+  
   async login(email, password) {
     const res = await fetch(
       `http://localhost:8000/login`,

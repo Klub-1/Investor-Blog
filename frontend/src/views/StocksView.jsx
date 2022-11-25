@@ -1,33 +1,13 @@
 import React from "react";
-import { useState, useEffect } from 'react';
-import { StocksData } from "../Data/TestData/StocksData";
+import { useEffect } from 'react';
 import { StockItem } from "../components/StockItem";
+import StocksStore from "../stores/StocksStore";
 
 export const StocksView = () => {  
-  const [stocks, setStocks] = useState([]);
 
-
-function getStocks(){
-
-  fetch("http://localhost:8000/stocks/", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => {
-      console.log(response);
-      return response.json();
-    })
-    .then((data) => {
-      setStocks(data);
-    });
-}
-
-useEffect(() => {
-  getStocks();
-}, []);
-
+  useEffect(() => {
+    StocksStore.getStocks();
+  });
 
   return (
     <div>
@@ -50,7 +30,7 @@ useEffect(() => {
       
       <div className="grid justify-center grid-cols-5 overflow-y-scroll">
       
-        {stocks.map((stock) => (
+        {StocksStore.filteredStocks.map((stock) => (
           <StockItem stock={stock} />
         ))}
     </div>

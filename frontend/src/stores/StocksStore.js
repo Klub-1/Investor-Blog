@@ -1,4 +1,4 @@
-import { action, makeObservable, observable } from "mobx";
+import {action, makeObservable, observable, computed} from "mobx";
 import { API } from "../Api/api";
 
 class StocksStore {
@@ -24,4 +24,6 @@ class StocksStore {
     });
     }
 }
+
+export default new StocksStore();
 
