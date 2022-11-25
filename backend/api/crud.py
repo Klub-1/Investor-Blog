@@ -32,6 +32,7 @@ def create_user(db: Session, user: schemas.UserCreate):
 def get_blogposts(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.BlogPost).offset(skip).limit(limit).all()
 
+
 def create_user_blogpost(db: Session, blogpost: schemas.BlogPostCreate, user_id: int):
     db_item = models.BlogPost(**blogpost.dict(), user_id=user_id)
     db.add(db_item)
@@ -39,12 +40,22 @@ def create_user_blogpost(db: Session, blogpost: schemas.BlogPostCreate, user_id:
     db.refresh(db_item)
     return db_item
 
+
+
+def delete_user_blogpost(db: Session, user_id: int, blog_post_id: int):
+    db.query(models.BlogPost).filter(models.BlogPost.user_id == user_id).filter(
+        models.BlogPost.id == blog_post_id).delete()
+    db.commit()
+    return {"message": "Deleted"}
+
 def create_interaction(db: Session, interaction: schemas.Interactions, user_id: int, blog_post_id: int):
-    db_item = models.Interactions(**interaction.dict(), user_id=user_id, blog_post_id=blog_post_id)
+    db_item = models.Interactions(
+        **interaction.dict(), user_id=user_id, blog_post_id=blog_post_id)
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
     return db_item
+
 
 
 def update_interaction(db: Session, interaction: schemas.InteractionsUpdate, user_id: int, blog_post_id: int):
@@ -55,6 +66,7 @@ def update_interaction(db: Session, interaction: schemas.InteractionsUpdate, use
     db.commit()
     db.refresh(db_item)
     return db_item
+
     
 def delete_interaction(db: Session, user_id: int, blog_post_id: int):
     db.query(models.Interactions).filter(models.Interactions.user_id==user_id).filter(models.Interactions.blog_post_id==blog_post_id).delete()
