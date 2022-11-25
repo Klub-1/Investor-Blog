@@ -193,7 +193,7 @@ async def redirect(ticket: str):
         db_user = crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text, password = ""))
         token = jwt.encode({'id': db_user.id, "exp": datetime.now(
         tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
-    return RedirectResponse(url="http://localhost:3000?token="+token)
+    return RedirectResponse(url="https://investorblog.diplomportal.dk?token="+token)
 
 #body with email username and password
 @app.post("/register")
