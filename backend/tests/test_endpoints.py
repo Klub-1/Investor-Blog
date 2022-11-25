@@ -44,12 +44,6 @@ class TestAPI(unittest.TestCase):
         # Send request to create post
         request_url = self.url + f'users/{user_id}/blogposts/'
         res = self.api_session.post(request_url, json=new_post)
-
-        print("-"*60)
-        print("Creating with user id", user_id)
-        print(res.json())
-        print("-"*60)
-
         blogpost_id = res.json()['id']
 
         self.assertEqual(res.status_code, 201)
@@ -60,20 +54,21 @@ class TestAPI(unittest.TestCase):
             f'users/{user_id}/blogpost/{blogpost_id}/'
 
         res = self.api_session.delete(request_url)
-
-        print("-"*60)
-        print("delete post with id", blogpost_id)
-        print(res.json())
-        print("-"*60)
-
         status_message = res.json()['status']
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(status_message, "Blogpost deleted")
 
         # ------- Delete User Part -------
-        # TODO: Implement delete user
-        pass
+
+        request_url = self.url + \
+            f'users/{user_id}/'
+
+        res = self.api_session.delete(request_url)
+        status_message = res.json()['status']
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(status_message, "User deleted")
 
     def tearDown(self):
         self.api_session.close()
