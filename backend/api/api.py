@@ -104,6 +104,13 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 # END COPIED FROM DOCUMENTATION
 # ________________________________________________
 
+@app.delete("/users/{user_id}")
+def read_user(user_id: int, db: Session = Depends(get_db)):
+    status = crud.delete_user(db, user_id=user_id)
+    if status is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"status": "User deleted"}
+
 
 @app.post("/users/{user_id}/blogposts/", response_model=schemas.BlogPost, status_code=201)
 def create_blogpost_for_user(
