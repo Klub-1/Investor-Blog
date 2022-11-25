@@ -42,7 +42,8 @@ sentry_sdk.init(
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(openapi_prefix="/api")
+# app = FastAPI(openapi_prefix="/api")
+app = FastAPI()
 
 origins = [
     "*",

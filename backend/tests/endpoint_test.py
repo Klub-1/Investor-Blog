@@ -12,13 +12,13 @@ class TestAPI(unittest.TestCase):
     def setUp(self):
         self.url = 'http://host.docker.internal:8000/'
         self.api_session = requests.Session()
+        self.random_user = randint(100000, 999999)
 
     def test_create_user_and_delete(self):
-        random_user = randint(100000, 999999)
         new_user = {
-            "id": f"s{random_user}",
-            "username": f"test_user_{random_user}",
-            "email": f"s{random_user}@student.dtu.dk",
+            "id": f"s{self.random_user}",
+            "username": f"test_user_{self.random_user}",
+            "email": f"s{self.random_user}@student.dtu.dk",
             "blogposts": []
         }
 
