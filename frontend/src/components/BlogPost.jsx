@@ -28,7 +28,8 @@ const BlogPost = observer(({ post }) => {
           <div>
             <h1 className="font-bold text-2xl md:text-4xl">{post.title}</h1>
             <h1 className="text-base">
-              Slået op af {post.authorIsUser() ? "dig" : post.user_id}
+              Slået op af{" "}
+              {AuthStore.user.id === post.user_id ? "dig" : post.user_id}
             </h1>
           </div>
 

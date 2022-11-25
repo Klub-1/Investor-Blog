@@ -59,7 +59,10 @@ class BlogPost(Base):
     
     tags = Column(String, index=True)
     
+    
+    
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"))
+    username = Column(String, ForeignKey("users.username", ondelete="CASCADE", onupdate="CASCADE"))
     user = relationship("User", back_populates="blogposts", )
     
     comments = relationship("Comments", back_populates="blogpost")

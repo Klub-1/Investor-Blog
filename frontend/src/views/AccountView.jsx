@@ -4,9 +4,9 @@ import React from "react";
 import { useState, useEffect } from "react";
 
 import BlogPost from "../components/BlogPost";
-import BlogPostStore from "../stores/BlogPostStore";
 
 import AuthStore from "../stores/AuthStore";
+import { Constants } from "../Util/Constants";
 
 export const AccountView = observer(() => {
   const [showLogin, setShowLogin] = useState(false);
@@ -16,8 +16,8 @@ export const AccountView = observer(() => {
   const [email, setEmail] = useState();
 
   useEffect(() => {
-    AuthStore.getUserName();
-  });
+    AuthStore.checkAuth();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,12 +26,12 @@ export const AccountView = observer(() => {
     } else if (showLogin) {
       await AuthStore.login(email, password);
     } else {
-      window.location.href = "https://investorblog.diplomportal.dk/api/campusnet/login";
+      window.location.href = Constants.BACKEND_URL + "/campusnet/login";
       return null;
     }
   };
 
-  if (!localStorage.getItem("portal-jwt-Token") && !AuthStore.username) {
+  if (!localStorage.getItem("portal-jwt-Token") && !AuthStore.isAuth) {
     return (
       <div className="h-[400px] w-full shadow rounded-lg bg-white mb-5 md:mb-10">
         <div className="h-4/5 w-full grid">
@@ -108,19 +108,20 @@ export const AccountView = observer(() => {
     );
   } else {
     return (
-      <div className="h-[400px] w-full shadow rounded-lg bg-white mb-5 md:mb-10">
-        <div className="h-4/5 flex justify-center items-center">
-          <h1 className="h-max w-full text-center font-semibold text-4xl content-center md:text-8xl">
-            your user = {AuthStore.user_name}
-          </h1>
+      <div>
+        <div className="h-[400px] w-full shadow rounded-lg bg-white mb-5 md:mb-10">
+          <div className="h-4/5 flex justify-center items-center">
+            <h1 className="h-max w-full text-center font-semibold text-4xl content-center md:text-8xl">
+              your user = {AuthStore.user.username}
+            </h1>
+          </div>
         </div>
         <div className="flex flex-col items-center justify-center overflow-y-scroll">
-      {BlogPostStore.blogposts.map((post) => {if(post.user_name === AuthStore.user_name)return(
-         <BlogPost key={post.id + Math.random()} post={post} />
-      )})}
-    </div>
+          {AuthStore.user.blogposts.map((post) => {
+            return <BlogPost key={post.id} post={post} />;
+          })}
+        </div>
       </div>
-
     );
   }
 });

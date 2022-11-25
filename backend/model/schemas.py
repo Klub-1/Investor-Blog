@@ -54,6 +54,7 @@ class BlogPostCreate(BlogPostBase):
 class BlogPost(BlogPostBase):
     id: int
     user_id: int
+    username: str
     comments: list[Comments] = []
     interactions: list[Interactions] = []
 
@@ -82,6 +83,17 @@ class User(UserBase):
     blogposts: list[BlogPost] = []
     comments: list[Comments] = []
     interactions: list[Interactions] = []
+
+    class Config:
+        orm_mode = True
+        
+class UserInformation(BaseModel):
+    id: int
+    username: str
+    blogposts: list[BlogPost] = []
+    comments: list[Comments] = []
+    interactions: list[Interactions] = []
+    email: str
 
     class Config:
         orm_mode = True

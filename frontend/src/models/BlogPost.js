@@ -7,6 +7,7 @@ import { Interaction } from "./Interaction";
 export class BlogPost {
   id = 0;
   user_id = "";
+  username = "";
   title = "";
   content = "";
   tags = "";
@@ -18,28 +19,27 @@ export class BlogPost {
   // USER
   userLiked() {
     return this.interactions.some((interaction) => {
-      return interaction.type === 0 && interaction.user_id === this.user_id;
+      return (
+        interaction.type === 0 && interaction.user_id === AuthStore.user.id
+      );
     });
   }
 
   userDisliked() {
     return this.interactions.some((interaction) => {
-      return interaction.type === 1 && interaction.user_id === this.user_id;
+      return (
+        interaction.type === 1 && interaction.user_id === AuthStore.user.id
+      );
     });
-  }
-
-  authorIsUser() {
-    const user_id = AuthStore.getUserName();
-    return user_id === this.user_id;
   }
 
   // COMMENTS
 
   async createComment(comment) {
-    const user_id = AuthStore.getUserName();
+    await AuthStore.checkAuth();
+    const user_id = AuthStore.user.id;
     const id = await this.api.createComment(user_id, this.id, comment);
     const newComment = new Comment(id, user_id, this.id, comment);
-    console.table(newComment.user_id);
     this.comments.push(newComment);
   }
 
@@ -89,16 +89,15 @@ export class BlogPost {
     });
   }
 
-  registerInteraction(type) {
+  async registerInteraction(type) {
     let interactionType = -1;
     if (this.userLiked()) {
       interactionType = 0;
     } else if (this.userDisliked()) {
       interactionType = 1;
     }
-
-    AuthStore.getUserName();
-    const user_id = AuthStore.user_name;
+    await AuthStore.checkAuth();
+    const user_id = AuthStore.user.id;
 
     const interaction = new Interaction(-1, user_id, this.id, type);
 
@@ -114,14 +113,20 @@ export class BlogPost {
     }
   }
 
-  constructor(id, user_id, title, content, tags, comments, interactions) {
+  constructor(
+    id,
+    user_id,
+    username,
+    title,
+    content,
+    tags,
+    comments,
+    interactions
+  ) {
     makeAutoObservable(this);
-    if (id < 0) {
-      this.id = Math.random() * Math.PI * 10;
-    } else {
-      this.id = id;
-    }
+    this.id = id;
     this.user_id = user_id;
+    this.username = username;
     this.title = title;
     this.content = content;
     this.tags = tags;
