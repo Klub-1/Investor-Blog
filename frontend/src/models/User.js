@@ -1,5 +1,5 @@
+
 import { makeAutoObservable } from "mobx";
-import AuthStore from "../stores/AuthStore";
 
 export class Comment {
   id = 0;
@@ -8,7 +8,7 @@ export class Comment {
   comment = "";
 
   async isCommentFromUser() {
-    const user_id = AuthStore.user_name;
+    const user_id = await this.auth.getUserName();
     return user_id === this.user_id;
   }
 

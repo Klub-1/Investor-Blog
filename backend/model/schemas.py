@@ -20,7 +20,7 @@ class InteractionsUpdate(InteractionsBase):
 
 class Interactions(InteractionsBase):
     id: int
-    user_id: str
+    user_id: int
     blog_post_id: int
 
     class Config:
@@ -35,7 +35,7 @@ class CommentsCreate(CommentsBase):
 
 class Comments(CommentsBase):
     id: int
-    user_id: str
+    user_id: int
     blog_post_id: int
 
     class Config:
@@ -53,24 +53,32 @@ class BlogPostCreate(BlogPostBase):
 
 class BlogPost(BlogPostBase):
     id: int
-    user_id: str
+    user_id: int
     comments: list[Comments] = []
     interactions: list[Interactions] = []
 
     class Config:
         orm_mode = True
 
+class UserLogin(BaseModel):
+    email: str
+    password: str
+    class Config:
+        orm_mode = True
+
 class UserBase(BaseModel):
-    id: str
     username: str
     email: str
+    password: str
+    class Config:
+        orm_mode = True
 
 class UserCreate(UserBase):
     pass
 
 
 class User(UserBase):
-    id: str
+    id: int
     blogposts: list[BlogPost] = []
     comments: list[Comments] = []
     interactions: list[Interactions] = []

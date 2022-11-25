@@ -1,40 +1,37 @@
+import { observer } from "mobx-react-lite";
 import React from "react";
-import { useEffect, useState } from "react";
 
-function About() {
-  // 👇️ using window.location.href 👇️
-  window.location.href = "https://investorblog.diplomportal.dk/api/login";
-  return null;
-}
+import { useState, useEffect } from "react";
 
-export const AccountView = () => {
-  const [users, setUsers] = useState([]);
+import BlogPost from "../components/BlogPost";
+import BlogPostStore from "../stores/BlogPostStore";
+
+import AuthStore from "../stores/AuthStore";
+
+export const AccountView = observer(() => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
-
-  const fetchData = () => {
-    fetch(
-      "https://investorblog.diplomportal.dk/api/verify?token=" +
-        localStorage.getItem("portal-jwt-Token")
-    )
-      .then((response) => {
-        console.log(response);
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setUsers(data);
-      });
-  };
+  const [username, setUserName] = useState();
+  const [password, setPassword] = useState();
+  const [email, setEmail] = useState();
 
   useEffect(() => {
-    fetchData();
-  }, []);
-  if (
-    !localStorage.getItem("portal-jwt-Token") ||
-    users === "Token expired" ||
-    users === "Invalid token"
-  ) {
+    AuthStore.getUserName();
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (showRegister) {
+      await AuthStore.register(username, password, email);
+    } else if (showLogin) {
+      await AuthStore.login(email, password);
+    } else {
+      window.location.href = "http://localhost:8000/campusnet/login";
+      return null;
+    }
+  };
+
+  if (!localStorage.getItem("portal-jwt-Token") && !AuthStore.username) {
     return (
       <div className="h-[400px] w-full shadow rounded-lg bg-white mb-5 md:mb-10">
         <div className="h-4/5 w-full grid">
@@ -47,6 +44,7 @@ export const AccountView = () => {
                 <input
                   type="Username"
                   class="h-fit w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm p-2.5 mt-3 rounded-lg"
+                  onChange={(e) => setUserName(e.target.value)}
                   placeholder="Brugernavn"
                 />
               ) : null}
@@ -54,12 +52,14 @@ export const AccountView = () => {
               <input
                 type="Email"
                 class="h-fit w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm p-2.5 mt-3 rounded-lg"
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
               />
 
               <input
                 type="Password"
                 class="h-fit w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm p-2.5 mt-3 rounded-lg"
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
               />
             </div>
@@ -95,7 +95,7 @@ export const AccountView = () => {
 
           <button
             className="w-full h-full bg-[#7382D9] rounded-br-lg text-white p-2 font-extrabold text-xl"
-            onClick={About}
+            onClick={handleSubmit}
           >
             {showLogin
               ? showRegister
@@ -111,10 +111,16 @@ export const AccountView = () => {
       <div className="h-[400px] w-full shadow rounded-lg bg-white mb-5 md:mb-10">
         <div className="h-4/5 flex justify-center items-center">
           <h1 className="h-max w-full text-center font-semibold text-4xl content-center md:text-8xl">
-            your user = {users.id}
+            your user = {AuthStore.user_name}
           </h1>
         </div>
+        <div className="flex flex-col items-center justify-center overflow-y-scroll">
+      {BlogPostStore.blogposts.map((post) => {if(post.user_name === AuthStore.user_name)return(
+         <BlogPost key={post.id + Math.random()} post={post} />
+      )})}
+    </div>
       </div>
+
     );
   }
-};
+});
