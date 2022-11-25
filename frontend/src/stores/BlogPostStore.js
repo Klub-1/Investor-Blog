@@ -24,7 +24,7 @@ class BlogPostStore {
   }
 
   async createBlogPost(title, content, tags) {
-    const user_id = await AuthStore.getUserName();
+    const user_id = await AuthStore.getUserID();
 
     const data = await this.api.createBlogPost(user_id, title, content, tags);
 

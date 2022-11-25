@@ -33,6 +33,10 @@ class AuthStore {
       ;
     }
   }
+  async getUserID() {
+    const id = await this.api.getUserID();
+    return id.id;
+  }
 
 
 

@@ -108,6 +108,17 @@ export class API {
     return json;
   }
 
+  async getUserID() {
+    const res = await fetch(
+      this.url +
+
+        "/user/id?token=" +
+        localStorage.getItem("portal-jwt-Token")
+    );
+    const json = await res.json();
+    return json;
+  }
+
   async registerUser(email, username, password) {
     const res = await fetch(
       `https://investorblog.diplomportal.dk/api/register`,
