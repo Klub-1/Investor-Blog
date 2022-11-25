@@ -1,0 +1,23 @@
+---
+- name: copy metrics files
+  copy:
+    src: metrics
+    dest: /
+    directory_mode: yes
+    owner: root
+    group: root
+    mode: 0766
+
+- name: run prometheus container
+  ansible.builtin.docker_container:
+    name: prometheus
+    image: prom/prometheus:latest
+    state: started
+    restart_policy: always
+    volumes:
+      - /metrics/prometheus.yml:/etc/prometheus/prometheus.yml
+    published_ports:
+      - 9090:9090
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+  tags: notest

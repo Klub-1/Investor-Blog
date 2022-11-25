@@ -1,0 +1,14 @@
+---
+- name: run docker container backend
+  ansible.builtin.docker_container:
+    name: backend
+    image: s205424/backend-devops:latest
+    pull: true
+    state: started
+    restart_policy: always
+    published_ports:
+      - 8000:8000
+    env:
+      SENTRY_PATH: "{{SENTRY_PATH}}"
+    command: uvicorn backend.api.api:app --reload --host 0.0.0.0 --port 8000
+  tags: notest
