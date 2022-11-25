@@ -5,4 +5,5 @@ requests==2.26.0
 pyjwt==2.3.0
 beautifulsoup4
 prometheus-fastapi-instrumentator==5.9.1
-bcrypt==3.2.0
+sentry-sdk[fastapi]==1.11.0
+

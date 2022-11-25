@@ -1,3 +1,4 @@
+from os import getenv
 from typing import Union
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -13,10 +14,32 @@ from bs4 import BeautifulSoup
 
 from prometheus_fastapi_instrumentator import Instrumentator
 
+import logging
+import sentry_sdk
+from sentry_sdk.integrations.logging import LoggingIntegration
+
+
 from backend.api import crud
 from backend.model import models, schemas
 from backend.database.database import SessionLocal, engine
 
+# Sentry loggin code sourced from the sentry docs:
+# https://docs.sentry.io/platforms/python/guides/logging/
+
+# All of this is already happening by default!
+sentry_logging = LoggingIntegration(
+    level=logging.INFO,        # Capture info and above as breadcrumbs
+    event_level=logging.ERROR  # Send errors as events
+)
+sentry_sdk.init(
+    dsn=getenv("SENTRY_PATH"),
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production,
+    traces_sample_rate=1.0,
+)
+# ------------------------------------------------------
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -51,6 +74,7 @@ def get_db():
 
 @app.get("/")
 def read_root():
+    logging.info("Hello world log")
     return {"Hello": "Investor World!"}
 
 
@@ -58,6 +82,7 @@ def read_root():
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
+        logging.warning("Tried to create a user that already exists")
         raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_user(db=db, user=user)
 
@@ -72,6 +97,7 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id=user_id)
     if db_user is None:
+        logging.warning("Get call for user that does not exist")
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
@@ -214,5 +240,12 @@ async def verify(token: str):
         return "Token expired"
     except jwt.InvalidTokenError:
         return "Invalid token"
+
+@app.get("/test_logging")
+def test_logging():
+    logging.info("Running logger test:")
+    division_error = 1/ 0
+    return {"test": "log"}
+
 
 Instrumentator().instrument(app).expose(app)
