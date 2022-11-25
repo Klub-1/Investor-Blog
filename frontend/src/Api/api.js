@@ -1,5 +1,5 @@
 export class API {
-  url = "http://localhost:8000";
+  url = "https://investorblog.diplomportal.dk/api";
 
   async getBlogPosts() {
     const res = await fetch(this.url + "/blogposts/", {
@@ -110,7 +110,7 @@ export class API {
 
   async registerUser(email, username, password) {
     const res = await fetch(
-      `http://localhost:8000/register`,
+      `https://investorblog.diplomportal.dk/api/register`,
       {
         method: "POST",
         headers: {
@@ -129,7 +129,7 @@ export class API {
 
   async login(email, password) {
     const res = await fetch(
-      `http://localhost:8000/login`,
+      `https://investorblog.diplomportal.dk/api/login`,
       {
         method: "POST",
         headers: {
