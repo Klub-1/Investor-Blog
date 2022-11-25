@@ -98,4 +98,63 @@ export class API {
     const json = await res.json();
     return json;
   }
+
+  async getUserNameById(user_id) {
+    const res = await fetch(
+      this.url +
+        "/user/"+user_id
+    );
+    const json = await res.json();
+    return json;
+  }
+
+  async registerUser(email, username, password) {
+    const res = await fetch(
+      `http://localhost:8000/register`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          username: username,
+          password: password,
+        }),
+      }
+    )
+    const token = await res.text();
+    return token;
+  }
+
+  async login(email, password) {
+    const res = await fetch(
+      `http://localhost:8000/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      }
+    )
+    const token = await res.text();
+    return token;
+  }
+
+  async checkIfUserExists(email) {
+    const res = await fetch(
+      this.url +
+        "/checkifuserexists?email=" + email
+    );
+    if(res.status === 200){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
 }

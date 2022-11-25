@@ -3,6 +3,9 @@ import React from "react";
 
 import { useState, useEffect } from "react";
 
+import BlogPost from "../components/BlogPost";
+import BlogPostStore from "../stores/BlogPostStore";
+
 import AuthStore from "../stores/AuthStore";
 
 export const AccountView = observer(() => {
@@ -19,53 +22,9 @@ export const AccountView = observer(() => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (showRegister) {
-      fetch(`http://localhost:8000/checkifuserexists?email=${email}`).then(
-        (response) => {
-          if (response.status === 409) {
-            fetch(
-              `http://localhost:8000/register`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  email: email,
-                  username: username,
-                  password: password,
-                }),
-              }
-            )
-              .then((response) => response.text())
-              .then(
-                (data) =>
-                  (window.location.href = `http://localhost:3000?token=${data}`)
-              );
-          } else if (response.status === 200) {
-            console.log("SOMETHING WENT WRONG");
-            this.setState({ requestFailed: true });
-          }
-        }
-      );
+      await AuthStore.register(username, password, email);
     } else if (showLogin) {
-      fetch(
-        `http://localhost:8000/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email,
-            password: password,
-          }),
-        }
-      )
-        .then((response) => response.text())
-        .then(
-          (data) =>
-            (window.location.href = `http://localhost:3000?token=${data}`)
-        );
+      await AuthStore.login(email, password);
     } else {
       window.location.href = "http://localhost:8000/campusnet/login";
       return null;
@@ -155,7 +114,13 @@ export const AccountView = observer(() => {
             your user = {AuthStore.user_name}
           </h1>
         </div>
+        <div className="flex flex-col items-center justify-center overflow-y-scroll">
+      {BlogPostStore.blogposts.map((post) => {if(post.user_name === AuthStore.user_name)return(
+         <BlogPost key={post.id + Math.random()} post={post} />
+      )})}
+    </div>
       </div>
+
     );
   }
 });
