@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom";
-import { createContext } from "react";
 
 // Components
 import { SideBar } from "./components/SideBar/SideBar";
@@ -10,14 +9,9 @@ import AddView from "./views/AddView";
 import { SearchView } from "./views/SearchView";
 import { StocksView } from "./views/StocksView";
 import { AccountView } from "./views/AccountView";
-import { BlogPostStore } from "./stores/BlogPostStore";
-
-// SOURCE: https://jsguild.com/how-to-setup-mobx-with-react-in-2021/
-export const StoreContext = createContext(null);
 
 function App() {
   return (
-    <StoreContext.Provider value={new BlogPostStore()}>
       <div className="flex w-full h-full absolute">
         <SideBar />
         <div className="flex-1 m-5 md:m-10">
@@ -30,7 +24,6 @@ function App() {
           </Routes>
         </div>
       </div>
-    </StoreContext.Provider>
   );
 }
 

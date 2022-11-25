@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 import requests
 import jwt
+import bcrypt
 from bs4 import BeautifulSoup
 
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -43,7 +44,6 @@ sentry_sdk.init(
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(openapi_prefix="/api")
-
 
 origins = [
     "*",
@@ -93,7 +93,7 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 
 @app.get("/users/{user_id}", response_model=schemas.User)
-def read_user(user_id: str, db: Session = Depends(get_db)):
+def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id=user_id)
     if db_user is None:
         logging.warning("Get call for user that does not exist")
@@ -107,9 +107,10 @@ def read_user(user_id: str, db: Session = Depends(get_db)):
 
 @app.post("/users/{user_id}/blogposts/", response_model=schemas.BlogPost, status_code=201)
 def create_blogpost_for_user(
-    user_id: str, blogpost: schemas.BlogPostCreate, db: Session = Depends(get_db)
+    user_id: int, blogpost: schemas.BlogPostCreate, db: Session = Depends(get_db)
 ):
-    blogpost = crud.create_user_blogpost(db=db, blogpost=blogpost, user_id=user_id)
+    blogpost = crud.create_user_blogpost(
+        db=db, blogpost=blogpost, user_id=user_id)
     if blogpost is None:
         raise HTTPException(status_code=500, detail="Error creating blogpost")
     return blogpost
@@ -122,29 +123,45 @@ def read_blogposts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db
         raise HTTPException(status_code=404, detail="Blogposts not found")
     return blogposts
 
+
+@app.delete("/users/{user_id}/blogpost/{blog_post_id}")
+def delete_blogpost_interaction(user_id: str, blog_post_id: int, db: Session = Depends(get_db)):
+    blogpost = crud.delete_user_blogpost(
+        db=db, user_id=user_id, blog_post_id=blog_post_id)
+    if blogpost is None:
+        raise HTTPException(status_code=404, detail="Blogpost not found")
+    return {"status": "Blogpost deleted"}
+
+
 @app.post("/users/{user_id}/interactions/{blog_post_id}", response_model=schemas.Interactions, status_code=201)
 def create_blogpost_interaction(
-    user_id: str, blog_post_id: int, interaction: schemas.InteractionsCreate, db: Session = Depends(get_db)
+    user_id: int, blog_post_id: int, interaction: schemas.InteractionsCreate, db: Session = Depends(get_db)
 ):
-    interaction = crud.create_interaction(db=db, interaction=interaction, user_id=user_id, blog_post_id=blog_post_id)
+    interaction = crud.create_interaction(
+        db=db, interaction=interaction, user_id=user_id, blog_post_id=blog_post_id)
     if interaction is None:
-        raise HTTPException(status_code=500, detail="Error creating interaction")
+        raise HTTPException(
+            status_code=500, detail="Error creating interaction")
     return interaction
+
 
 @app.put("/users/{user_id}/interactions/{blog_post_id}", response_model=schemas.Interactions)
 def update_blogpost_interaction(
-    user_id: str, blog_post_id: int, interaction: schemas.InteractionsCreate, db: Session = Depends(get_db)
+    user_id: int, blog_post_id: int, interaction: schemas.InteractionsCreate, db: Session = Depends(get_db)
 ):
-    interaction = crud.update_interaction(db=db, interaction=interaction, user_id=user_id, blog_post_id=blog_post_id)
+    interaction = crud.update_interaction(
+        db=db, interaction=interaction, user_id=user_id, blog_post_id=blog_post_id)
     if interaction is None:
         raise HTTPException(status_code=404, detail="Interaction not found")
     return interaction
 
+
 @app.delete("/users/{user_id}/interactions/{blog_post_id}")
 def delete_blogpost_interaction(
-    user_id: str, blog_post_id: int, db: Session = Depends(get_db)
+    user_id: int, blog_post_id: int, db: Session = Depends(get_db)
 ):
-    interaction = crud.delete_interaction(db=db, user_id=user_id, blog_post_id=blog_post_id)
+    interaction = crud.delete_interaction(
+        db=db, user_id=user_id, blog_post_id=blog_post_id)
     if interaction is None:
         raise HTTPException(status_code=404, detail="Interaction not found")
     return {"status": "Interaction deleted"}
@@ -152,56 +169,102 @@ def delete_blogpost_interaction(
 
 @app.post("/users/{user_id}/comments/{blog_post_id}", response_model=schemas.Comments, status_code=201)
 def create_blogpost_comment(
-    user_id: str, blog_post_id: int, comment: schemas.CommentsCreate, db: Session = Depends(get_db)
+    user_id: int, blog_post_id: int, comment: schemas.CommentsCreate, db: Session = Depends(get_db)
 ):
-    response = crud.create_comment(db=db, comment=comment, user_id=user_id, blog_post_id=blog_post_id)
+    response = crud.create_comment(
+        db=db, comment=comment, user_id=user_id, blog_post_id=blog_post_id)
     if response is None:
         raise HTTPException(status_code=500, detail="Error creating comment")
     return response
 
 
-@app.get("/login")
+@app.get("/campusnet/login")
 async def login():
-    URI = "https://auth.dtu.dk/dtu/?service=http://4.233.122.101:8000/redirect"
+    URI = "https://auth.dtu.dk/dtu/?service=http://localhost:8000/campusnet/redirect"
     return RedirectResponse(url=URI)
 
 
-@app.get("/redirect")
+@app.get("/campusnet/redirect")
 async def redirect(ticket: str):
-    body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://4.233.122.101:8000/redirect&ticket="+ticket
+    body = "https://auth.dtu.dk/dtu/servicevalidate?service=http://localhost:8000/campusnet/redirect&ticket="+ticket
     body = requests.get(url=body)
-    print(body.content.decode("utf-8"))
     element = BeautifulSoup(body.content.decode("utf-8"))
-    # todo CHANGE SECRET KEY 30 min expiration
-    token = jwt.encode({'id': element.find("cas:user").text, "exp": datetime.now(
+    if(crud.get_user_by_username(db=SessionLocal(), username = element.find("cas:user").text) == None):
+        db_user = crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text, password = ""))
+        token = jwt.encode({'id': db_user.id, "exp": datetime.now(
         tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
-    #token = jwt.encode({'id': element.find("cas:user").text,'mail' : element.find("mail").text , 'name': element.find("gn").text , 'lastname': element.find("sn").text ,"exp": datetime.now(tz=timezone.utc) +  timedelta(seconds=30)}, 'secret', algorithm='HS256')
-    # if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
-    #    crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find("mail").text,id=element.find("cas:user").text, username=element.find("gn").text+" "+element.find("sn").text))
+    return RedirectResponse(url="http://localhost:3000?token="+token)
 
-    if(crud.get_user(db=SessionLocal(), user_id = element.find("cas:user").text) == None):
-        crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text,id = element.find("cas:user").text))
-    #print(token)
-    #returnn user to frontend with token in url
-    return RedirectResponse(url="https://investorblog.diplomportal.dk?token="+token)
+#body with email username and password
+@app.post("/register")
+async def register(user: schemas.UserBase, db: Session = Depends(get_db)):
+    if(crud.get_user(db=SessionLocal(), user_id = user.email) == None):
+        mySalt = bcrypt.gensalt()
+        hashed = bcrypt.hashpw(user.password.encode('utf-8'),mySalt)
+        user.password = hashed
+        db_user = crud.create_user(db=SessionLocal(), user=user)
+        token = jwt.encode({'id': db_user.id, "exp": datetime.now(
+        tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+        return token
+    else:
+        raise HTTPException(status_code=400, detail="Email already registered") 
 
-@app.get("/verify")
+@app.post("/login")
+async def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_email(db=SessionLocal(), email = user.email)
+    if(user == None):
+        raise HTTPException(status_code=400, detail="User not found")
+    if((bcrypt.checkpw(user.password.encode('utf-8'), db_user.password))):
+        return jwt.encode({'id': db_user.id, "exp": datetime.now(
+        tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+
+
+@app.get("/checkifuserexists")
+async def checkifuserexists(email: str):
+    if(crud.get_user_by_email(db=SessionLocal(), email = email) == None):
+        raise HTTPException(status_code=409, detail="Email does not exist")
+    else:
+        return jwt.encode({'id': crud.get_user_by_email(db=SessionLocal(), email = email).id, "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+
+@app.get("/user/username")
 async def verify(token: str):
-    print("verify " + token)
+    #if "" in token remove it
+    if(token[0] == '"'):
+        token = token[1:]
+    if(token[-1] == '"'):
+        token = token[:-1]
     try:
         # todo CHANGE SECRET KEY
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-        print(decoded)
-        return decoded
+        return {"username": crud.get_user(db=SessionLocal(), user_id = decoded["id"]).username, "status": "valid"}
+    except jwt.ExpiredSignatureError:
+        return {"username": "", "status": "Token expired"}
+    except jwt.InvalidTokenError:
+        return {"username": "", "status": "Invalid token"}
+
+
+
+@app.get("/verify")
+async def verify(token: str):
+    #if "" in token remove it
+    if(token[0] == '"'):
+        token = token[1:]
+    if(token[-1] == '"'):
+        token = token[:-1]
+    try:
+        # todo CHANGE SECRET KEY
+        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
+        return True
     except jwt.ExpiredSignatureError:
         return "Token expired"
     except jwt.InvalidTokenError:
         return "Invalid token"
 
+
 @app.get("/test_logging")
 def test_logging():
     logging.info("Running logger test:")
-    division_error = 1/ 0
+    division_error = 1 / 0
     return {"test": "log"}
 
 

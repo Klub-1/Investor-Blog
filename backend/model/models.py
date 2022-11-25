@@ -40,9 +40,10 @@ class User(Base):
     """A User is connected to their own blog posts"""
     __tablename__ = "users"
 
-    id = Column(String, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
-    email = Column(String, unique=True, index=True)
+    id = Column(Integer, primary_key=True, index=True) # AUTO GENERATED
+    username = Column(String, unique=True, index=True) # COMPUSNET: S205124 - MAILOGIN: Selected by user
+    email = Column(String, unique=True, index=True) # COMPUSNET: NULL - MAILOGIN: Selected by user
+    password = Column(String, index=True) # COMPUSNET: NULL - MAILOGIN: Selected by user
     blogposts = relationship("BlogPost", back_populates="user")
     comments = relationship("Comments", back_populates="user")
     interactions = relationship("Interactions", back_populates="user")

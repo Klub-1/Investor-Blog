@@ -1,16 +1,13 @@
 import React from "react";
 import BlogPost from "../components/BlogPost";
-import { useContext } from "react";
-import { StoreContext } from "../App";
+import BlogPostStore from "../stores/BlogPostStore";
 import { observer } from "mobx-react-lite";
 
 export const SearchView = observer(() => {
-  const store = useContext(StoreContext);
-
   const filterPosts = (e) => {
     const searchFor = e.target.value;
 
-    store.setFilterValue(searchFor);
+    BlogPostStore.setFilterValue(searchFor);
   };
 
   return (
@@ -38,7 +35,7 @@ export const SearchView = observer(() => {
       </div>
       {/*  -----------Sorted blog posts ----------- */}
       <div className="flex flex-col items-center justify-center overflow-y-scroll">
-        {store.filteredBlogPosts.map((post) => (
+        {BlogPostStore.filteredBlogPosts.map((post) => (
           <BlogPost key={post.id + Math.random()} post={post} />
         ))}
       </div>
