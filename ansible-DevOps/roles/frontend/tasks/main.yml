@@ -1,0 +1,11 @@
+---
+- name: run docker container frontend
+  ansible.builtin.docker_container:
+    name: frontend
+    image: s205424/frontend-devops:latest
+    pull: true
+    state: started
+    restart_policy: always
+    published_ports:
+      - 3000:3000
+  tags: notest

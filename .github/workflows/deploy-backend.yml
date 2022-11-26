@@ -46,7 +46,7 @@ jobs:
         uses: dawidd6/action-ansible-playbook@v2
         with:
           # Required, playbook filepath
-          playbook: playbook.yml
+          playbook: deplyment.yml
           # Optional, directory where playbooks live
           directory: ./ansible-DevOps
           # Optional, SSH private key

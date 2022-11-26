@@ -14,9 +14,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./backend/api/api.py:/code/backend/api/api.py
-      - ./backend/api/crud.py:/code/backend/api/crud.py
-      - ./backend/main.py:/code/backend/main.py
+      - ./backend/api:/code/backend/api
     command: uvicorn backend.api.api:app --reload --host 0.0.0.0 --port 8000
   # Source: https://github.com/Kludex/fastapi-prometheus-grafana/blob/master/docker-compose.yaml
   # @Kludex on github.com
