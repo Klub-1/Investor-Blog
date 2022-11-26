@@ -14,9 +14,26 @@
   tags: notest
 
 
+- name: allow port 80/tcp ufw rule
+  ansible.builtin.ufw:
+    rule: allow
+    port: 80
+    protocol: tcp
+    state: enabled
+  tags: notest
+  
 - name: allow port 22/tcp ufw rule
   ansible.builtin.ufw:
     rule: allow
     port: 22
     protocol: tcp
   tags: notest
+
+- name: allow port 443/tcp ufw rule
+  ansible.builtin.ufw:
+    rule: allow
+    port: 443
+    protocol: tcp
+    state: enabled
+  tags: notest
+
