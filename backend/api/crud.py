@@ -115,3 +115,11 @@ def delete_favorite(db: Session, favorite: schemas.FavoriteRemove, user_id: str,
     db.query(models.Favorite).filter_by(user_id=user_id, stock_id=stock_name).delete()
     db.commit()
     return {"message": "Stock removed from favorites"}
+
+def get_favorite_stock_names_from_db(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    list_of_fav = db.query(models.Favorite.stock_id).filter(user_id=user_id).offset(skip).limit(limit).all()
+    list_of_names = []
+    for stock in list_of_fav:
+        list_of_names.append(stock)
+    return list_of_names
+    
