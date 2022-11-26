@@ -53,7 +53,11 @@ models.Base.metadata.create_all(bind=engine)
 
 app = None
 if DEV_MODE == "false":
-    app = FastAPI(root_path="/api")
+    app = FastAPI(
+        title='Investorblog API',
+        docs_url='/api/docs', 
+        redoc_url='/api/redoc',
+        openapi_url='/api/openapi.json')
 else:
     app = FastAPI()
 
