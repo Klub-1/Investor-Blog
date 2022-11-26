@@ -10,7 +10,7 @@ import requests
 class TestAPI(unittest.TestCase):
 
     def setUp(self):
-        self.url = 'http://host.docker.internal:8000/'
+        self.url =  'https://investorblog.diplomportal.dk/api/'
         self.api_session = requests.Session()
 
     def test_create_user_and_post(self):
@@ -116,7 +116,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(res.json()['user']['email'], f's{random_user}@student.dtu.dk')
         self.assertEqual(res.json()['user']['username'], f'test_user_{random_user}')
 
-        
+
         
 
 
