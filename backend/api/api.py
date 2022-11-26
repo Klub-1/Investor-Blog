@@ -274,52 +274,6 @@ async def getuser(token: str):
         return {"user": "", "status": "Invalid token"}
 
 
-@app.get("/user/username")
-async def verify(token: str):
-    #if "" in token remove it
-    if(token[0] == '"'):
-        token = token[1:]
-    if(token[-1] == '"'):
-        token = token[:-1]
-    try:
-        # todo CHANGE SECRET KEY
-        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-        return {"username": crud.get_user(db=SessionLocal(), user_id = decoded["id"]).username, "status": "valid"}
-    except jwt.ExpiredSignatureError:
-        return {"username": "", "status": "Token expired"}
-    except jwt.InvalidTokenError:
-        return {"username": "", "status": "Invalid token"}
-
-@app.get("/user/id")
-async def getid(token: str):
-    if(token[0] == '"'):
-        token = token[1:]
-    if(token[-1] == '"'):
-        token = token[:-1]
-    try:
-        # todo CHANGE SECRET KEY
-        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-        return {"id": crud.get_user(db=SessionLocal(), user_id = decoded["id"]).id, "status": "valid"}
-    except jwt.ExpiredSignatureError:
-        return {"username": "", "status": "Token expired"}
-    except jwt.InvalidTokenError:
-        return {"username": "", "status": "Invalid token"}
-
-@app.get("/verify")
-async def verify(token: str):
-    #if "" in token remove it
-    if(token[0] == '"'):
-        token = token[1:]
-    if(token[-1] == '"'):
-        token = token[:-1]
-    try:
-        # todo CHANGE SECRET KEY
-        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-        return True
-    except jwt.ExpiredSignatureError:
-        return "Token expired"
-    except jwt.InvalidTokenError:
-        return "Invalid token"
 
 
 @app.get("/test_logging")
