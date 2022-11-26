@@ -8,7 +8,7 @@ const HomeView = () => {
   return (
     <div className="flex flex-col items-center justify-center overflow-y-scroll">
       {BlogPostStore.blogposts.map((post) => (
-        <BlogPost key={post.id + Math.random()} post={post} />
+        <BlogPost key={post.id} post={post} />
       ))}
     </div>
   );

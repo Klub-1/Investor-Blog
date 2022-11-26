@@ -17,6 +17,9 @@ def get_user_by_email(db: Session, email: str):
 def get_user_by_username(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
+def get_username_by_id(db: Session, user_id: int):
+    return db.query(models.User.username).filter(models.User.id == user_id).first()
+
 def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
@@ -28,6 +31,13 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
+def delete_user(db: Session, user_id: int):
+    db_user = db.query(models.User).get(user_id)
+    if db_user is None:
+        return None
+    db.delete(db_user)
+    db.commit()
+    return {"message": "Deleted"}
 
 def get_blogposts(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.BlogPost).offset(skip).limit(limit).all()

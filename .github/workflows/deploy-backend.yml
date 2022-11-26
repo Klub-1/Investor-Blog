@@ -46,9 +46,9 @@ jobs:
         uses: dawidd6/action-ansible-playbook@v2
         with:
           # Required, playbook filepath
-          playbook: playbook.yml
+          playbook: deplyment.yml
           # Optional, directory where playbooks live
           directory: ./ansible-DevOps
           # Optional, SSH private key
           key: ${{secrets.SSH_PRIVATE_KEY}}
-          options: -u gruppe11 -e "grafana_user=${{secrets.grafana_user}}" -e "grafana_password=${{secrets.grafana_password}}" -e "SENTRY_PATH=${{secrets.SENTRY_PATH}}"
+          options: -u gruppe11 -e "grafana_user=${{secrets.grafana_user}}" -e "grafana_password=${{secrets.grafana_password}}" -e "SENTRY_PATH=${{secrets.SENTRY_PATH}}" -e "DEVMODE=${{secrets.DEVMODE}}"

@@ -1,26 +1,75 @@
-
 import { makeAutoObservable } from "mobx";
 
-export class Comment {
-  id = 0;
-  user_id = "";
-  blog_post_id = 0;
-  comment = "";
+import { BlogPost } from "../models/BlogPost";
+import { Comment } from "../models/Comment";
+import { Interaction } from "../models/Interaction";
 
-  async isCommentFromUser() {
-    const user_id = await this.auth.getUserName();
-    return user_id === this.user_id;
+export class User {
+  id = 0;
+  username = "";
+  blogposts = [];
+  comments = [];
+  interactions = [];
+  email = "";
+
+  initBlogPosts(_blogposts) {
+    this.blogposts = _blogposts.map((blogpost) => {
+      return new BlogPost(
+        blogpost.id,
+        blogpost.user_id,
+        blogpost.title,
+        blogpost.content,
+        blogpost.tags,
+        blogpost.comments.map((comment) => {
+          return new Comment(
+            comment.id,
+            comment.user_id,
+            comment.blog_post_id,
+            comment.comment
+          );
+        }),
+
+        blogpost.interactions.map((interaction) => {
+          return new Interaction(
+            interaction.id,
+            interaction.user_id,
+            interaction.blog_post_id,
+            interaction.type
+          );
+        })
+      );
+    });
   }
 
-  constructor(id, user_id, blog_post_id, comment) {
+  initInteractions(_interactions) {
+    this.interactions = _interactions.map((interaction) => {
+      return new Interaction(
+        interaction.id,
+        interaction.user_id,
+        interaction.blog_post_id,
+        interaction.type
+      );
+    });
+  }
+
+  initComments(_comments) {
+    this.comments = _comments.map((comment) => {
+      return new Comment(
+        comment.id,
+        comment.user_id,
+        comment.blog_post_id,
+        comment.comment
+      );
+    });
+  }
+
+  constructor(id, username, blogposts, comments, interactions, email) {
     makeAutoObservable(this);
-    if (id < 0) {
-      this.id = Math.random() * Math.PI * 10;
-    } else {
-      this.id = id;
-    }
-    this.user_id = user_id;
-    this.blog_post_id = blog_post_id;
-    this.comment = comment;
+    this.id = id;
+    this.username = username;
+    this.email = email;
+    this.initBlogPosts(blogposts);
+    this.initInteractions(interactions);
+    this.initComments(comments);
   }
 }

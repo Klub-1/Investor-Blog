@@ -85,7 +85,18 @@ class User(UserBase):
 
     class Config:
         orm_mode = True
+        
 
+class UserInformation(BaseModel):
+    id: int
+    username: str
+    blogposts: list[BlogPost] = []
+    comments: list[Comments] = []
+    interactions: list[Interactions] = []
+    email: str
+
+    class Config:
+        orm_mode = True
 class StockBase(BaseModel):
     stock_name: str
     ppo: float
