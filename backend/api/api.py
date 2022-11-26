@@ -189,6 +189,13 @@ def create_blogpost_comment(
         raise HTTPException(status_code=500, detail="Error creating comment")
     return response
 
+@app.get("/users/username/{user_id}")
+def get_username(user_id: int, db: Session = Depends(get_db)):
+    response = crud.get_username_by_id(db=db, user_id=user_id)
+    if response is None:
+        raise HTTPException(status_code=500, detail="Error getting username")
+    return response
+
 
 @app.get("/campusnet/login")
 async def login():

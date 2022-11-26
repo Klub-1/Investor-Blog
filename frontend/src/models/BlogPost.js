@@ -17,6 +17,15 @@ export class BlogPost {
   api = new API();
 
   // USER
+  async getAuthor() {
+    if (this.user_id === AuthStore.user.id) {
+      this.username = "dig";
+    } else {
+      const res = await this.api.getUserNameById(this.user_id);
+      this.username = res.username;
+    }
+  }
+
   userLiked() {
     return this.interactions.some((interaction) => {
       return (
@@ -63,28 +72,25 @@ export class BlogPost {
     return count;
   }
 
-  async createInteraction(interaction) {
-    const id = await this.api.postInteraction(interaction);
-    interaction.id = id;
-    this.interactions.push(interaction);
+  async createInteraction(type) {
+    const user_id = AuthStore.user.id;
+    const id = await this.api.postInteraction(user_id, this.id, type);
+
+    this.interactions.push(new Interaction(id, user_id, this.id, type));
   }
 
-  async removeInteraction(interaction) {
-    await this.api.deleteInteraction(interaction.user_name, this.id);
-    this.interactions = this.interactions.filter(
-      (i) => i.user_id !== interaction.user_id
-    );
+  async removeInteraction() {
+    const user_id = AuthStore.user.id;
+    await this.api.deleteInteraction(user_id, this.id);
+    this.interactions = this.interactions.filter((i) => i.user_id !== user_id);
   }
 
-  async updateInteraction(interaction) {
-    await this.api.putInteraction(
-      interaction.user_name,
-      this.id,
-      interaction.type
-    );
+  async updateInteraction(type) {
+    const user_id = AuthStore.user.id;
+    await this.api.putInteraction(this.user_id, this.id, type);
     this.interactions.forEach((i) => {
-      if (interaction.user_id === i.user_id) {
-        i.update(interaction.type);
+      if (user_id === i.user_id) {
+        i.update(type);
       }
     });
   }
@@ -97,40 +103,29 @@ export class BlogPost {
       interactionType = 1;
     }
     await AuthStore.checkAuth();
-    const user_id = AuthStore.user.id;
-
-    const interaction = new Interaction(-1, user_id, this.id, type);
 
     if (type === interactionType) {
-      this.removeInteraction(interaction);
+      this.removeInteraction();
       return;
     }
 
     if (!this.userLiked() && !this.userDisliked()) {
-      this.createInteraction(interaction);
+      this.createInteraction(type);
     } else if (interactionType !== type) {
-      this.updateInteraction(interaction);
+      this.updateInteraction(type);
     }
   }
 
-  constructor(
-    id,
-    user_id,
-    username,
-    title,
-    content,
-    tags,
-    comments,
-    interactions
-  ) {
+  constructor(id, user_id, title, content, tags, comments, interactions) {
     makeAutoObservable(this);
     this.id = id;
     this.user_id = user_id;
-    this.username = username;
     this.title = title;
     this.content = content;
     this.tags = tags;
     this.comments = comments;
     this.interactions = interactions;
+
+    this.getAuthor();
   }
 }

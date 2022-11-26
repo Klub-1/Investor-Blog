@@ -54,7 +54,6 @@ class BlogPostCreate(BlogPostBase):
 class BlogPost(BlogPostBase):
     id: int
     user_id: int
-    username: str
     comments: list[Comments] = []
     interactions: list[Interactions] = []
 

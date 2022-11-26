@@ -26,16 +26,12 @@ class BlogPostStore {
   async createBlogPost(title, content, tags) {
     await AuthStore.checkAuth();
     const user_id = AuthStore.user.id
-    const username = AuthStore.user.username;
-
-    console.log(username);
 
     const data = await this.api.createBlogPost(user_id, title, content, tags);
 
     const blogpost = new BlogPost(
       data.id,
       user_id,
-      username,
       title,
       content,
       tags,
@@ -51,7 +47,6 @@ class BlogPostStore {
       return new BlogPost(
         blogpost.id,
         blogpost.user_id,
-        blogpost.username,
         blogpost.title,
         blogpost.content,
         blogpost.tags,

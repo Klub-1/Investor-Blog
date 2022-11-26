@@ -101,7 +101,7 @@ export const AccountView = observer(() => {
               ? showRegister
                 ? "Opret konto"
                 : "Login"
-              : "Login med CanpusNet"}
+              : "Login med CampusNet"}
           </button>
         </div>
       </div>
