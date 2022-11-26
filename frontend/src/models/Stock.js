@@ -7,18 +7,12 @@ export class Stock {
   isFavorite = false;
 
     api = new API();
-    
-    getFavorite() {
-        //TODO: CHECK IF STOCK EXISTS IN USER DB TABLE
-        const isFav = false; // TODO: MAKE API CALL
-        this.isFavorite = isFav;
-    }
 
-  constructor(stockname, ppo) {
+  constructor(stockname, ppo, isFavorite = true) {
       makeAutoObservable(this);
       this.stock_name = stockname;
-      this.ppo = ppo;
-      this.getFavorite();
+    this.ppo = ppo;
+    this.isFavorite = isFavorite
   }
   
   toggleFavorite(){

@@ -171,4 +171,49 @@ export class API {
       return false;
     }
   }
+
+  async searchStock(stock_name) {
+    const res = await fetch(this.url + "/stocks/"+ stock_name, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const stock = await res.json();
+    return stock;
+  }
+
+  async getUserFavorites(user_id) {
+
+    const res = await fetch(this.url + "/stocks/" + user_id + "/get_favorites", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const favorites = await res.json();
+    return favorites;
+  }
+
+  async createFavorite(user_id) {
+    const res = await fetch(this.url + "/stocks/"+ user_id + "/create_favorite", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const favorite = await res.json();
+    return favorite;
+  }
+
+  async deleteFavorite(user_id) {
+    const res = await fetch(this.url + "/stocks/" + user_id + "/delete_favorites", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const status = await res.status;
+    return status;
+  }
 }

@@ -1,9 +1,10 @@
 import React from "react";
+import { observer } from "mobx-react-lite";
 import { useEffect } from 'react';
 import { StockItem } from "../components/StockItem";
 import StocksStore from "../stores/StocksStore";
 
-export const StocksView = () => {  
+export const StocksView = observer(() => {  
 
   useEffect(() => {
     StocksStore.syncStocks();
@@ -21,9 +22,14 @@ export const StocksView = () => {
             type="text"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 mb-3"
             id="SearchInputField"
-            onChange={(e) => { }}
+            onChange={(e) => { StocksStore.setFilterValue(e.target.value); }}
             placeholder="Søg..."
           />
+        </div>
+        <div>
+          <button variant="Outlined">
+            Søg
+          </button>
         </div>
       </div>
       {/*  -----------Stock Card content ----------- */}
@@ -31,9 +37,9 @@ export const StocksView = () => {
       <div className="grid justify-center grid-cols-5 overflow-y-scroll">
       
         {StocksStore.filteredStocks.map((stock) => (
-          <StockItem stock={stock} />
+          <StockItem key={stock.stock_name} stock={stock} />
         ))}
     </div>
     </div>
   );
-};
+});

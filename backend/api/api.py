@@ -331,12 +331,12 @@ def test_logging():
 
 Instrumentator().instrument(app).expose(app)
 
-@app.get("/stocks/{stock_id}")
-def read_stocks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):    
-    stocks = crud.get_stocks_from_db(db, skip=skip, limit=limit)
-    return stocks
+#@app.get("/stocks")
+#def read_stocks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):    
+#    stocks = crud.get_stocks_from_db(db, skip=skip, limit=limit)
+#    return stocks
 
-@app.post("/stocks/")
+@app.post("/stocks/{stock_name}")
 def create_stock(stock_name: str, db: Session = Depends(get_db)):
     url = "https://www.alphavantage.co/query?function=PPO&symbol="+stock_name+"&interval=daily&series_type=close&fastperiod=10&matype=1&apikey=92DD3OTK7XOQK3GT"
     r = requests.get(url)
@@ -370,12 +370,13 @@ def delete_favorite_stock(
 def get_favorite_stock(
         user_id: str, db: Session = Depends(get_db)
     ):
-    list_of_names = crud.get_favorite_stock_names_from_db(db, user_id=user_id, skip=skip, limit=limit)
+    list_of_names = crud.get_favorite_stock_names_from_db(db, user_id=user_id)
+    list_of_fav = []
     for stock_name in list_of_names:
         url = "https://www.alphavantage.co/query?function=PPO&symbol="+stock_name+"&interval=daily&series_type=close&fastperiod=10&matype=1&apikey=92DD3OTK7XOQK3GT"
         r = requests.get(url)
         stocks = r.json()  
-        apippo = stocks.get("Technical Analysis: PPO").get("2020-11-20").get("PPO")
-        db_stock = crud.check_if_stock_exists(db, stockid=stock_name)
+        apippo = stocks.get("Technical Analysis: PPO").get("2020-11-20").get("PPO")       
         stock = models.Stock(stock_name=stock_name, ppo=apippo)
-        crud.update_stock(db=db, stock=stock, stock_name=stock_name, stockppo=apippo)
+        list_of_fav.append(crud.update_stock(db=db, stock=stock, stock_name=stock_name, stockppo=apippo))
+    return list_of_fav
