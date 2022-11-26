@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 import { assert } from 'console';
-import { API } from "../frontend/src/Api/api";
 
 
 test('test', async ({ page }) => {
