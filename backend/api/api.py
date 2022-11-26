@@ -53,7 +53,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = None
 if DEV_MODE == "false":
-    app = FastAPI(openapi_prefix="/api")
+    app = FastAPI(root_path="/api")
 else:
     app = FastAPI()
 
