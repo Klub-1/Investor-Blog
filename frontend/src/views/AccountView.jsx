@@ -31,7 +31,7 @@ export const AccountView = observer(() => {
     }
   };
 
-  if (AuthStore.isAuth == false) {
+  if (AuthStore.isAuth === false) {
     return (
       <div className="h-[400px] w-full shadow rounded-lg bg-white mb-5 md:mb-10">
         <div className="h-4/5 w-full grid">
