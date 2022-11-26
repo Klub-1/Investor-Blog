@@ -4,11 +4,11 @@ export class Constants {
   static get BACKEND_URL() {
     return this.isProd
       ? "https://investorblog.diplomportal.dk/api"
-      : "http://localhost:8000";
+      : "https://investorblog.diplomportal.dk/api";
   }
   static get FRONTEND_URL() {
     return this.isProd
       ? "https://investorblog.diplomportal.dk"
-      : "http://localhost:3000";
+      : "https://investorblog.diplomportal.dk";
   }
 }
