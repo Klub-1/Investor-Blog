@@ -70,8 +70,62 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(status_message, "User deleted")
 
+        #-------- test register user --------
+        request_url = self.url + \
+            f'register/'
+        
+        random_user = randint(100000, 999999)
+        new_user = {
+            "username": f"test_user_{random_user}",
+            "email": f"s{random_user}@student.dtu.dk",
+            "password": "randomtestpassword"
+        }
+        res = self.api_session.post(request_url, json=new_user)
+        self.assertEqual(res.status_code, 200)
+
+        #-------- test login user --------
+        request_url = self.url + \
+            f'login/'
+        
+        new_user = {
+            "email": f"s{random_user}@student.dtu.dk",
+            "password": "randomtestpassword"
+        }
+        res = self.api_session.post(request_url, json=new_user)
+        self.assertEqual(res.status_code, 200)
+
+        #-------- gets token --------
+        token = res.json()
+
+        #-------- test userexists --------
+        request_url = self.url + \
+            f'checkifuserexists?email=s{random_user}@student.dtu.dk'
+        res = self.api_session.get(request_url)
+        self.assertEqual(res.status_code, 200)
+        #-------- test userexists --------
+        request_url = self.url + \
+            f'checkifuserexists?email=test'
+        res = self.api_session.get(request_url)
+        self.assertEqual(res.status_code, 409)
+
+        #-------- test get user --------
+        request_url = self.url + \
+            f'user?token={token}'
+        res = self.api_session.get(request_url)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()['user']['email'], f's{random_user}@student.dtu.dk')
+        self.assertEqual(res.json()['user']['username'], f'test_user_{random_user}')
+
+        
+        
+
+
+
     def tearDown(self):
         self.api_session.close()
+    
+    
+     
 
 
 if __name__ == '__main__':

@@ -99,26 +99,6 @@ export class API {
     return json;
   }
 
-  async getUserNameById(user_id) {
-    const res = await fetch(this.url + "/users/username/" + user_id, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const text = await res.json();
-    return text;
-  }
-
-  // ?: NOT USED
-  async getUserID() {
-    const res = await fetch(
-      this.url + "/user/id?token=" + localStorage.getItem("portal-jwt-Token")
-    );
-    const json = await res.json();
-    return json;
-  }
-
   async registerUser(email, username, password) {
     const res = await fetch(this.url + "/register", {
       method: "POST",
