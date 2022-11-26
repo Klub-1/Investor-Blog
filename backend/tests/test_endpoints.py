@@ -30,7 +30,7 @@ class TestAPI(unittest.TestCase):
         user_id = res.json()['id']
 
         # Test the new user exists
-        res = self.api_session.get(self.url + f'users/{user_id}')
+        res = self.api_session.get(self.url + f'users/{user_id}/')
         self.assertEqual(res.status_code, 200)
 
         # ------- Create Blogpost Part -------
