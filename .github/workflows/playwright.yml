@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: run backend
+      run: docker-compose up -d
     - name: cd
       run: cd frontend
     - uses: actions/setup-node@v3
