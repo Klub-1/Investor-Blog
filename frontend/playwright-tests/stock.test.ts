@@ -50,7 +50,7 @@ test('test', async ({ page }) => {
   await page.locator('a:nth-child(4)').click();
   await expect(page).toHaveURL('http://localhost:3000//stocks');
 
-  await page.getByRole('heading', { name: 'APLE' }).click();
+  await expect(page.getByRole('heading', { name: 'APLE' })).toBeTruthy();
 
   await page.getByRole('button').nth(1).click();
 
