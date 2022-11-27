@@ -30,14 +30,14 @@ class AuthStore {
   async login(email, password) {
     const token = await this.api.login(email, password);
     await this.checkAuth();
-    window.location.href = Constants.BACKEND_URL + `?token=${token}`;
+    window.location.href = Constants.FRONTEND_URL + `?token=${token}`;
   }
 
   async register(username, email, password) {
     const ifUSerExist = await this.api.checkIfUserExists(email);
     if (!ifUSerExist) {
       const token = await this.api.registerUser(email, username, password);
-      window.location.href = Constants.BACKEND_URL + `?token=${token}`;
+      window.location.href = Constants.FRONTEND_URL + `?token=${token}`;
     }
   }
 

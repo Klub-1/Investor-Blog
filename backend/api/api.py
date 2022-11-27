@@ -53,7 +53,11 @@ models.Base.metadata.create_all(bind=engine)
 
 app = None
 if DEV_MODE == "false":
-    app = FastAPI(openapi_prefix="/api")
+    app = FastAPI(
+        title='Investorblog API',
+        docs_url='/api/docs', 
+        redoc_url='/api/redoc',
+        openapi_url='/api/openapi.json')
 else:
     app = FastAPI()
 
@@ -98,7 +102,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
 
-@app.get("/users/", response_model=list[schemas.User])
+@app.get("/users/", response_model=list[schemas.UserInformation])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
@@ -196,6 +200,7 @@ def create_blogpost_comment(
         raise HTTPException(status_code=500, detail="Error creating comment")
     return response
 
+
 @app.get("/users/username/{user_id}")
 def get_username(user_id: int, db: Session = Depends(get_db)):
     response = crud.get_username_by_id(db=db, user_id=user_id)
@@ -206,120 +211,80 @@ def get_username(user_id: int, db: Session = Depends(get_db)):
 
 @app.get("/campusnet/login")
 async def login():
-    URI = "https://auth.dtu.dk/dtu/?service="+  SERVER_LOCATION +"/campusnet/redirect"
+    URI = "https://auth.dtu.dk/dtu/?service=" + \
+        SERVER_LOCATION + "/campusnet/redirect"
     return RedirectResponse(url=URI)
 
 
 @app.get("/campusnet/redirect")
 async def redirect(ticket: str):
-    body = "https://auth.dtu.dk/dtu/servicevalidate?service="+  SERVER_LOCATION +"/campusnet/redirect&ticket="+ticket
+    body = "https://auth.dtu.dk/dtu/servicevalidate?service=" + \
+        SERVER_LOCATION + "/campusnet/redirect&ticket="+ticket
     body = requests.get(url=body)
     element = BeautifulSoup(body.content.decode("utf-8"))
-    if(crud.get_user_by_username(db=SessionLocal(), username = element.find("cas:user").text) == None):
-        db_user = crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text, password = ""))
+    if (crud.get_user_by_username(db=SessionLocal(), username=element.find("cas:user").text) == None):
+        db_user = crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find(
+            "cas:user").text + "@dtu.dk", username=element.find("cas:user").text, password=""))
         token = jwt.encode({'id': db_user.id, "exp": datetime.now(
-        tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+            tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
     else:
-        db_user = crud.get_user_by_username(db=SessionLocal(),username= element.find("cas:user").text)
+        db_user = crud.get_user_by_username(
+            db=SessionLocal(), username=element.find("cas:user").text)
         token = jwt.encode({'id': db_user.id, "exp": datetime.now(
-        tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
-        
+            tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+
     return RedirectResponse(url=FRONTEND_LOCATION+"?token="+token)
 
-#body with email username and password
+# body with email username and password
+
+
 @app.post("/register")
 async def register(user: schemas.UserBase, db: Session = Depends(get_db)):
-    if(crud.get_user(db=SessionLocal(), user_id = user.email) == None):
+    if (crud.get_user(db=SessionLocal(), user_id=user.email) == None):
         mySalt = bcrypt.gensalt()
-        hashed = bcrypt.hashpw(user.password.encode('utf-8'),mySalt)
+        hashed = bcrypt.hashpw(user.password.encode('utf-8'), mySalt)
         user.password = hashed
         db_user = crud.create_user(db=SessionLocal(), user=user)
         token = jwt.encode({'id': db_user.id, "exp": datetime.now(
-        tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+            tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
         return token
     else:
-        raise HTTPException(status_code=400, detail="Email already registered") 
+        raise HTTPException(status_code=400, detail="Email already registered")
+
 
 @app.post("/login")
 async def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db=SessionLocal(), email = user.email)
-    if(user == None):
+    db_user = crud.get_user_by_email(db=SessionLocal(), email=user.email)
+    if (user == None):
         raise HTTPException(status_code=400, detail="User not found")
-    if((bcrypt.checkpw(user.password.encode('utf-8'), db_user.password))):
+    if ((bcrypt.checkpw(user.password.encode('utf-8'), db_user.password))):
         return jwt.encode({'id': db_user.id, "exp": datetime.now(
-        tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+            tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
 
 
 @app.get("/checkifuserexists")
 async def checkifuserexists(email: str):
-    if(crud.get_user_by_email(db=SessionLocal(), email = email) == None):
+    if (crud.get_user_by_email(db=SessionLocal(), email=email) == None):
         raise HTTPException(status_code=409, detail="Email does not exist")
     else:
-        return jwt.encode({'id': crud.get_user_by_email(db=SessionLocal(), email = email).id, "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+        return jwt.encode({'id': crud.get_user_by_email(db=SessionLocal(), email=email).id, "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+
 
 @app.get("/user")
 async def getuser(token: str):
-    if(token[0] == '"'):
+    if (token[0] == '"'):
         token = token[1:]
-    if(token[-1] == '"'):
+    if (token[-1] == '"'):
         token = token[:-1]
     try:
         # todo CHANGE SECRET KEY
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-        user = crud.get_user(db=SessionLocal(), user_id = decoded["id"])
-        return {"user": schemas.UserInformation(id = user.id , email=user.email , username= user.username, blogposts= user.blogposts, commennts = user.comments), "status": "valid"}
+        user = crud.get_user(db=SessionLocal(), user_id=decoded["id"])
+        return {"user": schemas.UserInformation(id=user.id, email=user.email, username=user.username, blogposts=user.blogposts, commennts=user.comments), "status": "valid"}
     except jwt.ExpiredSignatureError:
         return {"user": "", "status": "Token expired"}
     except jwt.InvalidTokenError:
         return {"user": "", "status": "Invalid token"}
-
-
-@app.get("/user/username")
-async def verify(token: str):
-    #if "" in token remove it
-    if(token[0] == '"'):
-        token = token[1:]
-    if(token[-1] == '"'):
-        token = token[:-1]
-    try:
-        # todo CHANGE SECRET KEY
-        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-        return {"username": crud.get_user(db=SessionLocal(), user_id = decoded["id"]).username, "status": "valid"}
-    except jwt.ExpiredSignatureError:
-        return {"username": "", "status": "Token expired"}
-    except jwt.InvalidTokenError:
-        return {"username": "", "status": "Invalid token"}
-
-@app.get("/user/id")
-async def getid(token: str):
-    if(token[0] == '"'):
-        token = token[1:]
-    if(token[-1] == '"'):
-        token = token[:-1]
-    try:
-        # todo CHANGE SECRET KEY
-        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-        return {"id": crud.get_user(db=SessionLocal(), user_id = decoded["id"]).id, "status": "valid"}
-    except jwt.ExpiredSignatureError:
-        return {"username": "", "status": "Token expired"}
-    except jwt.InvalidTokenError:
-        return {"username": "", "status": "Invalid token"}
-
-@app.get("/verify")
-async def verify(token: str):
-    #if "" in token remove it
-    if(token[0] == '"'):
-        token = token[1:]
-    if(token[-1] == '"'):
-        token = token[:-1]
-    try:
-        # todo CHANGE SECRET KEY
-        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-        return True
-    except jwt.ExpiredSignatureError:
-        return "Token expired"
-    except jwt.InvalidTokenError:
-        return "Invalid token"
 
 
 @app.get("/test_logging")

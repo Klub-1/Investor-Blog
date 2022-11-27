@@ -10,7 +10,7 @@ import requests
 class TestAPI(unittest.TestCase):
 
     def setUp(self):
-        self.url = 'http://host.docker.internal:8000/'
+        self.url =  'https://investorblog.diplomportal.dk/api/'
         self.api_session = requests.Session()
 
     def test_create_user_and_post(self):
@@ -30,7 +30,7 @@ class TestAPI(unittest.TestCase):
         user_id = res.json()['id']
 
         # Test the new user exists
-        res = self.api_session.get(self.url + f'users/{user_id}')
+        res = self.api_session.get(self.url + f'users/{user_id}/')
         self.assertEqual(res.status_code, 200)
 
         # ------- Create Blogpost Part -------
@@ -70,8 +70,62 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(status_message, "User deleted")
 
+        #-------- test register user --------
+        request_url = self.url + \
+            f'register/'
+        
+        random_user = randint(100000, 999999)
+        new_user = {
+            "username": f"test_user_{random_user}",
+            "email": f"s{random_user}@student.dtu.dk",
+            "password": "randomtestpassword"
+        }
+        res = self.api_session.post(request_url, json=new_user)
+        self.assertEqual(res.status_code, 200)
+
+        #-------- test login user --------
+        request_url = self.url + \
+            f'login/'
+        
+        new_user = {
+            "email": f"s{random_user}@student.dtu.dk",
+            "password": "randomtestpassword"
+        }
+        res = self.api_session.post(request_url, json=new_user)
+        self.assertEqual(res.status_code, 200)
+
+        #-------- gets token --------
+        token = res.json()
+
+        #-------- test userexists --------
+        request_url = self.url + \
+            f'checkifuserexists?email=s{random_user}@student.dtu.dk'
+        res = self.api_session.get(request_url)
+        self.assertEqual(res.status_code, 200)
+        #-------- test userexists --------
+        request_url = self.url + \
+            f'checkifuserexists?email=test'
+        res = self.api_session.get(request_url)
+        self.assertEqual(res.status_code, 409)
+
+        #-------- test get user --------
+        request_url = self.url + \
+            f'user?token={token}'
+        res = self.api_session.get(request_url)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()['user']['email'], f's{random_user}@student.dtu.dk')
+        self.assertEqual(res.json()['user']['username'], f'test_user_{random_user}')
+
+
+        
+
+
+
     def tearDown(self):
         self.api_session.close()
+    
+    
+     
 
 
 if __name__ == '__main__':
