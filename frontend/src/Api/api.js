@@ -91,6 +91,19 @@ export class API {
     );
   }
 
+  async getUserName(id) {
+    const res = await fetch(this.url + "/users/username/" + id, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const username = await res.text();
+
+    return username;
+  }
+
   async getUser() {
     const res = await fetch(
       this.url + "/user?token=" + localStorage.getItem("portal-jwt-Token")
@@ -100,9 +113,7 @@ export class API {
   }
 
   async getAllUsers() {
-    const res = await fetch(
-      this.url + "/users"
-    );
+    const res = await fetch(this.url + "/users");
     const json = await res.json();
     return json;
   }
