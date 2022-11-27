@@ -115,19 +115,16 @@ class Stock(StockBase):
         orm_mode = True
 
 class FavoriteBase(BaseModel):    
-    user_id: str
+    user_id: int
     stock_id: str
 
 class Favorite(FavoriteBase):
     id: int
-    user_id: str
+    user_id: int
     stock_id: str
 
     class Config:
         orm_mode = True
 
 class FavoriteCreate(FavoriteBase):
-    pass
-
-class FavoriteRemove(FavoriteBase):
     pass

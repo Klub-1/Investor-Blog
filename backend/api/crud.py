@@ -95,7 +95,7 @@ def check_if_stock_exists(db: Session, stockid: str):
     exists = db.query(models.Stock).filter(models.Stock.stock_name==stockid).first() is not None
     return exists
 
-def update_stock(db: Session, stock: schemas.StockUpdate, stock_name: str, stockppo: float):
+def update_stock(db: Session, stock_name: str, stockppo: float):
     stock_item = db.query(models.Stock).filter(models.Stock.stock_name==stock_name).first()
     if stock_item is None:
         return None
@@ -114,22 +114,22 @@ def create_stock(db: Session, stock: schemas.StockCreate):
 def get_stocks_from_db(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Stock).offset(skip).limit(limit).all()
 
-def create_favorite(db: Session, favorite: schemas.FavoriteCreate, user_id: str, stock_name: str):
-    db_fav = models.Favorite(user_id=user_id, stock_id=stock_name)
+def create_favorite(db: Session, fav: schemas.FavoriteCreate):
+    db_fav = models.Favorite(user_id=fav.user_id, stock_id=fav.stock_id)
     db.add(db_fav)
     db.commit()
     db.refresh(db_fav)
     return db_fav
 
-def delete_favorite(db: Session, favorite: schemas.FavoriteRemove, user_id: str, stock_name: str):
+def delete_favorite(db: Session, user_id: int, stock_name: str):
     db.query(models.Favorite).filter_by(user_id=user_id, stock_id=stock_name).delete()
     db.commit()
     return {"message": "Stock removed from favorites"}
 
 def get_favorite_stock_names_from_db(db: Session, user_id: int):
-    list_of_fav = db.query(models.Favorite.stock_id).filter(user_id=user_id).all()
-    list_of_names = []
+    list_of_fav = db.query(models.Favorite).filter(models.Favorite.user_id==user_id).all()
+    stocks = []
     for stock in list_of_fav:
-        list_of_names.append(stock)
-    return list_of_names
+        stocks.append(db.query(models.Stock).filter(models.Stock.stock_name==stock.stock_id).first())     
+    return stocks
     

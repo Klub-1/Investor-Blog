@@ -135,8 +135,7 @@ export class API {
     return token;
   }
 
-  async getStocks(){
-
+  async getStocks() {
     const res = await fetch("http://localhost:8000/stocks/", {
       method: "GET",
       headers: {
@@ -145,9 +144,9 @@ export class API {
     });
 
     const stocks = await res.json();
-    return stocks
+    return stocks;
   }
-  
+
   async login(email, password) {
     const res = await fetch(this.url + "/login", {
       method: "POST",
@@ -173,7 +172,7 @@ export class API {
   }
 
   async searchStock(stock_name) {
-    const res = await fetch(this.url + "/stocks/"+ stock_name, {
+    const res = await fetch(this.url + "/stocks/" + stock_name, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -184,36 +183,45 @@ export class API {
   }
 
   async getUserFavorites(user_id) {
-
-    const res = await fetch(this.url + "/stocks/" + user_id + "/get_favorites", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await fetch(
+      this.url + "/stocks/" + user_id + "/get_favorites",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     const favorites = await res.json();
     return favorites;
   }
 
-  async createFavorite(user_id) {
-    const res = await fetch(this.url + "/stocks/"+ user_id + "/create_favorite", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  async createFavorite(user_id, stocks_name) {
+    const res = await fetch(
+      this.url + "/stocks/" + user_id + "/create_favorite/" + stocks_name,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     const favorite = await res.json();
+    console.table(favorite);
     return favorite;
   }
 
-  async deleteFavorite(user_id) {
-    const res = await fetch(this.url + "/stocks/" + user_id + "/delete_favorites", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const status = await res.status;
+  async deleteFavorite(user_id, stocks_name) {
+    const res = await fetch(
+      this.url + "/stocks/" + user_id + "/delete_favorite/" + stocks_name,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const status = res.status;
     return status;
   }
 }
