@@ -86,6 +86,7 @@ class User(UserBase):
     class Config:
         orm_mode = True
         
+
 class UserInformation(BaseModel):
     id: int
     username: str
@@ -96,3 +97,34 @@ class UserInformation(BaseModel):
 
     class Config:
         orm_mode = True
+class StockBase(BaseModel):
+    stock_name: str
+    ppo: float
+
+class StockCreate(StockBase):
+    pass
+
+class StockUpdate(StockBase):
+    pass
+
+class Stock(StockBase):
+    stock_name: str
+    ppo: float
+
+    class Config:
+        orm_mode = True
+
+class FavoriteBase(BaseModel):    
+    user_id: int
+    stock_id: str
+
+class Favorite(FavoriteBase):
+    id: int
+    user_id: int
+    stock_id: str
+
+    class Config:
+        orm_mode = True
+
+class FavoriteCreate(FavoriteBase):
+    pass

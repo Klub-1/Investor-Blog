@@ -295,3 +295,72 @@ def test_logging():
 
 
 Instrumentator().instrument(app).expose(app)
+
+#@app.get("/stocks")
+#def read_stocks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):    
+#    stocks = crud.get_stocks_from_db(db, skip=skip, limit=limit)
+#    return stocks
+
+@app.post("/stocks/{stock_name}", response_model=schemas.Stock)
+def create_stock(stock_name: str, db: Session = Depends(get_db)):
+    url = "https://www.alphavantage.co/query?function=PPO&symbol="+stock_name+"&interval=daily&series_type=close&fastperiod=10&matype=1&apikey=92DD3OTK7XOQK3GT"
+    try:
+        r = requests.get(url)
+        stocks = r.json()  
+        if stocks == None:
+            raise HTTPException(status_code=404, detail="Stock not found")
+        
+        apippo = stocks.get("Technical Analysis: PPO").get(stocks.get("Meta Data").get("3: Last Refreshed")).get("PPO")
+    
+        db_stock = crud.check_if_stock_exists(db, stockid=stock_name)
+        
+        stock = models.Stock(stock_name=stock_name, ppo=apippo)    
+        
+        if db_stock:        
+            return crud.update_stock(db=db, stock_name=stock_name, stockppo=apippo)
+        
+        if apippo == None:
+            stock.ppo = 0
+            
+        return crud.create_stock(db=db, stock=stock)
+    except:
+        pass
+    return crud.get_stock_from_db(db, stock_name=stock_name)
+
+@app.post("/stocks/{user_id}/create_favorite/{stock_name}", response_model=schemas.Favorite, status_code=201)
+def create_favorite_stock(
+    user_id: int, stock_name: str, db: Session = Depends(get_db)
+):
+    favorite = crud.create_favorite(db=db, fav=models.Favorite(user_id=user_id, stock_id=stock_name))
+    if stock_name is None:
+        raise HTTPException(status_code=500, detail="Can't find stock")
+    return favorite
+
+@app.delete("/stocks/{user_id}/delete_favorite/{stock_name}")
+def delete_favorite_stock(
+    user_id: int, stock_name: str, db: Session = Depends(get_db)
+    ):
+    favorite = crud.delete_favorite(db=db, user_id=user_id, stock_name=stock_name)
+    if favorite is None:
+        raise HTTPException(status_code=404, detail="Favorite stock not found")
+    return {"status": "Favorite stock has been removed"}
+
+@app.get("/stocks/{user_id}/get_favorites", response_model=list[schemas.Stock])
+def get_favorite_stock(
+        user_id: int, db: Session = Depends(get_db)
+    ):
+    list_of_stocks = crud.get_favorite_stock_names_from_db(db, user_id=user_id)
+    for stock in list_of_stocks:        
+        url = "https://www.alphavantage.co/query?function=PPO&symbol="+stock.stock_name+"&interval=daily&series_type=close&fastperiod=10&matype=1&apikey=92DD3OTK7XOQK3GT"
+        r = requests.get(url)
+        stocks = r.json()  
+        
+        try: 
+            apippo = stocks.get("Technical Analysis: PPO").get(stocks.get("Meta Data").get("3: Last Refreshed")).get("PPO")  
+            stock.ppo = apippo
+        except:
+            pass
+        print(stock.stock_name)  
+        print(stock.ppo)  
+            
+    return list_of_stocks
