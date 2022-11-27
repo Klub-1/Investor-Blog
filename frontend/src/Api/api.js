@@ -99,6 +99,14 @@ export class API {
     return json;
   }
 
+  async getAllUsers() {
+    const res = await fetch(
+      this.url + "/users"
+    );
+    const json = await res.json();
+    return json;
+  }
+
   async registerUser(email, username, password) {
     const res = await fetch(this.url + "/register", {
       method: "POST",
@@ -113,6 +121,18 @@ export class API {
     });
     const token = await res.text();
     return token;
+  }
+
+  async getStocks() {
+    const res = await fetch("http://localhost:8000/stocks/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const stocks = await res.json();
+    return stocks;
   }
 
   async login(email, password) {
@@ -137,5 +157,59 @@ export class API {
     } else {
       return false;
     }
+  }
+
+  async searchStock(stock_name) {
+    const res = await fetch(this.url + "/stocks/" + stock_name, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const stock = await res.json();
+    return stock;
+  }
+
+  async getUserFavorites(user_id) {
+    const res = await fetch(
+      this.url + "/stocks/" + user_id + "/get_favorites",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const favorites = await res.json();
+    return favorites;
+  }
+
+  async createFavorite(user_id, stocks_name) {
+    const res = await fetch(
+      this.url + "/stocks/" + user_id + "/create_favorite/" + stocks_name,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const favorite = await res.json();
+    console.table(favorite);
+    return favorite;
+  }
+
+  async deleteFavorite(user_id, stocks_name) {
+    const res = await fetch(
+      this.url + "/stocks/" + user_id + "/delete_favorite/" + stocks_name,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const status = res.status;
+    return status;
   }
 }
