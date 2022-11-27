@@ -12,7 +12,7 @@ const { devices } = require("@playwright/test");
  * @type {import('@playwright/test').PlaywrightTestConfig}
  */
 const config = {
-  testDir: "./src/tests",
+  testDir: "./playwright-tests",
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
   expect: {
@@ -52,19 +52,6 @@ const config = {
       },
     },
 
-    {
-      name: "firefox",
-      use: {
-        ...devices["Desktop Firefox"],
-      },
-    },
-
-    {
-      name: "webkit",
-      use: {
-        ...devices["Desktop Safari"],
-      },
-    },
 
     /* Test against mobile viewports. */
     // {

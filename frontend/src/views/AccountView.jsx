@@ -22,7 +22,7 @@ export const AccountView = observer(() => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (showRegister) {
-      await AuthStore.register(username, password, email);
+      await AuthStore.register(username, email, password);
     } else if (showLogin) {
       await AuthStore.login(email, password);
     } else {
@@ -31,7 +31,7 @@ export const AccountView = observer(() => {
     }
   };
 
-  if (!localStorage.getItem("portal-jwt-Token") && !AuthStore.isAuth) {
+  if (AuthStore.isAuth === false) {
     return (
       <div className="h-[400px] w-full shadow rounded-lg bg-white mb-5 md:mb-10">
         <div className="h-4/5 w-full grid">

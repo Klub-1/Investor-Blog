@@ -287,6 +287,7 @@ async def getuser(token: str):
         return {"user": "", "status": "Invalid token"}
 
 
+
 @app.get("/test_logging")
 def test_logging():
     logging.info("Running logger test:")
