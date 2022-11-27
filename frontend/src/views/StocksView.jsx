@@ -7,6 +7,7 @@ import { FiSearch } from "react-icons/fi";
 import { useEffect } from "react";
 
 export const StocksView = observer(() => {
+  
   useEffect(() => {
     StocksStore.syncStocks();
   }, []);
