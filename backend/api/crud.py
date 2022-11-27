@@ -96,11 +96,12 @@ def check_if_stock_exists(db: Session, stockid: str):
     return exists
 
 def update_stock(db: Session, stock_name: str, stockppo: float):
+    print("Start af update_stock i crud")
     stock_item = db.query(models.Stock).filter(models.Stock.stock_name==stock_name).first()
     if stock_item is None:
         return None
     setattr(stock_item, 'ppo', stockppo)
-    db.commit
+    db.commit()
     db.refresh(stock_item)
     return stock_item
 
@@ -111,8 +112,8 @@ def create_stock(db: Session, stock: schemas.StockCreate):
     db.refresh(db_stock)
     return db_stock
 
-def get_stocks_from_db(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Stock).offset(skip).limit(limit).all()
+def get_stock_from_db(db: Session, stock_name: str):
+    return db.query(models.Stock).filter(models.Stock.stock_name==stock_name).first()
 
 def create_favorite(db: Session, fav: schemas.FavoriteCreate):
     db_fav = models.Favorite(user_id=fav.user_id, stock_id=fav.stock_id)

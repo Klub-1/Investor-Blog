@@ -11,7 +11,7 @@ export const StockItem = observer((_stock) => {
         <h1 className="font-bold text-white">{stock.stock_name}</h1>
         <button
           onClick={() => {
-            stock.toggleFavorite(stock.stock_name);
+            stock.toggleFavorite();
           }}
         >
           {stock.isFavorite ? (
