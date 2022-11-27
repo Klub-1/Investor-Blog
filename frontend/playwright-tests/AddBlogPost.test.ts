@@ -18,6 +18,7 @@ test('test', async ({ page }) => {
   const token = await page.evaluate(() => localStorage.getItem('portal-jwt-Token')); 
   await expect(page).toHaveURL('http://localhost:3000/');
 
+  await new Promise(f => setTimeout(f, 5000));
   await page.getByRole('link').nth(1).click();
   await expect(page).toHaveURL('http://localhost:3000/add');
 
