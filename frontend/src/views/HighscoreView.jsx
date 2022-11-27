@@ -1,35 +1,32 @@
 import React from "react";
 import { API } from "../Api/api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 
 
 export const HighscoreView = () => {
     let api = new API();
-    const allScores = [];
-    // const [allScores, setallScores] = useState([]);
 
-    console.log("Hejsa")
+    const [allScores, setallScores] = useState([]);
 
-    api.getAllUsers().then((users) => {
-        console.log(users)
-        let scores = []
-        for (let i = 0; i < users.length; i++) {
-            let user = users[i];
-            let username = user.username
-            let postsAmount = user.blogposts.length
-            let commentsAmount = user.comments.length
-            let scoreMap = {
-                'username': username,
-                'posts': postsAmount,
-                'comments': commentsAmount,
+    useEffect(() => {
+        api.getAllUsers().then((users) => {
+            let scores = []
+            for (let i = 0; i < users.length; i++) {
+                let user = users[i];
+                let username = user.username
+                let postsAmount = user.blogposts.length
+                let commentsAmount = user.comments.length
+                let scoreMap = {
+                    'username': username,
+                    'posts': postsAmount,
+                    'comments': commentsAmount,
+                }
+                scores.push(scoreMap)
             }
-
-            scores.push(scoreMap)
-        }
-        console.log("Setting scores for all")
-        allScores.push(scores)
-    });
+            setallScores(scores)
+        });
+    }, []);
 
     return (
         <div>
