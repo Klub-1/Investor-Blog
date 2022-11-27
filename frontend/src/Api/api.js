@@ -99,6 +99,14 @@ export class API {
     return json;
   }
 
+  async getAllUsers() {
+    const res = await fetch(
+      this.url + "/users"
+    );
+    const json = await res.json();
+    return json;
+  }
+
   async registerUser(email, username, password) {
     const res = await fetch(this.url + "/register", {
       method: "POST",
