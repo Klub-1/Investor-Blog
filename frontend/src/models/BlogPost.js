@@ -21,8 +21,8 @@ export class BlogPost {
     if (this.user_id === AuthStore.user.id) {
       this.username = "dig";
     } else {
-      const res = this.api.getUserName(this.user_id);
-      this.username = res.username;
+      const res = await this.api.getUserName(this.user_id);
+      this.username = res;
     }
   }
 

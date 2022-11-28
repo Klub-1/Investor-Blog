@@ -15,6 +15,11 @@ export class Comment {
     return user_id === this.user_id;
   }
 
+  async getUserName() {
+    const res = await this.api.getUserName(this.user_id);
+    this.username = res;
+  }
+
   constructor(id, user_id, blog_post_id, comment) {
     makeAutoObservable(this);
     this.id = id;
@@ -22,7 +27,6 @@ export class Comment {
     this.blog_post_id = blog_post_id;
     this.comment = comment;
 
-    const res = this.api.getUserName(this.user_id);
-    this.username = res.username;
+    this.getUserName();
   }
 }
