@@ -11,8 +11,10 @@ export class Comment {
   api = new API();
 
   async isCommentFromUser() {
-    const user_id = AuthStore.user.id;
-    return user_id === this.user_id;
+    return (
+      AuthStore.user.id === this.user_id ||
+      this.username === AuthStore.user.username
+    );
   }
 
   async getUserName() {

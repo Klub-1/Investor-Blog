@@ -18,11 +18,19 @@ export class BlogPost {
 
   // USER
   async getAuthor() {
-    if (this.user_id === AuthStore.user.id) {
+    if (this.user_id === -1) {
+      this.username = "Ukendt bruger";
+      return;
+    }
+
+    if (
+      this.user_id === AuthStore.user.id ||
+      this.username === AuthStore.user.username
+    ) {
       this.username = "dig";
     } else {
       const res = await this.api.getUserName(this.user_id);
-      this.username = res;
+      this.username = res.username;
     }
   }
 
