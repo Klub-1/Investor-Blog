@@ -4,7 +4,7 @@ import {
   AiOutlineSearch,
   AiOutlineBarChart,
   AiOutlineUser,
-  AiFillTrophy,
+  AiOutlineTrophy,
 } from "react-icons/ai";
 
 export const SideBarItems = [
@@ -44,7 +44,7 @@ export const SideBarItems = [
     title: "Highscore",
     route: "/highscore",
     unAuth: true,
-    icon: <AiFillTrophy />,
+    icon: <AiOutlineTrophy />,
   },
 
   {
