@@ -30,7 +30,11 @@ export class BlogPost {
       this.username = "dig";
     } else {
       const res = await this.api.getUserName(this.user_id);
-      this.username = res.username;
+      if (!res) {
+        this.username = "Ukendt bruger";
+      } else {
+        this.username = res;
+      }
     }
   }
 

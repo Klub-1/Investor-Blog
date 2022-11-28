@@ -99,9 +99,12 @@ export class API {
       },
     });
 
-    const username = await res.text();
-
-    return username;
+    if (res.status === 200) {
+      const username = await res.text();
+      return username.username;
+    } else {
+      return null;
+    }
   }
 
   async getUser() {

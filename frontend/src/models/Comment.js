@@ -19,7 +19,11 @@ export class Comment {
 
   async getUserName() {
     const res = await this.api.getUserName(this.user_id);
-    this.username = res;
+    if (!res) {
+      this.username = "Ukendt bruger";
+    } else {
+      this.username = res;
+    }
   }
 
   constructor(id, user_id, blog_post_id, comment) {
