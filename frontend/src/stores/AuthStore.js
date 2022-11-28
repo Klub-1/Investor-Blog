@@ -23,6 +23,7 @@ class AuthStore {
         user.email
       );
     } else {
+      localStorage.clear();
       this.user = new User(-1, "", [], [], [], "");
     }
   }
