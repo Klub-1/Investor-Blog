@@ -104,7 +104,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         #-------- test userexists --------
         request_url = self.url + \
-            f'checkifuserexists?email=test'
+            f'checkifuserexists?email=dennebrugerskalikkeoprettes'
         res = self.api_session.get(request_url)
         self.assertEqual(res.status_code, 409)
 
