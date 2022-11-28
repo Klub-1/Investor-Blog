@@ -1,11 +1,14 @@
 import React from "react";
 import { useState } from "react";
 import BlogPostStore from "../stores/BlogPostStore";
+import { useNavigate } from "react-router-dom";
 
 const AddView = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
+
+  const navigate = useNavigate();
 
   function postDataToBackend() {
     if (title === "" || content === "") {
@@ -17,6 +20,9 @@ const AddView = () => {
     setTitle("");
     setContent("");
     setTags("");
+
+    // SOURCE: https://stackoverflow.com/a/31079244
+    navigate("/");
   }
 
   return (
