@@ -30,9 +30,9 @@ const BlogPost = observer(({ post }) => {
             <h1 className="text-base">Slået op af {post.username}</h1>
           </div>
 
-          {AuthStore.isAuth ? (
-            <div className="flex gap-3 md:gap-4 pt-4 md:pt-0 justify-center">
-              <div className="justify-center content-center text-center">
+          <div className="flex gap-3 md:gap-4 pt-4 md:pt-0 justify-center">
+            <div className="justify-center content-center text-center">
+              {AuthStore.isAuth ? (
                 <button
                   className="text-2xl md:text-5xl"
                   onClick={() => {
@@ -45,11 +45,17 @@ const BlogPost = observer(({ post }) => {
                     <AiOutlineLike className="hover:text-[#C5C8D9]" />
                   )}
                 </button>
+              ) : (
+                <button className="text-2xl md:text-5xl" disabled="true">
+                  <AiOutlineLike />
+                </button>
+              )}
 
-                <h1>{post.getLikeCount()}</h1>
-              </div>
+              <h1>{post.getLikeCount()}</h1>
+            </div>
 
-              <div className="justify-center content-center text-center">
+            <div className="justify-center content-center text-center">
+              {AuthStore.isAuth ? (
                 <button
                   className="text-2xl md:text-5xl"
                   onClick={() => {
@@ -62,11 +68,17 @@ const BlogPost = observer(({ post }) => {
                     <AiOutlineDislike className="hover:text-[#C5C8D9]" />
                   )}
                 </button>
+              ) : (
+                <button className="text-2xl md:text-5xl" disabled="true">
+                  <AiOutlineDislike />
+                </button>
+              )}
 
-                <h1>{post.getDislikeCount()}</h1>
-              </div>
+              <h1>{post.getDislikeCount()}</h1>
+            </div>
 
-              <div className="justify-center content-center text-center">
+            <div className="justify-center content-center text-center">
+              {AuthStore.isAuth ? (
                 <button
                   className="text-2xl md:text-5xl"
                   onClick={() => setAddComment(!addComment)}
@@ -77,11 +89,15 @@ const BlogPost = observer(({ post }) => {
                     <MdOutlineAddComment className="hover:text-[#7382D9]" />
                   )}
                 </button>
+              ) : (
+                <button className="text-2xl md:text-5xl" disabled="true">
+                  <MdOutlineAddComment />
+                </button>
+              )}
 
-                <h1>{post.commentsCount()}</h1>
-              </div>
+              <h1>{post.commentsCount()}</h1>
             </div>
-          ) : null}
+          </div>
         </div>
 
         <div className="pb-5 text-2xl">{post.content}</div>
