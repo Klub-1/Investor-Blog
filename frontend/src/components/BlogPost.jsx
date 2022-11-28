@@ -165,7 +165,7 @@ const Comments = ({ comments }) => {
             >
               <h1 className="text-xl">{data.comment}</h1>
               <h1 className="text-base">
-                Slået op af {data.isCommentFromUser() ? "dig" : data.user_id}
+                Slået op af {data.isCommentFromUser() ? "dig" : data.username}
               </h1>
             </div>
           ))}
