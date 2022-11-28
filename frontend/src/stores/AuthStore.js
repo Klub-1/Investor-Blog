@@ -11,6 +11,13 @@ class AuthStore {
 
   async checkAuth() {
     const res = await this.api.getUser();
+    if (!res) {
+      this.isAuth = false;
+      localStorage.clear();
+      this.user = new User(-1, "", [], [], [], "");
+      return;
+    }
+
     const user = await res.user;
     this.isAuth = res.status === "valid";
     if (this.isAuth) {
