@@ -10,16 +10,20 @@
     name: snapd
     state: started
     enabled: yes
+  tags: notest
 
 
 - name: install certbot snap
   ansible.builtin.command: snap install --classic certbot
+  tags: notest
 
 - name: symlink certbot
   ansible.builtin.file:
     src: /snap/bin/certbot
     dest: /usr/bin/certbot
     state: link
+  tags: notest
 
 - name: Generate new certificate if one doesn't exist.
   ansible.builtin.command: "certbot --nginx --noninteractive --agree-tos --email s194134@student.dtu.dk -d investorblog.diplomportal.dk"
+  tags: notest

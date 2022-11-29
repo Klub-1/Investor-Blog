@@ -2,13 +2,17 @@
 - hosts: all
   become: yes
   roles:
-    - setup_server
-    - deployment
-    - nginx
     - certbot
+    - nginx
+    - backend
+    - frontend
+    - grafana
+    - prometheus
   tags:
-    - setup_server
-    - deployment
-    - nginx
     - certbot
+    - nginx
+    - backend
+    - frontend
+    - grafana
+    - prometheus
   
