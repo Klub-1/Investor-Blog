@@ -4,6 +4,7 @@ import {
   AiOutlineSearch,
   AiOutlineBarChart,
   AiOutlineUser,
+  AiOutlineTrophy,
 } from "react-icons/ai";
 
 export const SideBarItems = [
@@ -38,9 +39,16 @@ export const SideBarItems = [
     unAuth: true,
     icon: <AiOutlineBarChart />,
   },
-
   {
     id: 5,
+    title: "Highscore",
+    route: "/highscore",
+    unAuth: true,
+    icon: <AiOutlineTrophy />,
+  },
+
+  {
+    id: 6,
     title: "Account",
     route: "/account",
     unAuth: true,

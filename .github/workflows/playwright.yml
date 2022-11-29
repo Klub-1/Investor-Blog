@@ -1,26 +1,40 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, dev, feature/playwritetest* ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, dev ]
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
     steps:
-    - name: Go to frontend folder
-      run: cd frontend
     - uses: actions/checkout@v3
+
+    - name: Make envfile
+      uses: SpicyPizza/create-envfile@v1.3
+      with:
+         grafana_user: ${{secrets.grafana_user}}
+         grafana_password: ${{secrets.grafana_password}}
+         SENTRY_PATH: ${{secrets.SENTRY_PATH}} -e "DEVMODE=${{secrets.DEVMODE}}
+         DEVMODE: false
+
+    - name: Start containers
+      run: docker-compose -f "docker-compose.yml" up -d --build
+
     - uses: actions/setup-node@v3
       with:
         node-version: 16
     - name: Install dependencies
       run: npm ci
+      working-directory: ./frontend
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+      working-directory: ./frontend
     - name: Run Playwright tests
       run: npx playwright test
+      working-directory: ./frontend
     - uses: actions/upload-artifact@v3
       if: always()
       with:

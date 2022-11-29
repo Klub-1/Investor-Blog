@@ -47,6 +47,7 @@ class User(Base):
     blogposts = relationship("BlogPost", back_populates="user")
     comments = relationship("Comments", back_populates="user")
     interactions = relationship("Interactions", back_populates="user")
+    favorites = relationship("Favorite", back_populates="user")
 
 
 class BlogPost(Base):
@@ -59,8 +60,32 @@ class BlogPost(Base):
     
     tags = Column(String, index=True)
     
+    user = relationship("User", back_populates="blogposts")
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"))
-    user = relationship("User", back_populates="blogposts", )
     
     comments = relationship("Comments", back_populates="blogpost")
     interactions = relationship("Interactions", back_populates="blogpost")
+
+    likes = Column(Integer, index=True)
+    dislikes = Column(Integer, index=True)
+
+    user_id = Column(String, ForeignKey("users.id"))
+    user = relationship("User", back_populates="blogposts")
+
+class Stock(Base):
+    """A stock is fetched from Alpha Vantage, pointing to an id and its name"""
+    __tablename__ = "stocks"
+    
+    stock_name = Column(String, primary_key=True, index=True)
+    ppo = Column(String, index=True)
+    favorites= relationship("Favorite", back_populates="stock")
+
+class Favorite(Base):
+    """A favorite is created by a user, pointing to a stock and its owner"""
+    __tablename__ = "favorites"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="favorites")
+    stock_id = Column(Integer, ForeignKey("stocks.stock_name"))
+    stock = relationship("Stock", back_populates="favorites")

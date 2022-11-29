@@ -1,36 +1,54 @@
 import "@testing-library/jest-dom";
+import { API } from "../Api/api";
+import AuthStore from "../stores/AuthStore";
 
-import { BlogPostStore } from "../stores/BlogPostStore";
+import BlogPostStore from "../stores/BlogPostStore";
 
-test("Filter blogposts", () => {
-  const blogpostStore = new BlogPostStore();
+beforeAll(async () => {
+  const api = new API();
+  const users = await api.getAllUsers();
 
-  blogpostStore.createBlogPost("This is a test", "I'm writing a test", "TAG");
+  const userExists = users.find((u) => u.email === "test_user@user.dk");
 
-  blogpostStore.createBlogPost(
-    "This is another test",
-    "I'm writing another test",
-    "TAG, TAG2, TAG3"
-  );
+  if (!userExists) {
+    await api.registerUser("test_user@user.dk", "test_user", "test");
+  } else {
+    await api.login("test_user@user.dk", "test");
+  }
 
-  blogpostStore.setFilterValue("another");
-
-  expect(blogpostStore.filteredBlogPosts.length).toBe(1);
+  AuthStore.checkAuth();
 });
 
+test("Filter blogposts", async () => {
+  const randomNumber = Math.random() * Math.PI;
 
-test("Add interaction", () => {
-  const blogpostStore = new BlogPostStore();
-
-  blogpostStore.createBlogPost("This is a test", "I'm writing a test", "TAG");
-
-  blogpostStore.createBlogPost(
-    "This is another test",
-    "I'm writing another test",
-    "TAG, TAG2, TAG3"
+  await BlogPostStore.createBlogPost(
+    "This is a test",
+    "I'm writing a test",
+    "TAG"
   );
 
-  blogpostStore.setFilterValue("another");
+  await BlogPostStore.createBlogPost(
+    "This is a test " + randomNumber,
+    "I'm writing a test",
+    "TAG"
+  );
 
-  expect(blogpostStore.filteredBlogPosts.length).toBe(1);
+  BlogPostStore.setFilterValue(randomNumber.toString());
+
+  const filteredBlogPosts = BlogPostStore.filteredBlogPosts;
+
+  expect(filteredBlogPosts.length).toBe(1);
+});
+
+test("Add interaction", async () => {
+  await BlogPostStore.createBlogPost(
+    "This is a test",
+    "I'm writing a test",
+    "TAG"
+  );
+
+  const count = BlogPostStore.blogposts.length;
+
+  expect(count).toBeGreaterThan(0);
 });

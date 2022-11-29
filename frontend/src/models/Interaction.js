@@ -12,11 +12,7 @@ export class Interaction {
 
   constructor(id, user_id, blog_post_id, type) {
     makeAutoObservable(this);
-    if (id < 0) {
-      this.id = Math.random() * Math.PI * 10;
-    } else {
-      this.id = id;
-    }
+    this.id = id
     this.user_id = user_id;
     this.blog_post_id = blog_post_id;
     this.type = type;

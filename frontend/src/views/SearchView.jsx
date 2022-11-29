@@ -36,7 +36,7 @@ export const SearchView = observer(() => {
       {/*  -----------Sorted blog posts ----------- */}
       <div className="flex flex-col items-center justify-center overflow-y-scroll">
         {BlogPostStore.filteredBlogPosts.map((post) => (
-          <BlogPost key={post.id + Math.random()} post={post} />
+          <BlogPost key={post.id} post={post} />
         ))}
       </div>
     </div>

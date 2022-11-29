@@ -1,5 +1,7 @@
+import { Constants } from "../Util/Constants";
+
 export class API {
-  url = "https://investorblog.diplomportal.dk/api";
+  url = Constants.BACKEND_URL;
 
   async getBlogPosts() {
     const res = await fetch(this.url + "/blogposts/", {
@@ -89,83 +91,136 @@ export class API {
     );
   }
 
-  async getUserName() {
+  async getUserName(id) {
+    const res = await fetch(this.url + "/users/username/" + id, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const username = await res.text();
+
+    return username;
+  }
+
+  async getUser() {
     const res = await fetch(
-      this.url +
-        "/user/username?token=" +
-        localStorage.getItem("portal-jwt-Token")
+      this.url + "/user?token=" + localStorage.getItem("portal-jwt-Token")
     );
     const json = await res.json();
     return json;
   }
 
-  async getUserNameById(user_id) {
-    const res = await fetch(
-      this.url +
-        "/user/"+user_id
-    );
-    const json = await res.json();
-    return json;
-  }
-
-  async getUserID() {
-    const res = await fetch(
-      this.url +
-
-        "/user/id?token=" +
-        localStorage.getItem("portal-jwt-Token")
-    );
+  async getAllUsers() {
+    const res = await fetch(this.url + "/users");
     const json = await res.json();
     return json;
   }
 
   async registerUser(email, username, password) {
-    const res = await fetch(
-      `https://investorblog.diplomportal.dk/api/register`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-          username: username,
-          password: password,
-        }),
-      }
-    )
+    const res = await fetch(this.url + "/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        username: username,
+        password: password,
+      }),
+    });
     const token = await res.text();
     return token;
   }
 
+  async getStocks() {
+    const res = await fetch("http://localhost:8000/stocks/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const stocks = await res.json();
+    return stocks;
+  }
+
   async login(email, password) {
-    const res = await fetch(
-      `https://investorblog.diplomportal.dk/api/login`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-        }),
-      }
-    )
+    const res = await fetch(this.url + "/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password,
+      }),
+    });
     const token = await res.text();
     return token;
   }
 
   async checkIfUserExists(email) {
-    const res = await fetch(
-      this.url +
-        "/checkifuserexists?email=" + email
-    );
-    if(res.status === 200){
+    const res = await fetch(this.url + "/checkifuserexists?email=" + email);
+    if (res.status === 200) {
       return true;
-    }
-    else{
+    } else {
       return false;
     }
+  }
+
+  async searchStock(stock_name) {
+    const res = await fetch(this.url + "/stocks/" + stock_name, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const stock = await res.json();
+    return stock;
+  }
+
+  async getUserFavorites(user_id) {
+    const res = await fetch(
+      this.url + "/stocks/" + user_id + "/get_favorites",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const favorites = await res.json();
+    return favorites;
+  }
+
+  async createFavorite(user_id, stocks_name) {
+    const res = await fetch(
+      this.url + "/stocks/" + user_id + "/create_favorite/" + stocks_name,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const favorite = await res.json();
+    console.table(favorite);
+    return favorite;
+  }
+
+  async deleteFavorite(user_id, stocks_name) {
+    const res = await fetch(
+      this.url + "/stocks/" + user_id + "/delete_favorite/" + stocks_name,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const status = res.status;
+    return status;
   }
 }

@@ -1,50 +1,58 @@
 import { action, makeObservable, observable } from "mobx";
 import { API } from "../Api/api";
+import { User } from "../models/User";
+import { Constants } from "../Util/Constants";
 
 class AuthStore {
-  user_name = "";
+  user = new User(-1, "", [], [], [], "");
+  blogposts = [];
   isAuth = false;
   api = new API();
 
-  async getUserName() {
-    const user = await this.checkAuth();
-    this.user_name = user.username;
-    return user.username;
-  }
-
   async checkAuth() {
-    const user = await this.api.getUserName();
-    console.log(user.status);
-    this.isAuth = user.status === "valid";
-    return user;
+    const res = await this.api.getUser();
+    if (!res) {
+      this.isAuth = false;
+      localStorage.clear();
+      this.user = new User(-1, "", [], [], [], "");
+      return;
+    }
+
+    const user = await res.user;
+    this.isAuth = res.status === "valid";
+    if (this.isAuth) {
+      this.user = new User(
+        user.id,
+        user.username,
+        user.blogposts,
+        user.comments,
+        user.interactions,
+        user.email
+      );
+    } else {
+      localStorage.clear();
+      this.user = new User(-1, "", [], [], [], "");
+    }
   }
 
   async login(email, password) {
     const token = await this.api.login(email, password);
     await this.checkAuth();
-    window.location.href = `https://investorblog.diplomportal.dk?token=${token}`;
+    window.location.href = Constants.FRONTEND_URL + `?token=${token}`;
   }
 
   async register(username, email, password) {
-    const ifUSerExist = await (this.api.checkIfUserExists(email));
-    if(!ifUSerExist){
-      const token = await this.api.registerUser(email, username , password);
-      window.location.href = `https://investorblog.diplomportal.dk?token=${token}`;  
-      ;
+    const ifUSerExist = await this.api.checkIfUserExists(email);
+    if (!ifUSerExist) {
+      const token = await this.api.registerUser(email, username, password);
+      window.location.href = Constants.FRONTEND_URL + `?token=${token}`;
     }
   }
-  async getUserID() {
-    const id = await this.api.getUserID();
-    return id.id;
-  }
-
-
 
   constructor() {
     makeObservable(this, {
-      user_name: observable,
+      user: observable,
       isAuth: observable,
-      getUserName: action,
       checkAuth: action,
       login: action,
       register: action,

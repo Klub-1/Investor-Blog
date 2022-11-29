@@ -23,6 +23,14 @@ from backend.api import crud
 from backend.model import models, schemas
 from backend.database.database import SessionLocal, engine
 
+SERVER_LOCATION = "http://localhost:8000"
+FRONTEND_LOCATION = "http://localhost:3000"
+DEV_MODE = getenv("DEVMODE")
+if DEV_MODE == "false":
+    SERVER_LOCATION = "https://investorblog.diplomportal.dk/api"
+    FRONTEND_LOCATION = "https://investorblog.diplomportal.dk"
+
+
 # Sentry loggin code sourced from the sentry docs:
 # https://docs.sentry.io/platforms/python/guides/logging/
 
@@ -43,7 +51,15 @@ sentry_sdk.init(
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(openapi_prefix="/api")
+app = None
+if DEV_MODE == "false":
+    app = FastAPI(
+        title='Investorblog API',
+        docs_url='/api/docs', 
+        redoc_url='/api/redoc',
+        openapi_url='/api/openapi.json')
+else:
+    app = FastAPI()
 
 origins = [
     "*",
@@ -86,7 +102,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
 
-@app.get("/users/", response_model=list[schemas.User])
+@app.get("/users/", response_model=list[schemas.UserInformation])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
@@ -185,100 +201,91 @@ def create_blogpost_comment(
     return response
 
 
+@app.get("/users/username/{user_id}")
+def get_username(user_id: int, db: Session = Depends(get_db)):
+    response = crud.get_username_by_id(db=db, user_id=user_id)
+    if response is None:
+        raise HTTPException(status_code=500, detail="Error getting username")
+    return response
+
+
 @app.get("/campusnet/login")
 async def login():
-    URI = "https://auth.dtu.dk/dtu/?service=https://investorblog.diplomportal.dk/api/campusnet/redirect"
+    URI = "https://auth.dtu.dk/dtu/?service=" + \
+        SERVER_LOCATION + "/campusnet/redirect"
     return RedirectResponse(url=URI)
 
 
 @app.get("/campusnet/redirect")
 async def redirect(ticket: str):
-    body = "https://auth.dtu.dk/dtu/servicevalidate?service=https://investorblog.diplomportal.dk/api/campusnet/redirect&ticket="+ticket
+    body = "https://auth.dtu.dk/dtu/servicevalidate?service=" + \
+        SERVER_LOCATION + "/campusnet/redirect&ticket="+ticket
     body = requests.get(url=body)
     element = BeautifulSoup(body.content.decode("utf-8"))
-    if(crud.get_user_by_username(db=SessionLocal(), username = element.find("cas:user").text) == None):
-        db_user = crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email = element.find("cas:user").text+ "@dtu.dk",username = element.find("cas:user").text, password = ""))
+    if (crud.get_user_by_username(db=SessionLocal(), username=element.find("cas:user").text) == None):
+        db_user = crud.create_user(db=SessionLocal(), user=schemas.UserCreate(email=element.find(
+            "cas:user").text + "@dtu.dk", username=element.find("cas:user").text, password=""))
         token = jwt.encode({'id': db_user.id, "exp": datetime.now(
-        tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
-    return RedirectResponse(url="https://investorblog.diplomportal.dk?token="+token)
+            tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+    else:
+        db_user = crud.get_user_by_username(
+            db=SessionLocal(), username=element.find("cas:user").text)
+        token = jwt.encode({'id': db_user.id, "exp": datetime.now(
+            tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
 
-#body with email username and password
+    return RedirectResponse(url=FRONTEND_LOCATION+"?token="+token)
+
+# body with email username and password
+
+
 @app.post("/register")
 async def register(user: schemas.UserBase, db: Session = Depends(get_db)):
-    if(crud.get_user(db=SessionLocal(), user_id = user.email) == None):
+    if (crud.get_user(db=SessionLocal(), user_id=user.email) == None):
         mySalt = bcrypt.gensalt()
-        hashed = bcrypt.hashpw(user.password.encode('utf-8'),mySalt)
+        hashed = bcrypt.hashpw(user.password.encode('utf-8'), mySalt)
         user.password = hashed
         db_user = crud.create_user(db=SessionLocal(), user=user)
         token = jwt.encode({'id': db_user.id, "exp": datetime.now(
-        tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+            tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
         return token
     else:
-        raise HTTPException(status_code=400, detail="Email already registered") 
+        raise HTTPException(status_code=400, detail="Email already registered")
+
 
 @app.post("/login")
 async def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db=SessionLocal(), email = user.email)
-    if(user == None):
+    db_user = crud.get_user_by_email(db=SessionLocal(), email=user.email)
+    if (user == None):
         raise HTTPException(status_code=400, detail="User not found")
-    if((bcrypt.checkpw(user.password.encode('utf-8'), db_user.password))):
+    if ((bcrypt.checkpw(user.password.encode('utf-8'), db_user.password))):
         return jwt.encode({'id': db_user.id, "exp": datetime.now(
-        tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+            tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
 
 
 @app.get("/checkifuserexists")
 async def checkifuserexists(email: str):
-    if(crud.get_user_by_email(db=SessionLocal(), email = email) == None):
+    if (crud.get_user_by_email(db=SessionLocal(), email=email) == None):
         raise HTTPException(status_code=409, detail="Email does not exist")
     else:
-        return jwt.encode({'id': crud.get_user_by_email(db=SessionLocal(), email = email).id, "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
+        return jwt.encode({'id': crud.get_user_by_email(db=SessionLocal(), email=email).id, "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=1800)}, 'secret', algorithm='HS256')
 
-@app.get("/user/username")
-async def verify(token: str):
-    #if "" in token remove it
-    if(token[0] == '"'):
+
+@app.get("/user")
+async def getuser(token: str):
+    if (token[0] == '"'):
         token = token[1:]
-    if(token[-1] == '"'):
+    if (token[-1] == '"'):
         token = token[:-1]
     try:
         # todo CHANGE SECRET KEY
         decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-        return {"username": crud.get_user(db=SessionLocal(), user_id = decoded["id"]).username, "status": "valid"}
+        user = crud.get_user(db=SessionLocal(), user_id=decoded["id"])
+        return {"user": schemas.UserInformation(id=user.id, email=user.email, username=user.username, blogposts=user.blogposts, commennts=user.comments), "status": "valid"}
     except jwt.ExpiredSignatureError:
-        return {"username": "", "status": "Token expired"}
+        return {"user": "", "status": "Token expired"}
     except jwt.InvalidTokenError:
-        return {"username": "", "status": "Invalid token"}
+        return {"user": "", "status": "Invalid token"}
 
-@app.get("/user/id")
-async def getid(token: str):
-    if(token[0] == '"'):
-        token = token[1:]
-    if(token[-1] == '"'):
-        token = token[:-1]
-    try:
-        # todo CHANGE SECRET KEY
-        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-        return {"id": crud.get_user(db=SessionLocal(), user_id = decoded["id"]).id, "status": "valid"}
-    except jwt.ExpiredSignatureError:
-        return {"username": "", "status": "Token expired"}
-    except jwt.InvalidTokenError:
-        return {"username": "", "status": "Invalid token"}
-
-@app.get("/verify")
-async def verify(token: str):
-    #if "" in token remove it
-    if(token[0] == '"'):
-        token = token[1:]
-    if(token[-1] == '"'):
-        token = token[:-1]
-    try:
-        # todo CHANGE SECRET KEY
-        decoded = jwt.decode(token, 'secret', algorithms=['HS256'])
-        return True
-    except jwt.ExpiredSignatureError:
-        return "Token expired"
-    except jwt.InvalidTokenError:
-        return "Invalid token"
 
 
 @app.get("/test_logging")
@@ -289,3 +296,72 @@ def test_logging():
 
 
 Instrumentator().instrument(app).expose(app)
+
+#@app.get("/stocks")
+#def read_stocks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):    
+#    stocks = crud.get_stocks_from_db(db, skip=skip, limit=limit)
+#    return stocks
+
+@app.post("/stocks/{stock_name}", response_model=schemas.Stock)
+def create_stock(stock_name: str, db: Session = Depends(get_db)):
+    url = "https://www.alphavantage.co/query?function=PPO&symbol="+stock_name+"&interval=daily&series_type=close&fastperiod=10&matype=1&apikey=92DD3OTK7XOQK3GT"
+    try:
+        r = requests.get(url)
+        stocks = r.json()  
+        if stocks == None:
+            raise HTTPException(status_code=404, detail="Stock not found")
+        
+        apippo = stocks.get("Technical Analysis: PPO").get(stocks.get("Meta Data").get("3: Last Refreshed")).get("PPO")
+    
+        db_stock = crud.check_if_stock_exists(db, stockid=stock_name)
+        
+        stock = models.Stock(stock_name=stock_name, ppo=apippo)    
+        
+        if db_stock:        
+            return crud.update_stock(db=db, stock_name=stock_name, stockppo=apippo)
+        
+        if apippo == None:
+            stock.ppo = 0
+            
+        return crud.create_stock(db=db, stock=stock)
+    except:
+        pass
+    return crud.get_stock_from_db(db, stock_name=stock_name)
+
+@app.post("/stocks/{user_id}/create_favorite/{stock_name}", response_model=schemas.Favorite, status_code=201)
+def create_favorite_stock(
+    user_id: int, stock_name: str, db: Session = Depends(get_db)
+):
+    favorite = crud.create_favorite(db=db, fav=models.Favorite(user_id=user_id, stock_id=stock_name))
+    if stock_name is None:
+        raise HTTPException(status_code=500, detail="Can't find stock")
+    return favorite
+
+@app.delete("/stocks/{user_id}/delete_favorite/{stock_name}")
+def delete_favorite_stock(
+    user_id: int, stock_name: str, db: Session = Depends(get_db)
+    ):
+    favorite = crud.delete_favorite(db=db, user_id=user_id, stock_name=stock_name)
+    if favorite is None:
+        raise HTTPException(status_code=404, detail="Favorite stock not found")
+    return {"status": "Favorite stock has been removed"}
+
+@app.get("/stocks/{user_id}/get_favorites", response_model=list[schemas.Stock])
+def get_favorite_stock(
+        user_id: int, db: Session = Depends(get_db)
+    ):
+    list_of_stocks = crud.get_favorite_stock_names_from_db(db, user_id=user_id)
+    for stock in list_of_stocks:        
+        url = "https://www.alphavantage.co/query?function=PPO&symbol="+stock.stock_name+"&interval=daily&series_type=close&fastperiod=10&matype=1&apikey=92DD3OTK7XOQK3GT"
+        r = requests.get(url)
+        stocks = r.json()  
+        
+        try: 
+            apippo = stocks.get("Technical Analysis: PPO").get(stocks.get("Meta Data").get("3: Last Refreshed")).get("PPO")  
+            stock.ppo = apippo
+        except:
+            pass
+        print(stock.stock_name)  
+        print(stock.ppo)  
+            
+    return list_of_stocks
