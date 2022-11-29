@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import BlogPost from "../components/BlogPost";
 
@@ -15,10 +15,6 @@ export const AccountView = observer(() => {
   const [password, setPassword] = useState();
   const [email, setEmail] = useState();
 
-  useEffect(() => {
-    AuthStore.checkAuth();
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (showRegister) {
@@ -31,7 +27,7 @@ export const AccountView = observer(() => {
     }
   };
 
-  if (AuthStore.isAuth === false) {
+  if (!AuthStore.isAuth) {
     return (
       <div className="h-[400px] w-full shadow rounded-lg bg-white mb-5 md:mb-10">
         <div className="h-4/5 w-full grid">

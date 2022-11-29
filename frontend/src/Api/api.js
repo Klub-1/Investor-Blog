@@ -100,10 +100,10 @@ export class API {
     });
 
     if (res.status === 200) {
-      const username = await res.text();
+      const username = await res.json();
       return username.username;
     } else {
-      return null;
+      return "Ukendt bruger";
     }
   }
 
@@ -209,7 +209,6 @@ export class API {
       }
     );
     const favorite = await res.json();
-    console.table(favorite);
     return favorite;
   }
 

@@ -4,25 +4,27 @@ import AuthStore from "../stores/AuthStore";
 
 export class Comment {
   id = 0;
-  user_id = "";
+  user_id = 0;
   username = "";
+  comment_from_user = false;
   blog_post_id = 0;
   comment = "";
   api = new API();
 
-  async isCommentFromUser() {
-    return (
-      AuthStore.user.id === this.user_id ||
-      this.username === AuthStore.user.username
-    );
-  }
-
   async getUserName() {
-    const res = await this.api.getUserName(this.user_id);
-    if (!res) {
-      this.username = "Ukendt bruger";
+    await AuthStore.checkAuth();
+
+    if (this.user_id === -1) {
+      this.username = "Anonymous";
+    }
+
+    if (this.user_id === AuthStore.user.id) {
+      this.username = "dig";
+      this.comment_from_user = true;
     } else {
+      const res = await this.api.getUserName(this.user_id);
       this.username = res;
+      this.comment_from_user = false;
     }
   }
 
