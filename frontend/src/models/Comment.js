@@ -12,7 +12,9 @@ export class Comment {
   api = new API();
 
   async getUserName() {
-    await AuthStore.checkAuth();
+    if (AuthStore.user.id === -1) {
+      await AuthStore.checkAuth();
+    }
 
     if (this.user_id === -1) {
       this.username = "Anonymous";

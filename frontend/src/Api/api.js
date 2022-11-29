@@ -1,7 +1,8 @@
 import { Constants } from "../Util/Constants";
 
 export class API {
-  url = Constants.BACKEND_URL;
+  constant = new Constants();
+  url = this.constant.BACKEND_URL();
 
   async getBlogPosts() {
     const res = await fetch(this.url + "/blogposts/", {
