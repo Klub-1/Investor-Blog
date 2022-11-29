@@ -9,29 +9,30 @@ class AuthStore {
   isAuth = false;
   api = new API();
 
+  setUser(user) {
+    this.user = user;
+  }
+
+  setAuth(value) {
+    this.isAuth = value;
+  }
+
   async checkAuth() {
     const res = await this.api.getUser();
     if (!res) {
-      this.isAuth = false;
+      this.setAuth(false);
       localStorage.clear();
-      this.user = new User(-1, "", [], [], [], "");
+      this.setUser(new User(-1, "", ""));
       return;
     }
 
-    const user = await res.user;
-    this.isAuth = res.status === "valid";
+    const user = res.user;
+    this.setAuth(res.status === "valid");
     if (this.isAuth) {
-      this.user = new User(
-        user.id,
-        user.username,
-        user.blogposts,
-        user.comments,
-        user.interactions,
-        user.email
-      );
+      this.setUser(new User(user.id, user.username, user.email));
     } else {
       localStorage.clear();
-      this.user = new User(-1, "", [], [], [], "");
+      this.setAuth(new User(-1, "", ""));
     }
   }
 
@@ -53,6 +54,8 @@ class AuthStore {
     makeObservable(this, {
       user: observable,
       isAuth: observable,
+      setUser: action,
+      setAuth: action,
       checkAuth: action,
       login: action,
       register: action,

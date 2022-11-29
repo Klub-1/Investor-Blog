@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AuthStore from "../stores/AuthStore";
 
 import {
@@ -16,10 +16,6 @@ import { MdOutlineAddComment, MdAddComment } from "react-icons/md";
 
 const BlogPost = observer(({ post }) => {
   const [addComment, setAddComment] = useState(false);
-
-  useEffect(() => {
-    AuthStore.checkAuth();
-  }, []);
 
   return (
     <div className="h-fit w-full  shadow rounded-lg bg-white mb-5 md:mb-10">
@@ -46,7 +42,7 @@ const BlogPost = observer(({ post }) => {
                   )}
                 </button>
               ) : (
-                <button className="text-2xl md:text-5xl" disabled="true">
+                <button className="text-2xl md:text-5xl" disabled={true}>
                   <AiOutlineLike />
                 </button>
               )}
@@ -69,7 +65,7 @@ const BlogPost = observer(({ post }) => {
                   )}
                 </button>
               ) : (
-                <button className="text-2xl md:text-5xl" disabled="true">
+                <button className="text-2xl md:text-5xl" disabled={true}>
                   <AiOutlineDislike />
                 </button>
               )}
@@ -90,7 +86,7 @@ const BlogPost = observer(({ post }) => {
                   )}
                 </button>
               ) : (
-                <button className="text-2xl md:text-5xl" disabled="true">
+                <button className="text-2xl md:text-5xl" disabled={true}>
                   <MdOutlineAddComment />
                 </button>
               )}
@@ -176,13 +172,11 @@ const Comments = ({ comments }) => {
             <div
               key={data.id}
               className={`px-5 pt-5 ${
-                data.isCommentFromUser() ? "text-right" : "text-left"
+                data.comment_from_user ? "text-right" : "text-left"
               }`}
             >
               <h1 className="text-xl">{data.comment}</h1>
-              <h1 className="text-base">
-                Slået op af {data.isCommentFromUser() ? "dig" : data.username}
-              </h1>
+              <h1 className="text-base">Slået op af {data.username}</h1>
             </div>
           ))}
         </div>
