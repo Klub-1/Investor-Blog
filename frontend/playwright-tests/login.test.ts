@@ -1,18 +1,19 @@
 import { test, expect } from '@playwright/test';
-import { assert } from 'console';
 
 
-test('test', async ({ page }) => {
+test('register, remove token and login - test', async ({ page }) => {
+
+  const testid = Math.random() * 1000;
+
   await page.goto('http://localhost:3000/');
   await page.getByRole('link').nth(4).click();
   await page.getByRole('button', { name: 'Login' }).first().click();
   await page.getByRole('button', { name: 'Registrer' }).click();
   await page.getByPlaceholder('Brugernavn').click();
-  await page.getByPlaceholder('Brugernavn').fill('test');
+  await page.getByPlaceholder('Brugernavn').fill('test' + testid.toString());
   await page.getByPlaceholder('Brugernavn').press('Tab');
-  await page.getByPlaceholder('Email').fill('test@test.dk');
+  await page.getByPlaceholder('Email').fill('test'  + testid.toString() + '@test.dk');
   await page.getByPlaceholder('Email').press('Tab');
-  await page.getByRole('link').nth(3).click();
   await page.getByPlaceholder('Password').fill('test');
   await page.getByRole('button', { name: 'Opret konto' }).click();
 
@@ -34,7 +35,7 @@ test('test', async ({ page }) => {
   await page.getByRole('link').nth(4).click();
   await page.getByRole('button', { name: 'Login' }).first().click();
   await page.getByPlaceholder('Email').click();
-  await page.getByPlaceholder('Email').fill('test@test.dk');
+  await page.getByPlaceholder('Email').fill('test' + testid.toString() + '@test.dk');
   await page.getByPlaceholder('Email').press('Tab');
   await page.getByPlaceholder('Password').fill('test');
   await page.getByPlaceholder('Password').press('Enter');

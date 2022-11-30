@@ -1,45 +1,56 @@
 import { test, expect } from '@playwright/test';
 
-test('test', async ({ page }) => {
+test('AddBlogPost - test', async ({ page }) => {
 
-  //create user
+  const testid = Math.random() * 1000;
+
   await page.goto('http://localhost:3000/');
-  await page.getByRole('link').nth(3).click();
-  await page.getByRole('button', { name: 'Login' }).first().click();
+
+  await page.getByRole('link').nth(4).click();
+  await expect(page).toHaveURL('http://localhost:3000/account');
+
+  await page.getByRole('button', { name: 'Login' }).click();
+
   await page.getByRole('button', { name: 'Registrer' }).click();
+
   await page.getByPlaceholder('Brugernavn').click();
-  await page.getByPlaceholder('Brugernavn').fill('test2');
-  await page.getByPlaceholder('Brugernavn').press('Tab');
-  await page.getByPlaceholder('Email').fill('test2@test.dk');
+
+  await page.getByPlaceholder('Brugernavn').fill('addtest' + testid.toString());
+
+  await page.getByPlaceholder('Email').click();
+
+  await page.getByPlaceholder('Email').fill('addtest' + testid.toString() + '@test.dk');
+
   await page.getByPlaceholder('Email').press('Tab');
-  await page.getByRole('link').nth(3).click();
-  await page.getByPlaceholder('Password').fill('test');
+
+  await page.getByPlaceholder('Password').fill('1234');
+
   await page.getByRole('button', { name: 'Opret konto' }).click();
-  const token = await page.evaluate(() => localStorage.getItem('portal-jwt-Token')); 
+
   await expect(page).toHaveURL('http://localhost:3000/');
 
-  await new Promise(f => setTimeout(f, 5000));
   await page.getByRole('link').nth(1).click();
+
   await expect(page).toHaveURL('http://localhost:3000/add');
 
   await page.getByPlaceholder('Titel').click();
 
-  await page.getByPlaceholder('Titel').fill('Dette er en test');
+  await page.getByPlaceholder('Titel').fill('Dette er et test post');
 
   await page.getByPlaceholder('Indlæg').click();
 
-  await page.getByPlaceholder('Indlæg').fill('Jeg har lavet en test');
+  await page.getByPlaceholder('Indlæg').fill('Dette er en test med id ' + testid.toString());
 
   await page.getByPlaceholder('Tags (F.eks.: APPL, Positivt, Køb)').click();
 
-  await page.getByPlaceholder('Tags (F.eks.: APPL, Positivt, Køb)').fill('Dette, er, et, tag');
+  await page.getByPlaceholder('Tags (F.eks.: APPL, Positivt, Køb)').fill('TEST');
 
   await page.getByRole('button', { name: 'Opret indlæg' }).click();
-
-  await page.getByRole('link').first().click();
   await expect(page).toHaveURL('http://localhost:3000/');
 
-  // check if the post is there
-  await expect(page.getByText('Dette er en test')).toBeTruthy();
+  const innertext = await page.getByText('Dette er en test med id ' + testid.toString()).innerText();
+
+  await expect(innertext).toBe('Dette er en test med id ' + testid.toString());
+
 
 });

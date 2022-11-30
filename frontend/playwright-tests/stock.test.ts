@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 
 test('test', async ({ page }) => {
 
+  const testid = Math.random() * 1000;
+
   await page.goto('http://localhost:3000/');
 
   await page.getByRole('link').nth(4).click();
@@ -13,11 +15,11 @@ test('test', async ({ page }) => {
 
   await page.getByPlaceholder('Brugernavn').click();
 
-  await page.getByPlaceholder('Brugernavn').fill('test');
+  await page.getByPlaceholder('Brugernavn').fill('test' + testid.toString());
 
   await page.getByPlaceholder('Brugernavn').press('Tab');
 
-  await page.getByPlaceholder('Email').fill('test');
+  await page.getByPlaceholder('Email').fill('test' + testid.toString() + '@test.dk');
 
   await page.getByPlaceholder('Email').press('Tab');
 
@@ -48,7 +50,7 @@ test('test', async ({ page }) => {
   await expect(page).toHaveURL('http://localhost:3000/');
 
   await page.locator('a:nth-child(4)').click();
-  await expect(page).toHaveURL('http://localhost:3000//stocks');
+  await expect(page).toHaveURL('http://localhost:3000/stocks');
 
   await expect(page.getByRole('heading', { name: 'APLE' })).toBeTruthy();
 
