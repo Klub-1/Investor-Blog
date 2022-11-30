@@ -23,7 +23,6 @@
 
 
 - name: Make sure nginx is running
-  become: true
   service:
     name: nginx
     state: restarted
