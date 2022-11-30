@@ -27,8 +27,8 @@ SERVER_LOCATION = "http://localhost:8000"
 FRONTEND_LOCATION = "http://localhost:3000"
 DEV_MODE = getenv("DEVMODE")
 if DEV_MODE == "false":
-    SERVER_LOCATION = "https://investorblog.diplomportal.dk/api"
-    FRONTEND_LOCATION = "https://investorblog.diplomportal.dk"
+    SERVER_LOCATION = "https://investorblog.ml/api"
+    FRONTEND_LOCATION = "https://investorblog.ml"
 
 
 # Sentry loggin code sourced from the sentry docs:
