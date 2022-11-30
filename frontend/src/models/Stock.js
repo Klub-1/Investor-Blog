@@ -9,6 +9,12 @@ export class Stock {
 
   api = new API();
 
+  /**
+   * Init class
+   * @param stockname - The name of the stock
+   * @param ppo - The PPO value of the stock
+   * @param isFavorite - If the stock is a favorite for the user
+   */
   constructor(stockname, ppo, isFavorite = false) {
     makeAutoObservable(this);
     this.stock_name = stockname;
@@ -16,6 +22,10 @@ export class Stock {
     this.isFavorite = isFavorite;
   }
 
+  /**
+   * If the user has the stock as favorite, the stock is removed from the favorites.
+   * If the user does not have the stock as favorite, the stock is added to the favorites.
+   */
   async toggleFavorite() {
     const user_id = AuthStore.user.id;
     if (!this.isFavorite) {
