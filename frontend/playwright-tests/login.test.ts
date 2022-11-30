@@ -20,9 +20,9 @@ test('test', async ({ page }) => {
   const token = await page.evaluate(() => localStorage.getItem('portal-jwt-Token')); 
   await expect(page).toHaveURL('http://localhost:3000/', { timeout: 10000 });
 
-  //wait for the page to be authenticated by waiting for role link to have 5 elements
+  //wait for the page to be authenticated by waiting for role link to have 6 elements
   await new Promise(f => setTimeout(f, 1000));
-  await page.getByRole('link').nth(4).click();
+  await page.getByRole('link').nth(5).click();
   await page.goto('http://localhost:3000/account');
   await expect(page.getByRole('heading', { name: 'your user = test' })).toBeTruthy();
 
