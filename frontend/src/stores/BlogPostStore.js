@@ -23,8 +23,13 @@ class BlogPostStore {
     this.filter = value;
   }
 
+  pushToBlogposts(blogpost) {
+    this.blogposts.push(blogpost);
+  }
+
   async createBlogPost(title, content, tags) {
     await AuthStore.checkAuth();
+
     const user_id = AuthStore.user.id;
 
     const data = await this.api.createBlogPost(user_id, title, content, tags);
@@ -39,7 +44,7 @@ class BlogPostStore {
       []
     );
 
-    this.blogposts.push(blogpost);
+    this.pushToBlogposts(blogpost);
   }
 
   initBlogPosts(_blogposts) {
