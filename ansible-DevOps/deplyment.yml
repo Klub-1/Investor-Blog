@@ -4,8 +4,12 @@
   roles:
     - backend
     - frontend
+    - grafana
+    - prometheus
   tags:
     - backend
     - frontend
+    - grafana
+    - prometheus
 
   

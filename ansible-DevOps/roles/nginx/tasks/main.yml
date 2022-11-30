@@ -16,7 +16,7 @@
   become: true
   copy:
     src: default
-    dest: /etc/nginx/sites-available
+    dest: /etc/nginx/sites-enabled
     owner: root
     group: root
     mode: 0644
@@ -25,7 +25,7 @@
 ##TODO fix test Idempotence test failed because of the following tasks:*  => nginx : Make sure nginx is running
 - name: Make sure nginx is running
   become: true
-  service:
+  service: 
     name: nginx
     state: restarted
     enabled: yes
