@@ -6,7 +6,7 @@ import { Interaction } from "./Interaction";
 
 export class BlogPost {
   id = 0;
-  user_id = "";
+  user_id = 0;
   username = "";
   title = "";
   content = "";
@@ -16,13 +16,28 @@ export class BlogPost {
 
   api = new API();
 
+  setAuthor(value) {
+    this.username = value;
+  }
+
   // USER
   async getAuthor() {
-    if (this.user_id === AuthStore.user.id) {
-      this.username = "dig";
+    if (AuthStore.user.id === -1) {
+      await AuthStore.checkAuth();
+    }
+
+    if (this.user_id === -1) {
+      this.setAuthor("Ukendt bruger");
+      return;
+    }
+
+    const author_id = AuthStore.user.id;
+
+    if (this.user_id === author_id) {
+      this.setAuthor("dig");
     } else {
       const res = await this.api.getUserName(this.user_id);
-      this.username = res;
+      this.setAuthor(res);
     }
   }
 

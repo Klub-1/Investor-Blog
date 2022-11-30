@@ -10,7 +10,7 @@ import requests
 class TestAPI(unittest.TestCase):
 
     def setUp(self):
-        self.url =  'https://investorblog.diplomportal.dk/api/'
+        self.url =  'https://investorblog.ml/api/'
         self.api_session = requests.Session()
 
     def test_create_user_and_post(self):
@@ -104,7 +104,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         #-------- test userexists --------
         request_url = self.url + \
-            f'checkifuserexists?email=test'
+            f'checkifuserexists?email=dennebrugerskalikkeoprettes'
         res = self.api_session.get(request_url)
         self.assertEqual(res.status_code, 409)
 

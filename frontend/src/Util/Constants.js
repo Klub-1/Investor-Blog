@@ -1,14 +1,14 @@
 export class Constants {
   url = window.location.href;
-  isProd = this.url.includes("localhost") ? false : true;
-  static get BACKEND_URL() {
+  isProd = !this.url.includes("localhost");
+  BACKEND_URL() {
     return this.isProd
-      ? "https://investorblog.diplomportal.dk/api"
-      : "https://investorblog.diplomportal.dk/api";
+      ? "https://investorblog.ml/api"
+      : "http://localhost:8000";
   }
-  static get FRONTEND_URL() {
+  FRONTEND_URL() {
     return this.isProd
-      ? "https://investorblog.diplomportal.dk"
-      : "https://investorblog.diplomportal.dk";
+      ? "https://investorblog.ml"
+      : "http://localhost:3000";
   }
 }

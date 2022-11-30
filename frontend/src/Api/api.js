@@ -1,7 +1,8 @@
 import { Constants } from "../Util/Constants";
 
 export class API {
-  url = Constants.BACKEND_URL;
+  constant = new Constants();
+  url = this.constant.BACKEND_URL();
 
   async getBlogPosts() {
     const res = await fetch(this.url + "/blogposts/", {
@@ -99,9 +100,12 @@ export class API {
       },
     });
 
-    const username = await res.text();
-
-    return username;
+    if (res.status === 200) {
+      const username = await res.json();
+      return username.username;
+    } else {
+      return "Ukendt bruger";
+    }
   }
 
   async getUser() {
@@ -206,7 +210,6 @@ export class API {
       }
     );
     const favorite = await res.json();
-    console.table(favorite);
     return favorite;
   }
 
