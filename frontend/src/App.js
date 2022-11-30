@@ -1,30 +1,24 @@
-import { Route, Routes } from "react-router-dom";
-
-// Components
-import { SideBar } from "./components/SideBar/SideBar";
-
-// Views
-import HomeView from "./views/HomeView";
-import AddView from "./views/AddView";
-import { SearchView } from "./views/SearchView";
-import { StocksView } from "./views/StocksView";
-import { AccountView } from "./views/AccountView";
-import { HighscoreView } from "./views/HighscoreView";
+import logo from './logo.svg';
+import './App.css';
 
 function App() {
   return (
-    <div className="flex w-full h-full absolute">
-      <SideBar />
-      <div className="flex-1 m-5 md:m-10">
-        <Routes>
-          <Route path="/" element={<HomeView />} />
-          <Route path="/add" element={<AddView />} />
-          <Route path="/search" element={<SearchView />} />
-          <Route path="/stocks" element={<StocksView />} />
-          <Route path="/account" element={<AccountView />} />
-          <Route path="/highscore" element={<HighscoreView />} />
-        </Routes>
-      </div>
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Gruppe 1 Frontend
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn DevOps
+        </a>
+        <button>Login</button>
+      </header>
     </div>
   );
 }
