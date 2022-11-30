@@ -43,8 +43,7 @@ server {
 	location / {
 		# First attempt to serve request as file, then
 		# as directory, then fall back to displaying a 404.
-		#try_files $uri $uri/ =404;
-		proxy_pass http://127.0.0.1:3000/;
+		try_files $uri $uri/ =404;
 	}
 
 	# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
@@ -104,11 +103,11 @@ server {
 	#
 	# include snippets/snakeoil.conf;
 
-	#root /var/www/html;
+	root /var/www/html;
 
 	# Add index.php to the list if you are using PHP
 	index index.html index.htm index.nginx-debian.html;
-    server_name investorblog.diplomportal.dk; # managed by Certbot
+    server_name investorblog.ml; # managed by Certbot
 
 
 	location / {
@@ -146,22 +145,22 @@ server {
 
     listen [::]:443 ssl ipv6only=on; # managed by Certbot
     listen 443 ssl; # managed by Certbot
-    ssl_certificate /etc/letsencrypt/live/investorblog.diplomportal.dk/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/investorblog.diplomportal.dk/privkey.pem; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/investorblog.ml/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/investorblog.ml/privkey.pem; # managed by Certbot
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
 
 }
 server {
-    if ($host = investorblog.diplomportal.dk) {
+    if ($host = investorblog.ml) {
         return 301 https://$host$request_uri;
     } # managed by Certbot
 
 
 	listen 80 ;
 	listen [::]:80 ;
-    server_name investorblog.diplomportal.dk;
+    server_name investorblog.ml;
     return 404; # managed by Certbot
 
 
