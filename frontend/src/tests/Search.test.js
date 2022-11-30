@@ -1,52 +1,57 @@
 import "@testing-library/jest-dom";
-import { API } from "../Api/api";
-import AuthStore from "../stores/AuthStore";
+import { BlogPost } from "../models/BlogPost";
 
 import BlogPostStore from "../stores/BlogPostStore";
 
-beforeAll(async () => {
-  const api = new API();
-  const users = await api.getAllUsers();
+test("Filter blogposts", () => {
+  BlogPostStore.blogposts = [];
 
-  const userExists = users.find((u) => u.email === "test_user@user.dk");
-
-  if (!userExists) {
-    await api.registerUser("test_user@user.dk", "test_user", "test");
-  } else {
-    await api.login("test_user@user.dk", "test");
-  }
-
-  AuthStore.checkAuth();
-});
-
-test("Filter blogposts", async () => {
-  const randomNumber = Math.random() * Math.PI;
-
-  await BlogPostStore.createBlogPost(
-    "This is a test",
-    "I'm writing a test",
-    "TAG"
+  const id1 = Math.random() * Math.PI;
+  const blogpost1 = new BlogPost(
+    id1,
+    id1,
+    "Blogpost " + id1,
+    "Content " + id1,
+    "",
+    [],
+    []
   );
 
-  await BlogPostStore.createBlogPost(
-    "This is a test " + randomNumber,
-    "I'm writing a test",
-    "TAG"
+  BlogPostStore.pushToBlogposts(blogpost1);
+
+  const id2 = Math.random() * Math.PI;
+  const blogpost2 = new BlogPost(
+    id2,
+    id2,
+    "Blogpost " + id2,
+    "Content " + id2,
+    "",
+    [],
+    []
   );
 
-  BlogPostStore.setFilterValue(randomNumber.toString());
+  BlogPostStore.pushToBlogposts(blogpost2);
+
+  BlogPostStore.setFilterValue(id2.toString());
 
   const filteredBlogPosts = BlogPostStore.filteredBlogPosts;
 
   expect(filteredBlogPosts.length).toBe(1);
 });
 
-test("Add interaction", async () => {
-  await BlogPostStore.createBlogPost(
-    "This is a test",
-    "I'm writing a test",
-    "TAG"
+test("Add interaction", () => {
+  const id1 = Math.random() * Math.PI;
+  const blogpost1 = new BlogPost(
+    id1,
+    id1,
+    "Blogpost " + id1,
+    "Content " + id1,
+    "",
+    [],
+    []
   );
+
+  BlogPostStore.pushToBlogposts(blogpost1);
 
   const count = BlogPostStore.blogposts.length;
 
