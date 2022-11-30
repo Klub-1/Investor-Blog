@@ -10,7 +10,7 @@ import requests
 class TestAPI(unittest.TestCase):
 
     def setUp(self):
-        self.url =  'https://investorblog.diplomportal.dk/api/'
+        self.url =  'https://investorblog.ml/api/'
         self.api_session = requests.Session()
 
     def test_create_user_and_post(self):
