@@ -25,7 +25,7 @@
 ##TODO fix test Idempotence test failed because of the following tasks:*  => nginx : Make sure nginx is running
 - name: Make sure nginx is running
   become: true
-  service: 
+  service:
     name: nginx
     state: restarted
     enabled: yes
