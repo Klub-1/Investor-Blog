@@ -9,6 +9,10 @@ export class User {
   blogposts = [];
   email = "";
 
+  /**
+   * Create a list of blogposts
+   * @param _blogposts - an array of blogposts to initialize the blogposts array with
+   */
   initBlogPosts(_blogposts) {
     this.blogposts = _blogposts.map((blogpost) => {
       return new BlogPost(
@@ -38,6 +42,13 @@ export class User {
     });
   }
 
+  /**
+   * Init user class
+   * @param id - The id of the user.
+   * @param username - The username of the user.
+   * @param email - The email of the user
+   * @param blogposts - an array of blogposts
+   */
   constructor(id, username, email, blogposts) {
     makeAutoObservable(this);
     this.id = id;

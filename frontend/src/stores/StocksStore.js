@@ -9,6 +9,11 @@ class StocksStore {
   filter = "";
   api = new API();
 
+  /**
+   * Sets the value of the filter to the value of the list of favorite if the filter value is empty
+   * Set the filter value to the value of the param
+   * @param value - New value of the filter variable
+   */
   setFilterValue(value) {
     if (value === "") {
       this.filtered = this.favorite;
@@ -16,6 +21,9 @@ class StocksStore {
     this.filter = value.toUpperCase();
   }
 
+  /**
+   * Using the filter variable search for the stock in the backend and add it to the list of favorites
+   */
   async searchStocks() {
     // else fetch stock
     const data = await this.api.searchStock(this.filter);
@@ -35,6 +43,9 @@ class StocksStore {
     this.filtered.push(stock);
   }
 
+  /**
+   * Get all user favorite from the database and add them to the list of favorites
+   */
   async syncStocks() {
     const user_id = AuthStore.user.id;
     const data = await this.api.getUserFavorites(user_id);
@@ -43,6 +54,10 @@ class StocksStore {
     });
     this.filtered = this.favorite;
   }
+
+  /**
+   * Init class
+   */
 
   constructor() {
     makeObservable(this, {
