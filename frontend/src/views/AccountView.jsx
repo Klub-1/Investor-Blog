@@ -15,6 +15,8 @@ export const AccountView = observer(() => {
   const [password, setPassword] = useState();
   const [email, setEmail] = useState();
 
+  const constants = new Constants();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (showRegister) {
@@ -22,7 +24,7 @@ export const AccountView = observer(() => {
     } else if (showLogin) {
       await AuthStore.login(email, password);
     } else {
-      window.location.href = Constants.BACKEND_URL + "/campusnet/login";
+      window.location.href = constants.BACKEND_URL() + "/campusnet/login";
       return null;
     }
   };
