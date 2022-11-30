@@ -22,10 +22,13 @@ export class BlogPost {
 
   // USER
   async getAuthor() {
-    await AuthStore.checkAuth();
+    if (AuthStore.user.id === -1) {
+      await AuthStore.checkAuth();
+    }
 
     if (this.user_id === -1) {
       this.setAuthor("Ukendt bruger");
+      return;
     }
 
     const author_id = AuthStore.user.id;
@@ -36,8 +39,6 @@ export class BlogPost {
       const res = await this.api.getUserName(this.user_id);
       this.setAuthor(res);
     }
-
-    console.log(author_id);
   }
 
   userLiked() {
