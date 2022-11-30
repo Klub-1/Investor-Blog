@@ -4,7 +4,7 @@ import { assert } from 'console';
 
 test('test', async ({ page }) => {
   await page.goto('http://localhost:3000/');
-  await page.getByRole('link').nth(3).click();
+  await page.getByRole('link').nth(4).click();
   await page.getByRole('button', { name: 'Login' }).first().click();
   await page.getByRole('button', { name: 'Registrer' }).click();
   await page.getByPlaceholder('Brugernavn').click();
@@ -31,7 +31,7 @@ test('test', async ({ page }) => {
   await page.reload();
   await page.goto('http://localhost:3000/');
   await page.goto('http://localhost:3000/');
-  await page.getByRole('link').nth(3).click();
+  await page.getByRole('link').nth(4).click();
   await page.getByRole('button', { name: 'Login' }).first().click();
   await page.getByPlaceholder('Email').click();
   await page.getByPlaceholder('Email').fill('test@test.dk');
