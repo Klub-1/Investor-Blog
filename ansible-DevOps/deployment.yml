@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: yes
+  roles:
+    - backend
+    - frontend
+    - prometheus
+    - grafana
+  tags:
+    - backend
+    - frontend
+    - prometheus
+    - grafana

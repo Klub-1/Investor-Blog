@@ -1,0 +1,85 @@
+---
+
+- name: stop nginx
+  service:
+    name: nginx
+    state: stopped
+
+- name: open port 80
+  ufw:
+    rule: allow
+    port: 80
+    proto: tcp
+
+- name: open port 443
+  ufw:
+    rule: allow
+    port: 443
+    proto: tcp
+
+
+- name: open port 3000
+  ufw:
+    rule: allow
+    port: 3000
+    proto: tcp
+
+- name: open port 996
+  ufw:
+    rule: allow
+    port: 996
+    proto: tcp  
+
+- name: open port 7946
+  ufw:
+    rule: allow
+    port: 7946
+    proto: tcp
+
+- name: open port 4789
+  ufw:
+    rule: allow
+    port: 4789
+    proto: tcp
+  
+- name: open port 2377
+  ufw:
+    rule: allow
+    port: 2377
+    proto: tcp
+
+- name: deploy docker container of caprover
+  docker_container:
+    name: caprover
+    image: caprover/caprover
+    state: started
+    restart_policy: always
+    published_ports:
+      - "80:80"
+      - "443:443"
+      - "3000:3000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /captain:/captain
+    become: yes
+
+- name: fallocate swapfile
+  command: fallocate -l 4G /swapfile
+
+- name: chmod swapfile
+  command: chmod 600 /swapfile
+
+- name: mkswap swapfile
+  command: mkswap /swapfile
+
+- name: swapon swapfile
+  command: swapon /swapfile
+
+- name: add swapfile to fstab
+  command: echo '/swapfile swap swap defaults 0 0' | tee -a /etc/fstab
+
+- name: start nginx
+  service:
+    name: nginx
+    state: started
+

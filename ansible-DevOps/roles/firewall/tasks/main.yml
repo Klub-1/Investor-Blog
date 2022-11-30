@@ -1,0 +1,39 @@
+---
+- name: install firewall 
+  ansible.builtin.package:
+    name: ufw
+    state: present
+  tags: notest
+
+
+- name: make sure firewall is running
+  ansible.builtin.service:
+    name: ufw
+    state: started
+    enabled: yes
+  tags: notest
+
+
+- name: allow port 80/tcp ufw rule
+  ansible.builtin.ufw:
+    rule: allow
+    port: 80
+    protocol: tcp
+    state: enabled
+  tags: notest
+  
+- name: allow port 22/tcp ufw rule
+  ansible.builtin.ufw:
+    rule: allow
+    port: 22
+    protocol: tcp
+  tags: notest
+
+- name: allow port 443/tcp ufw rule
+  ansible.builtin.ufw:
+    rule: allow
+    port: 443
+    protocol: tcp
+    state: enabled
+  tags: notest
+
