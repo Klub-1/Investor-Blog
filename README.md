@@ -37,3 +37,6 @@ Vi vil være færdige med implementering af programmet i slutningen af november,
 <https://www.youtube.com/watch?v=yKV1IGahXqA&t=315s>
 <https://www.youtube.com/watch?v=5R9jFHlG6ik&t=1254s&ab_channel=PedroTech>
 <https://www.youtube.com/watch?v=SLfhMt5OUPI&t=342s&ab_channel=WebDevSimplified>
+<https://github.com/dube-academy/mobx-objects-arrays>
+<https://tailwindcss.com/docs/installation>
+<https://mobx.js.org/README.html#documentation>
