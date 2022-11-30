@@ -3,6 +3,8 @@ import { API } from "../Api/api";
 import { User } from "../models/User";
 import { Constants } from "../Util/Constants";
 
+// SOURCE: https://github.com/dube-academy/mobx-objects-arrays
+
 class AuthStore {
   user = new User(-1, "", "", []);
   blogposts = [];
