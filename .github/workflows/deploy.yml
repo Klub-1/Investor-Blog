@@ -1,4 +1,4 @@
-name: deploy
+name: deploy pipeline
 
 on:
   push:
@@ -41,12 +41,12 @@ jobs:
           context: ./frontend
           tags: s205424/frontend-devops:${{github.run_number}},s205424/frontend-devops:latest
 
-
+       #source: https://github.com/dawidd6/action-ansible-playbook
       - name: Run playbook
         uses: dawidd6/action-ansible-playbook@v2
         with:
           # Required, playbook filepath
-          playbook: deplyment.yml
+          playbook: deployment.yml
           # Optional, directory where playbooks live
           directory: ./ansible-DevOps
           # Optional, SSH private key

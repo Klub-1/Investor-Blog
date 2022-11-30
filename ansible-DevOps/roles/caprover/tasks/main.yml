@@ -48,20 +48,20 @@
     port: 2377
     proto: tcp
 
-#- name: deploy docker container of caprover
-#  docker_container:
-#    name: caprover
-#    image: caprover/caprover
-#    state: started
-#    restart_policy: always
-#    published_ports:
-#      - "80:80"
-#      - "443:443"
-#      - "3000:3000"
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
-#      - /captain:/captain
-#    become: yes
+- name: deploy docker container of caprover
+  docker_container:
+    name: caprover
+    image: caprover/caprover
+    state: started
+    restart_policy: always
+    published_ports:
+      - "80:80"
+      - "443:443"
+      - "3000:3000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /captain:/captain
+    become: yes
 
 - name: fallocate swapfile
   command: fallocate -l 4G /swapfile
