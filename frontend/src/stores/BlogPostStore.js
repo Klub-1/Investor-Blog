@@ -19,14 +19,28 @@ class BlogPostStore {
     });
   }
 
+  /**
+   * Set the value of filter to the value of the param
+   * @param value - The new value of the filter.
+   */
   setFilterValue(value) {
     this.filter = value;
   }
 
+  /**
+   * Adds a blog post to the list of blog posts
+   * @param blogpost - The blogpost object that you want to add to the blogposts array.
+   */
   pushToBlogposts(blogpost) {
     this.blogposts.push(blogpost);
   }
 
+  /**
+   * It creates a blog post in the backend and push it to the blogposts array
+   * @param title - The title of the blog post
+   * @param content - The content of the blog post.
+   * @param tags - The tags of the blog post.
+   */
   async createBlogPost(title, content, tags) {
     await AuthStore.checkAuth();
 
@@ -47,6 +61,10 @@ class BlogPostStore {
     this.pushToBlogposts(blogpost);
   }
 
+  /**
+   * Init the blogposts array with the data from the param
+   * @param _blogposts - an array of blogposts
+   */
   initBlogPosts(_blogposts) {
     this.blogposts = _blogposts.map((blogpost) => {
       return new BlogPost(
@@ -76,6 +94,9 @@ class BlogPostStore {
     });
   }
 
+  /**
+   * Init class and array of blogposts
+   */
   constructor() {
     makeObservable(this, {
       blogposts: observable,
